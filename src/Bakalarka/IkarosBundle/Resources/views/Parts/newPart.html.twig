@@ -1,0 +1,684 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block head %}
+
+    <script type="text/javascript">
+        var newResURL = "{{ path('newResistorAjax') }}";
+        var newCapURL = "{{ path('newCapacitor') }}";
+        var newFuseURL = "{{ path('newFuse') }}";
+        var newConnectionURL = "{{ path('newConnection') }}";
+        var newConSocURL = "{{ path('newConSoc') }}";
+        var newConGenURL = "{{ path('newConGen') }}";
+        var newSwitchURL = "{{ path('newSwitch') }}";
+        var newFilterURL = "{{ path('newFilter') }}";
+        var newRotElapsURL = "{{ path('newRotElaps') }}";
+        var newTubeWaveURL = "{{ path('newTubeWave') }}";
+        var idPCB = {{pcb.IDPCB}};
+
+        var detailURL = "{{ path('detailPart', {id:-1}) }}";
+    </script>
+{% endblock %}
+
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>  <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Přidat součástku </h1>
+      <hr />
+      <h3> <span class="bold"> Systém: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ system.Title }} </a> </h3>
+        <p class="lam"> ∑(λ): <span id="SysLam" > {{ system.Lam }}</span> </p>
+      <h3> <span class="bold"> Deska: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ pcb.Label }} </a> </h3>
+        <p class="lam"> λ: <span>{{ pcb.SumLam }}</span> </p>
+      <hr />
+      <br />
+
+
+
+      {% if e %}
+          {{ e }}
+          {% endif %}
+
+    <div id = "container">
+        <ul class = "tabs">
+            <li>
+                <a href = "#tab_01" class="current"> Rezistory </a>
+            </li>
+            <li>
+                <a href = "#tab_02"> Kondenzátory </a>
+            </li>
+            <li>
+                <a href = "#tab_03"> Pojistky </a>
+            </li>
+            <li>
+                <a href = "#tab_04"> Propojení </a>
+            </li>
+            <li>
+                <a href = "#tab_05"> Konektory, sokety </a>
+            </li>
+            <li>
+                <a href = "#tab_06"> Konektory, obecné </a>
+            </li>
+            <li>
+                <a href = "#tab_07"> Spínače </a>
+            </li>
+            <li>
+                <a href = "#tab_08"> Filtry </a>
+            </li>
+            <li>
+                <a href = "#tab_09"> Měřič motohodin </a>
+            </li>
+            <li>
+                <a href = "#tab_10"> Permaktron </a>
+            </li>
+
+
+        </ul>
+        <div class = "tab_content_wrap">
+            <div id = "tab_01" class = "tab_content">
+                <h2> Přidat resistor </h2>
+
+                <form id="formRes" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formResistor) }}>
+
+                    {{ form_widget(formResistor) }}
+                    <div id = "submitHandle">
+                        <input id="saveResAjax" type="submit" value="Uložit" />
+                    </div>
+
+                    <p> * povinné pole </p>
+
+                </form>
+
+                <div id="MatResTable" >
+                <table class = "systems part tablesorter">
+                    <caption> Materiály resistorů </caption>
+                    <thead>
+                    <tr>
+                        <td> Zkratka </td>
+                        <td> Popis </td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for mat in matRes %}
+                        <tr >
+                            <td > {{ mat.ResShortcut }} </td>
+                            <td> {{ mat.Description }}  </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+
+                <div class="cleaner"> </div>
+
+
+                {% if resistors %}
+                    <h2> Uložené resistory </h2>
+                    <table id="ResTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Materiál </td>
+                            <td> Kvalita </td>
+                            <td> Maximální výkon </td>
+                            <td> Ztrátový výkon </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for resistor in resistors %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}" {{ resistor.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Material }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.MaxPower }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.DissipationPower }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.DPTemp }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.PassiveTemp }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+            <div id = "tab_02" class = "tab_content">
+                <h2> Přidat kondenzátor </h2>
+
+                <form id="formCap" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formCapacitor) }}>
+
+                    {{ form_widget(formCapacitor) }}
+                    <div id = "submitHandle">
+                        <input id="saveCap" type="submit" value="Uložit" />
+                    </div>
+
+                    <p> * povinné pole </p>
+
+                </form>
+
+                <div id="MatResTable" >
+                    <table class = "systems part tablesorter">
+                        <caption> Materiály kondenzátorů </caption>
+                        <thead>
+                        <tr>
+                            <td> Zkratka </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for mat in matCap %}
+                            <tr >
+                                <td > {{ mat.CapShortcut }} </td>
+                                <td> {{ mat.Description }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cleaner"> </div>
+
+
+                {% if capacitors %}
+                    <h2> Uložené kondenzátory </h2>
+                    <table id="CapTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Hodnota </td>
+                            <td> Prostředí </td>
+                            <td> Materiál </td>
+                            <td> Kvalita </td>
+                            <td> Maximální napětí </td>
+                            <td> Provozní napětí </td>
+                            <td> Pasivní oteplení </td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for capacitor in capacitors %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}" > {{ capacitor.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Value }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Material }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.VoltageMax }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.VoltageOperational }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.PassiveTemp }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div id = "tab_03" class = "tab_content">
+                <h2> Přidat pojistku </h2>
+
+                <form id="formFuse" class = "resForm short" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formFuse) }}>
+
+                    {{ form_widget(formFuse) }}
+                    <div id = "submitHandle">
+                        <input id="saveFuse" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if fuses %}
+                    <h2> Uložené pojistky </h2>
+                    <table id="FuseTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Hodnota </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for fuse in fuses %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Value }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div id = "tab_04" class = "tab_content">
+                <h2> Přidat propojení </h2>
+
+                <form id="formConnection" class = "resForm short" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formConnection) }}>
+
+                    {{ form_widget(formConnection) }}
+                    <div id = "submitHandle">
+                        <input id="saveConnection" type="submit" value="Uložit" />
+                    </div>
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if connections %}
+                    <h2> Uložené propojení </h2>
+                    <table id="ConnectionTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for con in connections %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Type }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+
+            <div id = "tab_05" class = "tab_content">
+                <h2> Přidat konektor, soket </h2>
+
+                <form id="formConSoc" class = "resForm short" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formConSoc) }}>
+
+                    {{ form_widget(formConSoc) }}
+                    <div id = "submitHandle">
+                        <input id="saveConSoc" type="submit" value="Uložit" />
+                    </div>
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if conSoc %}
+                    <h2> Uložené konektory, sokety </h2>
+                    <table id="ConSocTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Aktivní piny </td>
+                            <td> Popis </td>
+                            <td> Kvalita </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for con in conSoc %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ActivePins }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ConnectorType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div id = "tab_06" class = "tab_content">
+                <h2> Přidat konektor, obecný </h2>
+
+                <form id="formConGen" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formConGen) }}>
+
+                    {{ form_widget(formConGen) }}
+                    <div id = "submitHandle">
+                        <input id="saveConGen" type="submit" value="Uložit" />
+                    </div>
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if conGen %}
+                    <h2> Uložené konektory, obecné </h2>
+                    <table id="ConGenTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Kvalita </td>
+                            <td> Počet kontaktů </td>
+                            <td> Proud na kontakt </td>
+                            <td> Spoj/rozpoj </td>
+                            <td> Pasivní oteplení </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for con in conGen %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ConnectorType }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ContactCnt }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.CurrentContact }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.MatingFactor }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.PassiveTemp }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+
+            <div id = "tab_07" class = "tab_content">
+                <h2> Přidat spínač </h2>
+
+                <form id="formSwitch" class = "resForm short" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formSwitch) }}>
+
+                    {{ form_widget(formSwitch) }}
+                    <div id = "submitHandle">
+                        <input id="saveSwitch" type="submit" value="Uložit" />
+                    </div>
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if switches %}
+                    <h2> Uložené spínače </h2>
+                    <table id="SwitchTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Kvalita </td>
+                            <td> Počet kontaktů </td>
+                            <td> Pracovní proud </td>
+                            <td> Maximální proud </td>
+                            <td> Typ zátěže </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for s in switches %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.SwitchType }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.ContactCnt }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.OperatingCurrent }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.RatedResistiveCurrent }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.LoadType }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+
+            <div id = "tab_08" class = "tab_content">
+                <h2> Přidat filtr </h2>
+
+                <form id="formFilter" class = "resForm filter" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formFilter) }}>
+
+                    {{ form_widget(formFilter) }}
+                    <div id = "submitHandle">
+                        <input id="saveFilter" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div id="FilterTypeTable" >
+                    <table class = "systems part">
+                        <caption> Typy filtrů </caption>
+                        <thead>
+                        <tr>
+                            <td> Popis </td>
+                            <td> MIL </td>
+                            <td> Specifikace </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr >
+                                <td> Ceramic-Ferrite Construction </td>
+                                <td> MIL-F-15733 </td>
+                                <td> Styles FL 10-16, 22, 24, 30-32, 34, 35, 38, 41-43, 45, 47-50, 61-65, 70, 81-93, 95, 96 </td>
+                            </tr>
+                            <tr >
+                                <td> Discrete LC Components </td>
+                                <td> MIL-F-15733 </td>
+                                <td> Styles FL 37, 53, 74 </td>
+                            </tr>
+                            <tr >
+                                <td>  </td>
+                                <td> MIL-F-18327 </td>
+                                <td> Composition 1 </td>
+                            </tr>
+                            <tr >
+                                <td> Discrete LC and Crystal Components </td>
+                                <td> MIL-F-18327 </td>
+                                <td> Composition 2 </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cleaner"> </div>
+
+                {% if filters %}
+                    <h2> Uložené filtry </h2>
+                    <table id="FilterTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Kvalita </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for filter in filters %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.FilterType }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Quality }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div id = "tab_09" class = "tab_content">
+                <h2> Přidat měřič motohodin </h2>
+
+                <form id="formRotElaps" class = "resForm short" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formRotElaps) }}>
+
+                    {{ form_widget(formRotElaps) }}
+                    <div id = "submitHandle">
+                        <input id="saveRotElaps" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if rotElaps %}
+                    <h2> Uložené měřiče motohodin </h2>
+                    <table id="RotElapsTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Provozní teplota </td>
+                            <td> Maximální teplota </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for rot in rotElaps %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.DevType }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.TempOperational }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.TempMax }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div id = "tab_10" class = "tab_content">
+                <h2> Přidat permaktron </h2>
+
+                <form id="formTubeWave" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formTubeWave) }}>
+
+                    {{ form_widget(formTubeWave) }}
+                    <div id = "submitHandle">
+                        <input id="saveTubeWave" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if tubeWaves %}
+                    <h2> Uložené permaktrony </h2>
+                    <table id="TubeWaveTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Výkon </td>
+                            <td> Frekvence </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Prostředí </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for tube in tubeWaves %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Power }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Frequency }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.CasePart }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Environment }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+
+
+    
+
+
+  </div> <!-- content end -->
+
+{% endblock %}

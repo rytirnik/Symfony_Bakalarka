@@ -1,0 +1,128 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>
+          <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+      <h1> Detail součástky: <span id="labelPart"> {{ Label }} </span> </h1>
+      <h3> Typ součástky: {{ type }}</h3>
+      <h3> λ: <span id="lamPart"> {{ Lam }} </span> </h3>
+      <br />
+
+       {% if type == "rezistor" %}
+           <form id="formResE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formResistor) }}>
+               {{ form_widget(formResistor) }}
+               <div class = "submitHandle">
+                   <input id="EditRes" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+
+      {% elseif type == "pojistka" %}
+          <form id="formFuseE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formFuse) }}>
+              {{ form_widget(formFuse) }}
+              <div class = "submitHandle">
+                  <input id="EditFuse" type="submit" value="Upravit" />
+              </div>
+              <p class="pRed"> * povinné pole </p>
+          </form>
+      {% elseif type == "kondenzátor" %}
+           <form id="formCapE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formCapacitor) }}>
+               {{ form_widget(formCapacitor) }}
+               <div class = "submitHandle">
+                   <input id="EditCap" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "propojení" %}
+           <form id="formConnectionE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formConnection) }}>
+               {{ form_widget(formConnection) }}
+               <div class = "submitHandle">
+                   <input id="EditConnection" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "konektor, soket" %}
+           <form id="formConSocE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formConSoc) }}>
+               {{ form_widget(formConSoc) }}
+               <div class = "submitHandle">
+                   <input id="EditConSoc" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "konektor, obecný" %}
+           <form id="formConGenE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formConGen) }}>
+               {{ form_widget(formConGen) }}
+               <div class = "submitHandle">
+                   <input id="EditConGen" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "spínač" %}
+           <form id="formSwitchE" class = "resForm" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formSwitch) }}>
+               {{ form_widget(formSwitch) }}
+               <div class = "submitHandle">
+                   <input id="EditSwitch" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "filtr" %}
+           <form id="formFilterE" class = "resForm filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formFilter) }}>
+               {{ form_widget(formFilter) }}
+               <div class = "submitHandle">
+                   <input id="EditFilter" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "měřič motohodin" %}
+           <form id="formRotElapsE" class = "resForm filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formRotElaps) }}>
+               {{ form_widget(formRotElaps) }}
+               <div class = "submitHandle">
+                   <input id="EditRotElaps" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "permaktron" %}
+           <form id="formTubeWaveE" class = "resForm filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formTubeWave) }}>
+               {{ form_widget(formTubeWave) }}
+               <div class = "submitHandle">
+                   <input id="EditTubeWave" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+
+      {% endif %}
+
+
+      <div class="cleaner"> </div>
+    
+
+
+  </div> <!-- content end -->
+
+{% endblock %}

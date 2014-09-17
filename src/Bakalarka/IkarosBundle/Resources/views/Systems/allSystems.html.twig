@@ -1,0 +1,81 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>  <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Všechny systémy </h1>
+
+      {% if systems %}
+          <table class = "systems systemsHover shadow">
+              <thead>
+              <tr>
+                  <td> Uživatel </td>
+                  <td> Název </td>
+                  <td> Teplota </td>
+                  <td> Prostředí </td>
+                  <td> Lambda </td>
+                  <td> Desky </td>
+                  <td> Součástky </td>
+                  <td> Vytvořeno </td>
+                  <td> Smazáno </td>
+              </tr>
+              </thead>
+              <tbody>
+
+              {% for system in systems %}
+                  {% if system.DeleteDate != "" %}
+                      <tr class = "tableLink" href = "{{ path('detailAdmin',{id:system.ID_System}) }}">
+                  {% else %}
+                      <tr class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}">
+                  {% endif %}
+                      <td> {{ system.Username }}</td>
+                      <td> {{ system.Title }} </td>
+                      <td> {{ system.Temp }}  </td>
+                      <td> {{ system.Environment }}  </td>
+                      <td> {{ system.Lam }} </td>
+                      <td> {{ system.PCBcnt }} </td>
+                      <td> {{ system.PartsCnt }} </td>
+                      <td> {{ system.CreateDate|date("d.m.Y") }} </td>
+                      {% if system.DeleteDate %}
+                          <td> {{ system.DeleteDate|date("d.m.Y") }} </td>
+                      {% else %}
+                          <td> - </td>
+                      {% endif %}
+                  </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+
+      {% else %}
+          <p> Nejsou uložené žádné systémy. </p>
+      {% endif %}
+
+
+
+  </div> <!-- content end -->
+
+{% endblock %}

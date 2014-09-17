@@ -1,0 +1,41 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block content %} 
+
+  <div id = "contentMenu">
+    {% if app.user %}
+      <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>
+        <hr />
+      <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+
+        <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+        <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+        {% endif %}
+        <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+    
+    {% else %}
+      <p> Uživatel nepřihlášen  <hr /> </p>
+      <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+      <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+     
+    {% endif %}                 
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Vítejte </h1>
+     
+    <p> na stránkách věnovaných prediktivní analýze spolehlivosti! </p>
+    
+    <p> Aplikace Ikaros se zábývá výpočtem spolehlivostních parametrů dle normy MIL-HDBK-217F. Více informací o této normě naleznete v sekci O normě. </p>
+
+    <p> Pro správu systémů a součástek a výpočet intenzity poruch jednotlivých komponent je nutné se nejprve zaregistrovat/přihlásit. </p>
+
+  </div> <!-- content end -->
+
+{% endblock %}

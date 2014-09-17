@@ -1,0 +1,78 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>  <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Moje uložené systémy </h1>
+
+    {% if error %}
+        <p> {{ error }} </p>
+    {% endif %}
+
+  {% if systems %}
+       <table class = "systems systemsHover shadow">
+           <thead>
+               <tr>
+                   <td> Název </td>
+                   <td> Teplota </td>
+                   <td> Prostředí </td>
+                   <td> Lambda </td>
+                   <td> Desky </td>
+                   <td> Součástky </td>
+
+                   <td> </td>
+                   <td> </td>
+               </tr>
+           </thead>
+           <tbody>
+
+              {% for system in systems %}
+                   <tr >
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.Title }} </td>
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.Temp }}  </td>
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.Environment }}  </td>
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.Lam }} </td>
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.PCBcnt }} </td>
+                       <td class = "tableLink" href = "{{ path('detail',{id:system.ID_System}) }}"> {{ system.PartsCnt }} </td>
+
+                       <td> </td><td class = "tableBtn" >
+                           <a href="{{ path('detailSystem',{id:system.ID_System}) }}" > Upravit </a>
+                           <a href="{{ path('delSystem',{id:system.ID_System}) }}" > Smazat </a>
+                           <a href="{{ path('newPCB',{id:system.ID_System}) }}" > Přidat desku </a>
+                       </td>
+
+                   </tr>
+              {% endfor %}
+           </tbody>
+        </table>
+
+  {% else %}
+      <p> Nemáte žádné uložené systémy. </p>
+
+  {% endif %}
+    
+
+  </div> <!-- content end -->
+
+{% endblock %}

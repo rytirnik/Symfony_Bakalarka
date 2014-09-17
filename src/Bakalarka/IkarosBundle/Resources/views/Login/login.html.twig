@@ -1,0 +1,27 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %}
+
+{% block content %} 
+
+  <div id = "contentLog">      
+     
+     <form class = "log" action="{{ path('login_check') }}" method="post">
+      <h1> Přihlášení  </h1> 
+      <label for="username">Uživatelské jméno</label>
+      <input type="text" id="username" name="_username" value="{{ last_username }}" />  <br />
+    
+      <label for="password">Heslo</label>
+      <input type="password" id="password" name="_password" /> <br />
+    
+      <div id = "submitHandle">
+      <input type="submit" name="login" value="Přihlaš"/>
+
+      {% if error %}
+        <p class="errors"> Nesprávné přihlašovací udáje. </p>
+      {% endif %}
+      
+      </div>
+    </form>
+    
+  </div> <!-- content end -->
+
+{% endblock %}

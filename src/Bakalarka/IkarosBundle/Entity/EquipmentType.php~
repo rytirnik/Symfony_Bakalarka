@@ -1,0 +1,137 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Nikey
+ * Date: 26.3.14
+ * Time: 17:56
+ */
+
+namespace Bakalarka\IkarosBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Bakalarka\IkarosBundle\Entity\Part;
+
+/**
+ * @ORM\Entity
+ */
+class EquipmentType {
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", unique=true)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $ID_Equip;
+
+    /**
+     * @ORM\Column(length=30)
+     */
+    protected $Desc;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $Value;
+
+    /**
+     * @ORM\OneToMany(targetEntity="PCB", mappedBy="EquipID")
+     */
+    protected $PCBs;
+
+   
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->PCBs = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Get ID_Equip
+     *
+     * @return integer 
+     */
+    public function getIDEquip()
+    {
+        return $this->ID_Equip;
+    }
+
+    /**
+     * Set Desc
+     *
+     * @param string $desc
+     * @return EquipmentType
+     */
+    public function setDesc($desc)
+    {
+        $this->Desc = $desc;
+    
+        return $this;
+    }
+
+    /**
+     * Get Desc
+     *
+     * @return string 
+     */
+    public function getDesc()
+    {
+        return $this->Desc;
+    }
+
+    /**
+     * Set Value
+     *
+     * @param float $value
+     * @return EquipmentType
+     */
+    public function setValue($value)
+    {
+        $this->Value = $value;
+    
+        return $this;
+    }
+
+    /**
+     * Get Value
+     *
+     * @return float 
+     */
+    public function getValue()
+    {
+        return $this->Value;
+    }
+
+    /**
+     * Add PCBs
+     *
+     * @param Bakalarka\IkarosBundle\Entity\PCB $pCBs
+     * @return EquipmentType
+     */
+    public function addPCB(\Bakalarka\IkarosBundle\Entity\PCB $pCBs)
+    {
+        $this->PCBs[] = $pCBs;
+    
+        return $this;
+    }
+
+    /**
+     * Remove PCBs
+     *
+     * @param Bakalarka\IkarosBundle\Entity\PCB $pCBs
+     */
+    public function removePCB(\Bakalarka\IkarosBundle\Entity\PCB $pCBs)
+    {
+        $this->PCBs->removeElement($pCBs);
+    }
+
+    /**
+     * Get PCBs
+     *
+     * @return Doctrine\Common\Collections\Collection 
+     */
+    public function getPCBs()
+    {
+        return $this->PCBs;
+    }
+}

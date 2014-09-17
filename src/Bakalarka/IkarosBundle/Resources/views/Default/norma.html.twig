@@ -1,0 +1,75 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block content %} 
+
+  <div id = "contentMenu">
+    {% if app.user %}
+      <p> Přihlášen: <i> {{ app.user.username }} </i> </p>
+        <hr />
+        <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+      <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+      <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+      {% if is_granted('ROLE_ADMIN') %}
+        <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+      {% endif %}
+
+      <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+    
+    {% else %}
+      <p> Uživatel nepřihlášen  <hr /> </p>
+      <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+      <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+     
+    {% endif %}                 
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> O normě </h1>
+     
+    <p> V této sekci naleznete základní informace o norme MIL-HDBK-217F včetně krátké historie. </p>
+
+      <h2> Historie </h2>
+    <p> Vojenská příručka MIL-HDBK-217 (Military Handbook: Reliability Prediction of Electronic Equipment), dále jen norma,
+        se používá pro výpočet predikce bezporuchovosti elektronických zařízení. Jedná se o americkou vojenskou normu, z let 1961-1995,
+        kdy byla postupně revidována a aktualizována.  Celkem existuje šest revizí, které se označují velkým písmenem za číslem normy
+        MIL-HDBK-217 F. Poslední revizí je rev. F, z 2. prosince roku 1991 a nahrazuje rev. E N1.
+        Jednotlivé revize se dále často ještě postupem času aktualizovali a dali tak vznik nové revizi normy.
+        Aktualizace se označují N (Notice) a číslem aktualizace např. MIL-HDBK-217 E N1,
+        poslední aktualizace rev. F pochází z 28. února 1995 a celá norma se tak označuje názvem MIL-HDBK-217 F N2,
+        jedná se tudíž o téměř 20 let starou normu. V každé aktualizaci jsou vždy obsaženy pouze nové či editované stránky,
+        ve kterých je jasně napsáno, kterou revizi či její aktualizaci vlastně nahrazují.
+    </p>
+
+      <h2> Rozdělení normy </h2>
+    <p> Norma je rozdělena na dvě části, podle dvou možných metodických přístupů výpočtů predikce spolehlivosti: </p>
+        <ol>
+        <li> Metoda namáhání prvků - velmi propracovaná metoda, která má definován model poruchy pro daný typ součástky.
+            Tato metoda je použitelná, pouze pokud jsou známy parametry jednotlivých prvků jako kvalita, prostředí, materiál,
+            typ použití a dále pak provozní hodnoty činitelů namáhání, většinou se jedná o znalost konkrétního vyzářeného výkonu, teplotě apod.
+        </li><br />
+        <li> Metoda počítání z prvků - jedná se o velmi jednoduchou metodu, která se užívá zejména, když není znám dostatek informací
+            pro použití první metody. Její výsledky jsou tudíž značně nepřesné či spíše orientační. </li>
+      </ol>
+
+     <p> Aplikace Ikaros se zaměřuje pouze na metodu namáhání prvků, která slouží právě k prediktivní analýze spolehlivosti.
+         Tato část normy je rozdělena do 23 sekcí. Prvních pět sekcí je tvořeno úvodem, obsahem, referencemi apod.
+         Zbylých 18 sekcí popisuje jednotlivé kategorie součástek např. rezistory, kondenzátory, indukčnosti apod.
+         Většina sekcí se hierarchicky dělí na další podsekce, jež odpovídají různým druhům součástek v dané kategorii.
+         Např. sekce 5 obecně popisuje mikroobvody a je dále rozdělena na hradlová/logická pole a mikroprocesory; paměti; VLSI CMOS; digitální zařízení; hybridy atd.
+         Uživatel si tedy přesně vybere daný typ součástky (pokud jej norma zmiňuje) a podle doporučení provádí výpočet.</p>
+
+     <h2> Výpočet bezporuchovosti </h2>
+      <p> Základní postup pro určení celkové intenzity poruch je odvozen ze sériového spolehlivostního modelu,
+          kde se intenzity poruch sčítají. Každou součástku si lze představit jako samostatný blok, který je definován nějakými parametry.
+          A pro každý blok lze dle normy vypočíst intenzitu poruch λ. K získání výsledné intenzity poruch pro celý systém pak stačí
+          sečíst všechny intenzity poruch bloků (součástek). </p>
+      <p> Obecný postup pro určení intenzity poruch konkrétního typu součástky je založen na násobení základní intenzity poruch součástky
+          koeficienty, které reprezentují zatížení, neboli namáhání součástky v provozu a prostředí. </p>
+
+
+  </div> <!-- content end -->
+
+{% endblock %}

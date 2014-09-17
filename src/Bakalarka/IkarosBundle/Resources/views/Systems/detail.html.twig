@@ -1,0 +1,175 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
+
+{% block head %}
+<script type="text/javascript">
+    var delPartURL = "{{ path('delPart') }}";
+    var delDeskURL = "{{ path('delDeskAjax') }}";
+</script>
+{% endblock %}
+
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i> </p> <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+          {% endif %}
+
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> System: {{ system.Title }} </h1>
+
+      <table class = "systems shadow">
+          <thead>
+              <tr>
+                  <td> Název </td>
+                  <td> Teplota </td>
+                  <td> Prostředí </td>
+                  <td> Lambda </td>
+                  <td> Desky </td>
+                  <td> Součástky </td>
+                  <td> Vytvořeno </td>
+                  {% if system.DeleteDate %}
+                      <td> Smazáno </td>
+                  {% endif %}
+                  {% if system.Username == app.user.username %}
+                      <td> </td>
+                      <td> </td>
+                  {% endif %}
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td> {{ system.Title }} </td>
+                  <td> {{ system.Temp }}  </td>
+                  <td> {{ system.Environment }}  </td>
+                  <td id="Lam"> {{ system.Lam }} </td>
+                  <td id="PCBcnt"> {{ system.PCBcnt }} </td>
+                  <td id="PartsCnt"> {{ system.PartsCnt }} </td>
+                  <td> {{ system.CreateDate|date("d.m.Y") }} </td>
+                  {% if system.DeleteDate %}
+                      <td> {{ system.DeleteDate|date("d.m.Y") }} </td>
+                  {% endif %}
+                  {% if system.Username == app.user.username %}
+                    <td> </td>
+                    <td class = "tableBtn" > 
+                    <a href="{{ path('detailSystem',{id:system.ID_System}) }}" > Upravit </a>
+                    <a href="{{ path('delSystem',{id:system.ID_System}) }}" > Smazat </a>
+                        <a href="{{ path('newPCB',{id:system.ID_System}) }}" > Přidat desku </a>
+                    </td>
+                  {% endif %}
+              </tr>
+          </tbody>
+      </table>
+
+      {% if system.Note %}
+          <h3> Poznámka </h3>
+          <p class="note"> {{ system.Note }} </p>
+      {% endif %}
+
+
+
+    <h2> Desky a součástky </h2>
+      <div>
+    {% if desk %}
+      {% for d in desk %}
+          <table class = "systems desk systemsHover">
+              <thead>
+                  <tr>
+                      <td> Deska </td>
+                      <td> Lambda </td>
+                      <td> Životnost </td>
+                      <td> Aplikace v odvětví </td>
+                      <td> Materiál </td>
+                      {% if system.Username == app.user.username %}
+                        <td></td>
+                        <td></td>
+                      {% endif %}
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.Label }} </td>
+                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.SumLam }} </td>
+                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.Lifetime }}  </td>
+                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.EquipType }} </td>
+                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.SubstrateMaterial }} </td>
+                      {% if system.Username == app.user.username %}
+                        <td> </td>
+                        <td class = "tableBtn" >
+                            <a href="{{ path('detailPCB',{id:d.ID_PCB}) }}" > Upravit </a>
+                            <a class = "delDesk" href="{{ path('delDesk',{id:d.ID_PCB}) }}" > Smazat </a>
+                            <a href="{{ path('newPart', {id:d.ID_PCB}) }}"> Přidat součástku </a>
+                        </td>
+                        <td class="hidden"> {{ d.ID_PCB }} </td>
+                      {% endif %}
+                  </tr>
+              </tbody>
+          </table>
+
+          {% if d.PartsCnt > 0 %}
+              <table class = "systems systemsHover part">
+                  <thead>
+                  <tr>
+                      <td> Typ součástky </td>
+                      <td> Název </td>
+                      <td> Lambda </td>
+                      <td> Type </td>
+                      <td> Case </td>
+
+                        <td></td>
+                        <td></td>
+
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for part in parts %}
+                        {% if part.PCB_ID == d.ID_PCB %}
+                          <tr>
+                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.entity_type }} </td>
+                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Label }} </td>
+                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Lam }} </td>
+                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Type }} </td>
+                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.CasePart }} </td>
+                              {% if system.Username == app.user.username %}
+                                <td> </td>
+                                <td class = "tableBtn" >
+                                    <a href="{{ path('detailPart',{id:part.ID_Part}) }}" > Upravit </a>
+                                    <a class="delPart" href="{{ path('delPartID',{id:part.ID_Part}) }}" > Smazat </a>
+                                </td>
+                                <td class="hidden"> {{ part.ID_Part }} </td>
+                              {% endif %}
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+              </table>
+          {% endif %}
+      {% endfor %}
+    {% else %}
+        <p> V systému nejsou žádné desky. </p>
+    {% endif %}
+
+      </div>
+
+
+
+  </div> <!-- content end -->
+
+{% endblock %}

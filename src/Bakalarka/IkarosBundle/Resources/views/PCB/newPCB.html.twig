@@ -1,0 +1,97 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %}
+{% use 'form_div_layout.html.twig' with form_label as base_form_label %}
+
+{% use 'form_div_layout.html.twig' with form_label as base_form_label %}
+
+
+{% block head %}
+
+    <script type="text/javascript">
+        var newPCBURL = "{{ path('newPCBAjax') }}";
+        var idS = {{ idSend }};
+    </script>
+{% endblock %}
+
+
+{% block form_label %}
+    {{ block('base_form_label') }}
+
+    {% if required %}
+        <span class="required" title="This field is required">*</span>
+    {% endif %}
+{% endblock %}
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i>  </p>  <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Vytvořit novou desku </h1>
+
+
+      {% if form %}
+        <div class="formDiv">
+          <form id = "pcbForm" action = "{{ path('newPCB', {id:idSend}) }}" method="post" {{ form_enctype(form) }}>
+
+              {{ form_widget(form) }}
+
+            <p id="rozbal1"> + Přidat součástky s drátovými vývody </p>
+
+          <div id="slide1">
+              {{ form_row(form2.Quality) }}
+              {{ form_row(form2.Layers) }}
+              {{ form_row(form2.SolderingPointAuto) }}
+              {{ form_row(form2.SolderingPointHand) }}
+          </div>
+
+           <p id="rozbal2"> + Přidat součástky se SMT vývody </p>
+
+          <div id="slide2">
+              {{ form_row(form3.LeadConfig) }}
+              {{ form_row(form3.TCEPackage) }}
+              {{ form_row(form3.Height) }}
+              {{ form_row(form3.Width) }}
+              {{ form_row(form3.TempDissipation) }}
+              {{ form_row(form3.Cnt) }}
+
+          </div>
+
+              <div id = "submitHandle">
+                  <input type="submit" value="Uložit" />
+              </div>
+
+          </form>
+
+          <p class="reqLabel"> * povinné pole </p>
+
+
+        </div>
+
+      {% else %}
+         <p> Nemáte žádné uložené systémy, do kterých by se dala přidat deska. </p>
+      {% endif %}
+    
+
+  </div> <!-- content end -->
+
+{% endblock %}

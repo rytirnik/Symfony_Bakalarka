@@ -1,0 +1,32 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %}
+
+{% form_theme form _self %}
+{% block form_errors %}
+    {% spaceless %}
+        {% if errors|length > 0 %}         
+            {% for error in errors %}
+                <p class = "errors" > {{ error.message }} </p>
+            {% endfor %}        
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_errors %}
+
+
+{% block content %}
+  <div id = "contentLog"> 
+ 
+  <form class = "log" action = "{{ path('register') }}" method="post" {{ form_enctype(form) }}>
+   <h1> Registrace </h1>    
+      {{ form_widget(form) }}
+      <div id = "submitHandle">
+      {{ form_errors(form.Password) }}       
+      <input type="submit" value="Registrovat" />
+       
+      </div>
+ 
+      {{ form_rest(form) }}
+      
+  </form>
+  
+  </div> <!-- content end -->
+{% endblock %}

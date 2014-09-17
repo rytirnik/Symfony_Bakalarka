@@ -1,0 +1,144 @@
+{% extends 'BakalarkaIkarosBundle::layout.html.twig' %}
+{% use 'form_div_layout.html.twig' with form_label as base_form_label %}
+
+{% use 'form_div_layout.html.twig' with form_label as base_form_label %}
+
+
+{% block head %}
+
+    <script type="text/javascript">
+        var newPCBURL = "{{ path('newPCBAjax') }}";
+        var idS = {{ idSend }};
+        var delSmtURL = "{{ path('delSMT') }}";
+    </script>
+{% endblock %}
+
+
+{% block form_label %}
+    {{ block('base_form_label') }}
+
+    {% if required %}
+        <span class="required" title="This field is required">*</span>
+    {% endif %}
+{% endblock %}
+{% block content %} 
+
+  <div id = "contentMenu">
+      {% if app.user %}
+          <p> Přihlášen: <i> {{ app.user.username }} </i> </p>   <hr />
+          <a class = "btn_menu" href = "{{ path('mySystems') }}"> Moje systémy </a>
+
+          <a class = "btn_menu" href = "{{ path('newSystem') }}"> Přidat systém </a>
+          <a class = "btn_menu" href = "{{ path('newPCB') }}"> Přidat desku </a>
+
+          {% if is_granted('ROLE_ADMIN') %}
+              <a class = "btn_menu" href = "{{ path('allSystems') }}"> Všechny systémy </a>
+
+          {% endif %}
+          <a class = "btn_logout" href = "{{ path('logout') }}"> Odhlásit </a>
+
+      {% else %}
+          <p> Uživatel nepřihlášen  <hr /> </p>
+          <a class = "btn" href = "{{ path('login') }}"> Přihlásit </a>  <br />
+          <a class = "btn" href = "{{ path('register') }}"> Registrovat </a>
+
+      {% endif %}
+  </div> <!-- contentMenu end -->
+    
+       
+  <div id = "content">
+    <h1> Detail desky </h1>
+
+        <div class="formDiv">
+          <form id = "EditPcbForm" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form) }}>
+              {{ form_widget(form) }}
+              <p class ="editLam"> ∑(λ): <span id="PCBlam1"> {{ pcb.SumLam }} </span></p>
+              <div class = "submitHandle">
+                  <input id="EditPCB1" type="submit" value="Upravit" />
+              </div>
+          </form>
+
+            <p class="rozbal"> Upravit součástky s drátovými vývody </p>
+
+
+          <form id = "EditPcbForm2" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form2) }}>
+              {{ form_widget(form2) }}
+              <p class ="editLam"> λ: <span id="PCBlam2"> {{ pcb.Lam }} </span></p>
+              <div class = "submitHandle">
+                  <input id="EditPCB2" type="submit" value="Upravit" />
+              </div>
+          </form>
+
+
+           <p class="rozbal"> Přidat součástky se SMT vývody </p>
+
+
+          <form id = "PcbForm3" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form3) }}>
+              {{ form_widget(form3) }}
+
+              <div class = "submitHandle">
+                  <input id="EditPCB3" type="submit" value="Uložit" />
+              </div>
+
+          </form>
+
+
+
+          <p class="reqLabel"> * povinné pole </p>
+
+
+        </div>
+
+      {% if smt %}
+          <h2> Uložené součástky se SMT vývody </h2>
+          <table id="SMTTable" class = "systems part">
+              <thead>
+              <tr>
+                  <td> Lambda </td>
+                  <td> Typy Vývodů </td>
+                  <td> Materiál pouzdra </td>
+                  <td> Délka </td>
+                  <td> Šířka </td>
+                  <td> Oteplení ZV </td>
+                  <td> Počet součástek </td>
+                  <td></td>
+                  <td></td>
+
+              </tr>
+              </thead>
+              <tbody>
+
+              {% for s in smt %}
+                  <tr >
+                      <td > {{ s.Lam }} </td>
+                      {% if s.LeadConfig == 1 %}
+                        <td> Leadless </td>
+                      {% elseif s.LeadConfig == 150 %}
+                        <td> J/S Lead  </td>
+                      {% else %}
+                        <td> Gull Wing </td>
+                      {% endif %}
+
+                      {% if s.TCEPackage == 7 %}
+                          <td> Plastic </td>
+                      {% else %}
+                          <td> Ceramic </td>
+                      {% endif %}
+
+                      <td> {{ s.Height}}</td>
+                      <td> {{ s.Width }} </td>
+                      <td> {{ s.TempDissipation }} </td>
+                      <td> {{ s.Cnt }} </td>
+                      <td> </td>
+                      <td class = "tableBtn" > <a class = "delSTM" href="{{ path('delSMT') }}" > Smazat </a> </td>
+                      <td class="hidden"> {{ s.IDPartSMT }} </td>
+                  </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+      {% endif %}
+    
+
+  </div> <!-- content end -->
+
+{% endblock %}
