@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fd262a02-0aef-4cd6-bc5f-9115d656904d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Bakalarka/IkarosBundle/Resources/config/services.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Symfony_Bakalarka.iws" />
@@ -93,7 +91,7 @@
       <file leaf-file-name="Fuse.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Bakalarka/IkarosBundle/Entity/Fuse.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="35" selection-start="1007" selection-end="1007" vertical-scroll-proportion="-0.3" vertical-offset="1173" max-vertical-offset="5321">
+            <state line="69" column="35" selection-start="1007" selection-end="1007" vertical-scroll-proportion="-0.30177516" vertical-offset="1173" max-vertical-offset="5321">
               <folding />
             </state>
           </provider>
@@ -152,6 +150,9 @@
       <command text="s doctrine:schema:update --force " />
       <command text="s cache:clear" />
     </commandsHistory>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
@@ -749,6 +750,27 @@
       <created>1395852481760</created>
       <updated>1395852481760</updated>
     </task>
+    <task id="LOCAL-00001" summary="phpStorm test (services.yml added)">
+      <created>1411484134495</created>
+      <updated>1411484134495</updated>
+    </task>
+    <task id="LOCAL-00002" summary=".gitignore updated (.idea folder added to ignore)">
+      <created>1411484357264</created>
+      <updated>1411484357264</updated>
+    </task>
+    <task id="LOCAL-00003" summary=".gitignore updated (.idea folder added to ignore) edit">
+      <created>1411484440899</created>
+      <updated>1411484440899</updated>
+    </task>
+    <task id="LOCAL-00004" summary=".gitignore updated (.idea folder added to ignore) edit">
+      <created>1411484493848</created>
+      <updated>1411484493848</updated>
+    </task>
+    <task id="LOCAL-00005" summary=".gitignore updated (.idea folder added to ignore) edit">
+      <created>1411484706526</created>
+      <updated>1411484706526</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -772,10 +794,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="0" width="1382" height="744" extended-state="0" />
+    <frame x="-6" y="0" width="1382" height="744" extended-state="1" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3284553" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32952693" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20228384" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.0" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -831,6 +854,10 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <MESSAGE value="phpStorm test (services.yml added)" />
+    <MESSAGE value=".gitignore updated (.idea folder added to ignore)" />
+    <MESSAGE value=".gitignore updated (.idea folder added to ignore) edit" />
+    <option name="LAST_COMMIT_MESSAGE" value=".gitignore updated (.idea folder added to ignore) edit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1108,7 +1135,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Bakalarka/IkarosBundle/Entity/Fuse.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="35" selection-start="1007" selection-end="1007" vertical-scroll-proportion="-0.3" vertical-offset="1173" max-vertical-offset="5321">
+        <state line="69" column="35" selection-start="1007" selection-end="1007" vertical-scroll-proportion="-0.30177516" vertical-offset="1173" max-vertical-offset="5321">
           <folding />
         </state>
       </provider>
