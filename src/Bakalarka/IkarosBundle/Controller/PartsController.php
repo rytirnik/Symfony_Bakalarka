@@ -23,412 +23,10 @@ use Bakalarka\IkarosBundle\Entity\ConnectorSoc;
 
 class PartsController extends Controller
 {
-    public function lamRes (Resistor $res) {
-       $mat = $res->getMaterial();
-       $stmt = $this->getDoctrine()->getManager()
-           ->getConnection()
-           ->prepare('SELECT m.*
-                       FROM MaterialResistor m
-                       WHERE m.ResShortcut = :m');
-       $stmt->execute(array('m' => $mat));
-       $material = $stmt->fetchAll();
-
-       $base = $material[0]['Lamb'];
-       $piT_tab = $material[0]['FactorT'];
-       $piS_tab = intval($material[0]['FactorS']);
-
-       $temp = $res->getTemp();
-       $piT = exp(((-1 * $piT_tab) / (8.617 * 0.00001)) * (1 / ($temp + 273) - 1 / 298));
-
-       $pDiss = $res->getDissipationPower();
-       $s_pom = $pDiss / $res->getMaxPower();
-       switch($piS_tab) {
-           case 0:
-               $piS = 1;
-               break;
-           case 1:
-               $piS = 0.71 * exp(1.1 * $s_pom);
-               break;
-           case 2:
-               $piS = 0.54 * exp(2.04 * $s_pom);
-               break;
-       }
-
-       $piP = pow($pDiss, 0.39);
-       $piQ = $res->getQuality();
-
-       $sEnv = $res->getEnvironment();
-       $stmt = $this->getDoctrine()->getManager()
-           ->getConnection()
-           ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 91');
-       $stmt->execute();
-       $env = $stmt->fetchAll();
-       $piE = $env[0][$sEnv];
-
-       $lambda = $base * $piT * $piP * $piS * $piQ * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamFuse (Fuse $fuse) {
-        $sEnv = $fuse->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 221');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $base = 0.01;
-        $lambda = $base * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamCap (Capacitor $cap) {
-        $matC = $cap->getMaterial();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT m.*
-                        FROM MaterialCapacitor m
-                        WHERE m.CapShortcut = :m');
-        $stmt->execute(array('m' => $matC));
-        $materialC = $stmt->fetchAll();
-
-        $base = $materialC[0]['Lamb'];
-        $facT = floatval($materialC[0]['FactorT']);
-        $facC = floatval($materialC[0]['FactorC']);
-        $facV = $materialC[0]['FactorV'];
-        $facRS = $materialC[0]['PiSR'];
-        $piQ = $cap->getQuality();
-
-        if (!$facRS) {
-            $peek = $cap->getVoltageOperational();
-            $ser = $cap->getSerialResistor();
-            If ($peek <= 0) $peek = 0.001;
-            $s_pom = $ser / $peek;
-
-            if ($s_pom > 0.8) $pi_sr = 0.66;
-            else if ($s_pom > 0.6 && $s_pom <= 0.8)  $pi_sr = 1;
-            else if ($s_pom > 0.4 && $s_pom <= 0.6 ) $pi_sr = 1.3;
-            else if ($s_pom > 0.2 && $s_pom <= 0.4)  $pi_sr = 2;
-            else if ($s_pom > 0.1 && $s_pom <= 0.2)  $pi_sr = 2.7;
-            else  $pi_sr = 3.3;
-        }
-        else
-            $pi_sr = 1;
-
-        $teplota = $cap->getTemp();
-        $piT = exp((-$facT / (8.617 * 0.00001)) * (1 / ($teplota + 273) - 1 / 298));
-
-        $hodnota = $cap->getValue();
-        $piC = pow($hodnota, $facC);
-
-        $max = $cap->getVoltageMax();
-        $oper = $cap->getVoltageOperational();
-        $s = $oper/$max;
-
-        switch($facV) {
-            case 1:
-                $piV = pow(($s/0.6), 5) + 1;
-                break;
-            case 2:
-                $piV = pow(($s/0.6), 10) + 1;
-                break;
-            case 3:
-                $piV = pow(($s/0.6), 3) + 1;
-                break;
-            case 4:
-                $piV = pow(($s/0.6), 17) + 1;
-                break;
-            case 5:
-                $piV = pow(($s/0.5), 3) + 1;
-                break;
-        }
-
-        $sEnv = $cap->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 101');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $lambda = $base * $piT * $piC * $piV * $pi_sr * $piQ * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamConnection (Connections $con) {
-        $sEnv = $con->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 171');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $base = $con->getConnectionType();
-        $lambda = $base * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamConSoc (ConnectorSoc $conSoc) {
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM ConnectorSocType c
-                        WHERE c.Description = :d');
-        $stmt->execute(array('d' => $conSoc->getConnectorType()));
-        $conType = $stmt->fetchAll();
-        $lamB = floatval($conType[0]['Lamb']);
-
-        $qual = $conSoc->getQuality();
-        if ($qual == "MIL-SPEC")
-            $piQ = 0.3;
-        else
-            $piQ = 1;
-
-        $sEnv = $conSoc->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 152');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $q = 0.39;
-        $n = $conSoc->getActivePins();
-        $piP = exp(pow(($n-1)/10, $q));
-
-        $lambda = $lamB * $piP * $piQ * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamConGen (ConnectorGen $conGen) {
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM ConnectorGenType c
-                        WHERE c.Description = :d');
-        $stmt->execute(array('d' => $conGen->getConnectorType()));
-        $conType = $stmt->fetchAll();
-        $base = floatval($conType[0]['Lamb']);
-
-        $prumerI = $conGen->getCurrentContact();
-        $popis = $conGen->getConnectorType();
-        $contactCnt = $conGen->getContactCnt();
-
-        if ($popis == "RF Coaxial")
-            $deltaT = 5;
-        else if ($popis == "RF Coaxial (High Power)")
-            $deltaT = 50;
-        else {
-            if ($contactCnt <= 12)
-                $deltaT = 0.1 * ($prumerI) ^ 1.85;
-            else if ($contactCnt >= 13 && $contactCnt <= 16)
-                $deltaT = 0.274 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  17  && $contactCnt <=  18)
-                $deltaT = 0.429 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  19  && $contactCnt <=  20)
-                $deltaT = 0.64 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  21  && $contactCnt <=  22)
-                $deltaT = 0.989 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  23  && $contactCnt <=  24)
-                $deltaT = 1.345 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  25  && $contactCnt <=  28)
-                $deltaT = 2.286 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  29  && $contactCnt <=  31)
-                $deltaT = 2.856 * pow($prumerI, 1.85);
-            else if ($contactCnt >=  32)
-                $deltaT = 3.256 * pow($prumerI, 1.85);
-        }
 
 
-        $teplota = $conGen->getTemp() + $deltaT;
-
-        $piT = exp((-0.14 / (8.617 * pow(10, -5))) * (1 / ($teplota + 273) - 1 / 298));
-
-        $spoj = $conGen->getMatingFactor();
-        if ($spoj <= 0.05)
-            $piK = 1;
-        else if ($spoj > 0.05 && $spoj <= 0.5)
-            $piK = 1.5;
-        else if ($spoj > 0.5 && $spoj <= 5)
-            $piK = 2;
-        else if ($spoj > 5 && $spoj <= 50)
-            $piK = 3;
-        else
-            $piK = 4;
-
-        $qual = $conGen->getQuality();
-        If ($qual == "MIL-SPEC")
-            $piQ = 1;
-        Else
-            $piQ = 2;
-
-        $sEnv = $conGen->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 151');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $lambda = $base * $piT * $piK * $piQ * $piE * pow(10, -6);
-        return $lambda;
-    }
-
-    public function lamSwitch (Switches $switch) {
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM SwitchType s
-                        WHERE s.Description = :d');
-        $stmt->execute(array('d' => $switch->getSwitchType()));
-        $switchType = $stmt->fetchAll();
-        $base = floatval($switchType[0]['Lamb']);
-
-        $sEnv = $switch->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 141');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $stress = $switch->getOperatingCurrent() / $switch->getRatedResistiveCurrent();
-        $load = $switch->getLoadType();
-
-        switch ($load) {
-            case 'Resistive':
-                $piL = exp(pow(($stress / 0.8), 2));
-                break;
-            case 'Inductive':
-                $piL = exp(pow(($stress / 0.4), 2));
-                break;
-            case 'Lamp':
-                $piL = exp(pow(($stress / 0.2), 2));
-                break;
-        }
-
-        $typeS = $switch->getSwitchType();
-        if($typeS == 'Pushbutton' || $typeS == 'Toggle')
-            $piC = pow($switch->getContactCnt(), 0.33);
-        else
-            $piC = 1;
-
-        $qual = $switch->getQuality();
-        if($qual == 'MIL-SPEC')
-            $piQ = 1;
-        else
-            $piQ = 2;
-
-        $lambda = $base * $piL * $piC * $piQ * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamFilter (Filter $filter) {
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM FilterType f
-                        WHERE f.Description = :d');
-        $stmt->execute(array('d' => $filter->getFilterType()));
-        $filterType = $stmt->fetchAll();
-        $base = floatval($filterType[0]['Lamb']);
-
-        $sEnv = $filter->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 211');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $qual = $filter->getQuality();
-        if($qual == 'MIL-SPEC')
-            $piQ = 1;
-        else
-            $piQ = 2.9;
-
-        $lambda = $base * $piQ * $piE * pow(10, -6);
-        return $lambda;
-    }
 
 
-    public function lamRotElaps (RotDevElaps $rotElaps) {
-        $sEnv = $rotElaps->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 123');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $type = $rotElaps->getDevType();
-        if($type == "A.C.")
-            $base = 20;
-        else if ($type == "Inverter Driven")
-            $base = 30;
-        else
-            $base = 80;
-
-        $temp = $rotElaps->getTempOperational() / $rotElaps->getTempMax();
-
-        if($temp <= 0.5)
-            $piT = 0.5;
-        else if ($temp > 0.5 && $temp <= 0.6)
-            $piT = 0.6;
-        else if ($temp > 0.6 && $temp <= 0.8)
-            $piT = 0.8;
-        else
-            $piT = 1;
-
-        $lambda = $base * $piT * $piE * pow(10, -6);
-        return $lambda;
-    }
-
-    public function lamTubeWave (TubeWave $tubeWave) {
-        $sEnv = $tubeWave->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 72');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
-
-        $p = $tubeWave->getPower();
-        $f = $tubeWave->getFrequency();
-
-        $base = 11 * pow(1.00001, $p) * pow(1.1, $f) * pow(10, -6);
-
-        $lambda = $base * $piE;
-        return $lambda;
-    }
 
     /**
      * @Route("/newPart/{id}")
@@ -1274,7 +872,9 @@ class PartsController extends Controller
         $qualR = $stmt->fetchAll();
         $qualR = $qualR[0]['Description'];
 
-        $lambda = $this->lamRes($res);
+        //$lambda = $this->lamRes($res);
+        $service = $this->get('ikaros_resistorService');
+        $lambda = $service->lamResistor($res);
 
         $res->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1366,7 +966,9 @@ class PartsController extends Controller
         $qualC = $stmt->fetchAll();
         $qualC = $qualC[0]['Description'];
 
-        $lambda = $this->lamCap($cap);
+        //$lambda = $this->lamCap($cap);
+        $service = $this->get('ikaros_capacitorService');
+        $lambda = $service->lamCapacitor($cap);
 
         $cap->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1442,7 +1044,10 @@ class PartsController extends Controller
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
         $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-        $lambda = $this->lamFuse($fuse);
+        //$lambda = $this->lamFuse($fuse);
+
+        $service = $this->get('ikaros_fuseService');
+        $lambda = $service->lamFuse($fuse);
 
         $fuse->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1522,7 +1127,9 @@ class PartsController extends Controller
         $conType = $stmt->fetchAll();
         $conType = $conType[0]['Description'];
 
-        $lambda = $this->lamConnection($con);
+        //$lambda = $this->lamConnection($con);
+        $service = $this->get('ikaros_connectionService');
+        $lambda = $service->lamConnection($con);
 
         $con->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1593,7 +1200,9 @@ class PartsController extends Controller
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
         $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-        $lambda = $this->lamConSoc($conSoc);
+        //$lambda = $this->lamConSoc($conSoc);
+        $service = $this->get('ikaros_connectorService');
+        $lambda = $service->lamConSoc($conSoc);
 
         $conSoc->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1670,7 +1279,9 @@ class PartsController extends Controller
         $conGen->setCurrentContact(floatval($obj->CurrentContact));
         $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
-        $lambda = $this->lamConGen($conGen);
+        //$lambda = $this->lamConGen($conGen);
+        $service = $this->get('ikaros_connectorService');
+        $lambda = $service->lamConGen($conGen);
 
         $conGen->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1749,7 +1360,9 @@ class PartsController extends Controller
         $switch->setOperatingCurrent(floatval($obj->OperatingCurrent));
         $switch->setRatedResistiveCurrent(floatval($obj->RatedResistiveCurrent));
 
-        $lambda = $this->lamSwitch($switch);
+        //$lambda = $this->lamSwitch($switch);
+        $service = $this->get('ikaros_switchService');
+        $lambda = $service->lamSwitch($switch);
 
         $switch->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1822,7 +1435,9 @@ class PartsController extends Controller
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
         $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-        $lambda = $this->lamFilter($filter);
+        //$lambda = $this->lamFilter($filter);
+        $service = $this->get('ikaros_filterService');
+        $lambda = $service->lamFilter($filter);
 
         $filter->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1897,7 +1512,10 @@ class PartsController extends Controller
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
         $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-        $lambda = $this->lamRotElaps($rotElaps);
+        //$lambda = $this->lamRotElaps($rotElaps);
+        $service = $this->get('ikaros_rotDevElapsService');
+        $lambda = $service->lamRotElaps($rotElaps);
+
 
         $rotElaps->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -1970,7 +1588,9 @@ class PartsController extends Controller
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
         $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-        $lambda = $this->lamTubeWave($tubeWave);
+        //$lambda = $this->lamTubeWave($tubeWave);
+        $service = $this->get('ikaros_tubeWaveService');
+        $lambda = $service->lamTubeWave($tubeWave);
 
         $tubeWave->setLam($lambda);
         $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
@@ -2930,7 +2550,9 @@ class PartsController extends Controller
                 $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
 
                 $oldLam = $res->getLam();
-                $lambda = $this->lamRes($res);
+                //$lambda = $this->lamRes($res);
+                $service = $this->get('ikaros_resistorService');
+                $lambda = $service->lamResistor($res);
 
                 $res->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -2982,7 +2604,9 @@ class PartsController extends Controller
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
                 $oldLam = $fuse->getLam();
-                $lambda = $this->lamFuse($fuse);
+                //$lambda = $this->lamFuse($fuse);
+                $service = $this->get('ikaros_fuseService');
+                $lambda = $service->lamFuse($fuse);
 
                 $fuse->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3045,7 +2669,9 @@ class PartsController extends Controller
                 $cap->setTemp($sysTemp + $cap->getPassiveTemp());
 
                 $oldLam = $cap->getLam();
-                $lambda = $this->lamCap($cap);
+                //$lambda = $this->lamCap($cap);
+                $service = $this->get('ikaros_capacitorService');
+                $lambda = $service->lamCapacitor($cap);
 
                 $cap->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3099,7 +2725,9 @@ class PartsController extends Controller
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
                 $oldLam = $con->getLam();
-                $lambda = $this->lamConnection($con);
+                //$lambda = $this->lamConnection($con);
+                $service = $this->get('ikaros_connectionService');
+                $lambda = $service->lamConnection($con);
 
                 $con->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3155,7 +2783,9 @@ class PartsController extends Controller
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
                 $oldLam = $conSoc->getLam();
-                $lambda = $this->lamConSoc($conSoc);
+                //$lambda = $this->lamConSoc($conSoc);
+                $service = $this->get('ikaros_connectorService');
+                $lambda = $service->lamConSoc($conSoc);
 
                 $conSoc->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3214,7 +2844,9 @@ class PartsController extends Controller
                 $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
                 $oldLam = $conGen->getLam();
-                $lambda = $this->lamConGen($conGen);
+                //$lambda = $this->lamConGen($conGen);
+                $service = $this->get('ikaros_connectorService');
+                $lambda = $service->lamConGen($conGen);
 
                 $conGen->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3272,7 +2904,9 @@ class PartsController extends Controller
                 $switch->setRatedResistiveCurrent(floatval($obj->RatedResistiveCurrent));
 
                 $oldLam = $switch->getLam();
-                $lambda = $this->lamSwitch($switch);
+                //$lambda = $this->lamSwitch($switch);
+                $service = $this->get('ikaros_switchService');
+                $lambda = $service->lamSwitch($switch);
 
                 $switch->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3326,7 +2960,9 @@ class PartsController extends Controller
                 $filter->setEnvironment($obj->Environment);
 
                 $oldLam = $filter->getLam();
-                $lambda = $this->lamFilter($filter);
+                //$lambda = $this->lamFilter($filter);
+                $service = $this->get('ikaros_filterService');
+                $lambda = $service->lamFilter($filter);
 
                 $filter->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3380,7 +3016,9 @@ class PartsController extends Controller
                 $rotElaps->setTempOperational(intval($obj->TempOperational));
 
                 $oldLam = $rotElaps->getLam();
-                $lambda = $this->lamRotElaps($rotElaps);
+                //$lambda = $this->lamRotElaps($rotElaps);
+                $service = $this->get('ikaros_rotDevElapsService');
+                $lambda = $service->lamRotElaps($rotElaps);
 
                 $rotElaps->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
@@ -3433,7 +3071,9 @@ class PartsController extends Controller
                 $tubeWave->setEnvironment($obj->Environment);
 
                 $oldLam = $tubeWave->getLam();
-                $lambda = $this->lamTubeWave($tubeWave);
+                //$lambda = $this->lamTubeWave($tubeWave);
+                $service = $this->get('ikaros_tubeWaveService');
+                $lambda = $service->lamTubeWave($tubeWave);
 
                 $tubeWave->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda -$oldLam);

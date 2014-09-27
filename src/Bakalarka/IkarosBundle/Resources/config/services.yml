@@ -1,1 +1,28 @@
 services:
+  ikaros_capacitorService:
+      class: 'Bakalarka\IkarosBundle\Service\CapacitorService'
+      arguments: ['@doctrine']
+  ikaros_connectionService:
+        class: 'Bakalarka\IkarosBundle\Service\ConnectionService'
+        arguments: ['@doctrine']
+  ikaros_connectorService:
+        class: 'Bakalarka\IkarosBundle\Service\ConnectorService'
+        arguments: ['@doctrine']
+  ikaros_filterService:
+        class: 'Bakalarka\IkarosBundle\Service\FilterService'
+        arguments: ['@doctrine']
+  ikaros_fuseService:
+      class: 'Bakalarka\IkarosBundle\Service\FuseService'
+      arguments: ['@doctrine']
+  ikaros_resistorService:
+      class: 'Bakalarka\IkarosBundle\Service\ResistorService'
+      arguments: ['@doctrine']
+  ikaros_rotDevElapsService:
+        class: 'Bakalarka\IkarosBundle\Service\RotDevElapsService'
+        arguments: ['@doctrine']
+  ikaros_switchService:
+      class: 'Bakalarka\IkarosBundle\Service\SwitchService'
+      arguments: ['@doctrine']
+  ikaros_tubeWaveService:
+        class: 'Bakalarka\IkarosBundle\Service\TubeWaveService'
+        arguments: ['@doctrine']

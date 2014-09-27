@@ -206,7 +206,7 @@ function saveRes(event) {
             $("#formResE").append('<span class="submitMsg"> Vyplňte ztrátový výkon (desetinné číslo) </span>');
             return;
         }
-        val = $('#formResE input[id="form_DPTem"]').val();
+        val = $('#formResE input[id="form_DPTemp"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formResE .submitMsg").remove();
             $("#formResE").append('<span class="submitMsg"> Vyplňte oteplení ZV (desetinné číslo) </span>');
