@@ -10,11 +10,8 @@ class ResistorService {
 	
 	protected $doctrine;
 
-
-	
 	public function __construct(Registry $doctrine) {
 		$this->doctrine = $doctrine;
-
 	}
 	
 	protected function getRepository() {

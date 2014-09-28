@@ -26,3 +26,8 @@ services:
   ikaros_tubeWaveService:
         class: 'Bakalarka\IkarosBundle\Service\TubeWaveService'
         arguments: ['@doctrine']
+
+
+  ikaros_systemService:
+        class: 'Bakalarka\IkarosBundle\Service\SystemService'
+        arguments: ['@doctrine']

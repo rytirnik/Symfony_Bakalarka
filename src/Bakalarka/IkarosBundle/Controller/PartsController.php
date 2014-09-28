@@ -7,6 +7,7 @@ use Bakalarka\IkarosBundle\Entity\Filter;
 use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
 use Bakalarka\IkarosBundle\Entity\TubeWave;
+use Bakalarka\IkarosBundle\Forms\FuseType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,6 +21,8 @@ use Bakalarka\IkarosBundle\Entity\System;
 use Bakalarka\IkarosBundle\Entity\Fuse;
 use Bakalarka\IkarosBundle\Entity\Connections;
 use Bakalarka\IkarosBundle\Entity\ConnectorSoc;
+
+use Bakalarka\IkarosBundle\Forms\FuseForm;
 
 class PartsController extends Controller
 {
@@ -426,6 +429,11 @@ class PartsController extends Controller
                 'error_bubbling' => true,
             ))
             ->getForm();
+
+        $service = $this->get('ikaros_systemService');
+        $envChoices = $service->getEnvChoices();
+
+        $formFuse = $this->createForm(new FuseForm(), $fuse, array('envChoices' => $envChoices , 'sysEnv' => $sysEnv));
 
 
         $stmt = $this->getDoctrine()->getManager()
@@ -1025,17 +1033,21 @@ class PartsController extends Controller
     public function newFuseAction() {
         $post = $this->get('request')->request;
         $id = $post->get('id');
-        $formData = $post->get('formData');
+        //$formData = $post->get('formData');
 
-        $objF = json_decode($formData);
-        $obj = $objF->form;
+        //$objF = json_decode($formData);
+        //$obj = $objF->fuseForm;
 
         $fuse = new Fuse();
-        $fuse->setLabel($obj->Label);
+        /*$fuse->setLabel($obj->Label);
         $fuse->setType($obj->Type);
         $fuse->setCasePart($obj->CasePart);
         $fuse->setValue(intval($obj->Value));
-        $fuse->setEnvironment($obj->Environment);
+        $fuse->setEnvironment($obj->Environment);*/
+
+        $form = $this->createForm(new FuseForm(), $fuse);
+        $request = $this->get('request');
+        $request->request;
 
         $em =  $this->getDoctrine()->getManager();
         $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
