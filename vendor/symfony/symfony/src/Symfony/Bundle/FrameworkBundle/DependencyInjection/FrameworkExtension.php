@@ -12,7 +12,9 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Resource\FileResource;
@@ -20,6 +22,7 @@ use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Validator\Validation;
 
 /**
  * FrameworkExtension.
@@ -29,6 +32,9 @@ use Symfony\Component\Config\FileLocator;
  */
 class FrameworkExtension extends Extension
 {
+    private $formConfigEnabled = false;
+    private $sessionConfigEnabled = false;
+
     /**
      * Responds to the app.config configuration parameter.
      *
@@ -41,28 +47,41 @@ class FrameworkExtension extends Extension
 
         $loader->load('web.xml');
         $loader->load('services.xml');
+        $loader->load('fragment_renderer.xml');
 
         // A translator must always be registered (as support is included by
         // default in the Form component). If disabled, an identity translator
         // will be used and everything will still work as expected.
         $loader->load('translation.xml');
 
+        // Property access is used by both the Form and the Validator component
+        $loader->load('property_access.xml');
+
+        $loader->load('debug_prod.xml');
+
         if ($container->getParameter('kernel.debug')) {
             $loader->load('debug.xml');
-            $container->setDefinition('event_dispatcher', $container->findDefinition('debug.event_dispatcher'));
-            $container->setAlias('debug.event_dispatcher', 'event_dispatcher');
 
-            $container->setDefinition('controller_resolver', $container->findDefinition('debug.controller_resolver'));
-            $container->setAlias('debug.controller_resolver', 'controller_resolver');
+            $definition = $container->findDefinition('http_kernel');
+            $definition->replaceArgument(2, new Reference('debug.controller_resolver'));
+
+            // replace the regular event_dispatcher service with the debug one
+            $definition = $container->findDefinition('event_dispatcher');
+            $definition->setPublic(false);
+            $container->setDefinition('debug.event_dispatcher.parent', $definition);
+            $container->setAlias('event_dispatcher', 'debug.event_dispatcher');
         }
 
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('kernel.secret', $config['secret']);
+        if (isset($config['secret'])) {
+            $container->setParameter('kernel.secret', $config['secret']);
+        }
 
-        $container->setParameter('kernel.trust_proxy_headers', $config['trust_proxy_headers']);
-
+        $container->setParameter('kernel.http_method_override', $config['http_method_override']);
+        $container->setParameter('kernel.trusted_hosts', $config['trusted_hosts']);
+        $container->setParameter('kernel.trusted_proxies', $config['trusted_proxies']);
         $container->setParameter('kernel.default_locale', $config['default_locale']);
 
         if (!empty($config['test'])) {
@@ -70,49 +89,53 @@ class FrameworkExtension extends Extension
         }
 
         if (isset($config['session'])) {
+            $this->sessionConfigEnabled = true;
             $this->registerSessionConfiguration($config['session'], $container, $loader);
         }
 
-        if (isset($config['form']) && !empty($config['form']['enabled'])) {
+        if (isset($config['request'])) {
+            $this->registerRequestConfiguration($config['request'], $container, $loader);
+        }
+
+        $loader->load('security.xml');
+
+        if ($this->isConfigEnabled($container, $config['form'])) {
+            $this->formConfigEnabled = true;
             $this->registerFormConfiguration($config, $container, $loader);
             $config['validation']['enabled'] = true;
+
+            if (!class_exists('Symfony\Component\Validator\Validator')) {
+                throw new LogicException('The Validator component is required to use the Form component.');
+            }
+
+            if ($this->isConfigEnabled($container, $config['form']['csrf_protection'])) {
+                $config['csrf_protection']['enabled'] = true;
+            }
         }
 
-        if (!empty($config['validation']['enabled'])) {
-            $this->registerValidationConfiguration($config['validation'], $container, $loader);
-        }
-
-        if (isset($config['esi'])) {
-            $this->registerEsiConfiguration($config['esi'], $loader);
-        }
-
-        if (isset($config['profiler'])) {
-            $this->registerProfilerConfiguration($config['profiler'], $container, $loader);
-        }
-
-        if (isset($config['router'])) {
-            $this->registerRouterConfiguration($config['router'], $container, $loader);
-        }
+        $this->registerSecurityCsrfConfiguration($config['csrf_protection'], $container, $loader);
 
         if (isset($config['templating'])) {
             $this->registerTemplatingConfiguration($config['templating'], $config['ide'], $container, $loader);
         }
 
-        if (isset($config['translator'])) {
-            $this->registerTranslatorConfiguration($config['translator'], $container);
+        $this->registerValidationConfiguration($config['validation'], $container, $loader);
+        $this->registerEsiConfiguration($config['esi'], $container, $loader);
+        $this->registerFragmentsConfiguration($config['fragments'], $container, $loader);
+        $this->registerProfilerConfiguration($config['profiler'], $container, $loader);
+        $this->registerTranslatorConfiguration($config['translator'], $container);
+
+        if (isset($config['router'])) {
+            $this->registerRouterConfiguration($config['router'], $container, $loader);
         }
 
         $this->registerAnnotationsConfiguration($config['annotations'], $container, $loader);
 
-        $this->addClassesToCompile(array(
-            'Symfony\\Component\\HttpFoundation\\ParameterBag',
-            'Symfony\\Component\\HttpFoundation\\HeaderBag',
-            'Symfony\\Component\\HttpFoundation\\FileBag',
-            'Symfony\\Component\\HttpFoundation\\ServerBag',
-            'Symfony\\Component\\HttpFoundation\\Request',
-            'Symfony\\Component\\HttpFoundation\\Response',
-            'Symfony\\Component\\HttpFoundation\\ResponseHeaderBag',
+        if (isset($config['serializer']) && $config['serializer']['enabled']) {
+            $loader->load('serializer.xml');
+        }
 
+        $this->addClassesToCompile(array(
             'Symfony\\Component\\Config\\FileLocator',
 
             'Symfony\\Component\\EventDispatcher\\Event',
@@ -137,43 +160,68 @@ class FrameworkExtension extends Extension
         ));
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container)
-    {
-        return new Configuration($container->getParameter('kernel.debug'));
-    }
-
     /**
      * Loads Form configuration.
      *
      * @param array            $config    A configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      * @param XmlFileLoader    $loader    An XmlFileLoader instance
+     *
+     * @throws \LogicException
      */
     private function registerFormConfiguration($config, ContainerBuilder $container, XmlFileLoader $loader)
     {
         $loader->load('form.xml');
-        if (isset($config['csrf_protection'])) {
-            if (!isset($config['session'])) {
-                throw new \LogicException('CSRF protection needs that sessions are enabled.');
-            }
+        if (null === $config['form']['csrf_protection']['enabled']) {
+            $config['form']['csrf_protection']['enabled'] = $config['csrf_protection']['enabled'];
+        }
+
+        if ($this->isConfigEnabled($container, $config['form']['csrf_protection'])) {
             $loader->load('form_csrf.xml');
 
-            $container->setParameter('form.type_extension.csrf.enabled', $config['csrf_protection']['enabled']);
-            $container->setParameter('form.type_extension.csrf.field_name', $config['csrf_protection']['field_name']);
+            $container->setParameter('form.type_extension.csrf.enabled', true);
+
+            if (null !== $config['form']['csrf_protection']['field_name']) {
+                $container->setParameter('form.type_extension.csrf.field_name', $config['form']['csrf_protection']['field_name']);
+            } else {
+                $container->setParameter('form.type_extension.csrf.field_name', $config['csrf_protection']['field_name']);
+            }
+        } else {
+            $container->setParameter('form.type_extension.csrf.enabled', false);
         }
     }
 
     /**
      * Loads the ESI configuration.
      *
-     * @param array         $config An ESI configuration array
-     * @param XmlFileLoader $loader An XmlFileLoader instance
+     * @param array            $config    An ESI configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader    $loader    An XmlFileLoader instance
      */
-    private function registerEsiConfiguration(array $config, XmlFileLoader $loader)
+    private function registerEsiConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
-        if (!empty($config['enabled'])) {
-            $loader->load('esi.xml');
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
         }
+
+        $loader->load('esi.xml');
+    }
+
+    /**
+     * Loads the fragments configuration.
+     *
+     * @param array            $config    A fragments configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader    $loader    An XmlFileLoader instance
+     */
+    private function registerFragmentsConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
+
+        $loader->load('fragment_listener.xml');
+        $container->setParameter('fragment.path', $config['path']);
     }
 
     /**
@@ -182,9 +230,22 @@ class FrameworkExtension extends Extension
      * @param array            $config    A profiler configuration array
      * @param ContainerBuilder $container A ContainerBuilder instance
      * @param XmlFileLoader    $loader    An XmlFileLoader instance
+     *
+     * @throws \LogicException
      */
     private function registerProfilerConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
+        if (!$this->isConfigEnabled($container, $config)) {
+            // this is needed for the WebProfiler to work even if the profiler is disabled
+            $container->setParameter('data_collector.templates', array());
+
+            return;
+        }
+
+        if (true === $this->formConfigEnabled) {
+            $loader->load('form_debug.xml');
+        }
+
         $loader->load('profiling.xml');
         $loader->load('collectors.xml');
 
@@ -216,7 +277,7 @@ class FrameworkExtension extends Extension
         if (isset($config['matcher'])) {
             if (isset($config['matcher']['service'])) {
                 $container->setAlias('profiler.request_matcher', $config['matcher']['service']);
-            } elseif (isset($config['matcher']['ip']) || isset($config['matcher']['path'])) {
+            } elseif (isset($config['matcher']['ip']) || isset($config['matcher']['path']) || isset($config['matcher']['ips'])) {
                 $definition = $container->register('profiler.request_matcher', 'Symfony\\Component\\HttpFoundation\\RequestMatcher');
                 $definition->setPublic(false);
 
@@ -224,10 +285,18 @@ class FrameworkExtension extends Extension
                     $definition->addMethodCall('matchIp', array($config['matcher']['ip']));
                 }
 
+                if (isset($config['matcher']['ips'])) {
+                    $definition->addMethodCall('matchIps', array($config['matcher']['ips']));
+                }
+
                 if (isset($config['matcher']['path'])) {
                     $definition->addMethodCall('matchPath', array($config['matcher']['path']));
                 }
             }
+        }
+
+        if (!$config['collect']) {
+            $container->getDefinition('profiler')->addMethodCall('disable', array());
         }
     }
 
@@ -243,8 +312,8 @@ class FrameworkExtension extends Extension
         $loader->load('routing.xml');
 
         $container->setParameter('router.resource', $config['resource']);
+        $container->setParameter('router.cache_class_prefix', $container->getParameter('kernel.name').ucfirst($container->getParameter('kernel.environment')));
         $router = $container->findDefinition('router.default');
-
         $argument = $router->getArgument(2);
         $argument['strict_requirements'] = $config['strict_requirements'];
         if (isset($config['type'])) {
@@ -284,21 +353,22 @@ class FrameworkExtension extends Extension
             }
         }
 
-        //we deprecated session options without cookie_ prefix, but we are still supporting them,
-        //Let's merge the ones that were supplied without prefix
-        foreach (array('lifetime', 'path', 'domain', 'secure', 'httponly') as $key) {
-            if (!isset($options['cookie_'.$key]) && isset($config[$key])) {
-                $options['cookie_'.$key] = $config[$key];
-            }
-        }
         $container->setParameter('session.storage.options', $options);
 
         // session handler (the internal callback registered with PHP session management)
-        if (null == $config['handler_id']) {
+        if (null === $config['handler_id']) {
             // Set the handler class to be null
             $container->getDefinition('session.storage.native')->replaceArgument(1, null);
+            $container->getDefinition('session.storage.php_bridge')->replaceArgument(0, null);
         } else {
-            $container->setAlias('session.handler', $config['handler_id']);
+            $handlerId = $config['handler_id'];
+
+            if ($config['metadata_update_threshold'] > 0) {
+                $container->getDefinition('session.handler.write_check')->addArgument(new Reference($handlerId));
+                $handlerId = 'session.handler.write_check';
+            }
+
+            $container->setAlias('session.handler', $handlerId);
         }
 
         $container->setParameter('session.save_path', $config['save_path']);
@@ -306,6 +376,7 @@ class FrameworkExtension extends Extension
         $this->addClassesToCompile(array(
             'Symfony\\Bundle\\FrameworkBundle\\EventListener\\SessionListener',
             'Symfony\\Component\\HttpFoundation\\Session\\Storage\\NativeSessionStorage',
+            'Symfony\\Component\\HttpFoundation\\Session\\Storage\\PhpBridgeSessionStorage',
             'Symfony\\Component\\HttpFoundation\\Session\\Storage\\Handler\\NativeFileSessionHandler',
             'Symfony\\Component\\HttpFoundation\\Session\\Storage\\Proxy\\AbstractProxy',
             'Symfony\\Component\\HttpFoundation\\Session\\Storage\\Proxy\\SessionHandlerProxy',
@@ -316,6 +387,26 @@ class FrameworkExtension extends Extension
             $this->addClassesToCompile(array(
                 $container->findDefinition('session.storage')->getClass(),
             ));
+        }
+
+        $container->setParameter('session.metadata.update_threshold', $config['metadata_update_threshold']);
+    }
+
+    /**
+     * Loads the request configuration.
+     *
+     * @param array            $config    A session configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader    $loader    An XmlFileLoader instance
+     */
+    private function registerRequestConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        if ($config['formats']) {
+            $loader->load('request.xml');
+            $container
+                ->getDefinition('request.add_request_formats_listener')
+                ->replaceArgument(0, $config['formats'])
+            ;
         }
     }
 
@@ -335,14 +426,28 @@ class FrameworkExtension extends Extension
         $links = array(
             'textmate' => 'txmt://open?url=file://%%f&line=%%l',
             'macvim'   => 'mvim://open?url=file://%%f&line=%%l',
+            'emacs'    => 'emacs://open?url=file://%file&line=%line',
+            'sublime'  => 'subl://open?url=file://%file&line=%line',
         );
 
         $container->setParameter('templating.helper.code.file_link_format', isset($links[$ide]) ? $links[$ide] : $ide);
         $container->setParameter('templating.helper.form.resources', $config['form']['resources']);
-        $container->setParameter('templating.hinclude.default_template', $config['hinclude_default_template']);
+        $container->setParameter('fragment.renderer.hinclude.global_template', $config['hinclude_default_template']);
 
         if ($container->getParameter('kernel.debug')) {
             $loader->load('templating_debug.xml');
+
+            $logger = new Reference('logger', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
+
+            $container->getDefinition('templating.loader.cache')
+                ->addTag('monolog.logger', array('channel' => 'templating'))
+                ->addMethodCall('setLogger', array($logger));
+            $container->getDefinition('templating.loader.chain')
+                ->addTag('monolog.logger', array('channel' => 'templating'))
+                ->addMethodCall('setLogger', array($logger));
+
+            $container->setDefinition('templating.engine.php', $container->findDefinition('debug.templating.engine.php'));
+            $container->setAlias('debug.templating.engine.php', 'templating.engine.php');
         }
 
         // create package definitions and add them to the assets helper
@@ -362,7 +467,7 @@ class FrameworkExtension extends Extension
         // Apply request scope to assets helper if one or more packages are request-scoped
         $requireRequestScope = array_reduce(
             $namedPackages,
-            function($v, Reference $ref) use ($container) {
+            function ($v, Reference $ref) use ($container) {
                 return $v || 'request' === $container->getDefinition($ref)->getScope();
             },
             'request' === $defaultPackage->getScope()
@@ -373,7 +478,7 @@ class FrameworkExtension extends Extension
         }
 
         if (!empty($config['loaders'])) {
-            $loaders = array_map(function($loader) { return new Reference($loader); }, $config['loaders']);
+            $loaders = array_map(function ($loader) { return new Reference($loader); }, $config['loaders']);
 
             // Use a delegation unless only a single loader was registered
             if (1 === count($loaders)) {
@@ -410,13 +515,15 @@ class FrameworkExtension extends Extension
         }
 
         $container->setParameter('templating.engines', $config['engines']);
-        $engines = array_map(function($engine) { return new Reference('templating.engine.'.$engine); }, $config['engines']);
+        $engines = array_map(function ($engine) { return new Reference('templating.engine.'.$engine); }, $config['engines']);
 
         // Use a delegation unless only a single engine was registered
         if (1 === count($engines)) {
             $container->setAlias('templating', (string) reset($engines));
         } else {
-            $container->getDefinition('templating.engine.delegating')->replaceArgument(1, $engines);
+            foreach ($engines as $engine) {
+                $container->getDefinition('templating.engine.delegating')->addMethodCall('addEngine', array($engine));
+            }
             $container->setAlias('templating', 'templating.engine.delegating');
         }
     }
@@ -496,56 +603,66 @@ class FrameworkExtension extends Extension
      */
     private function registerTranslatorConfiguration(array $config, ContainerBuilder $container)
     {
-        if (!empty($config['enabled'])) {
-            // Use the "real" translator instead of the identity default
-            $container->setAlias('translator', 'translator.default');
-            $translator = $container->findDefinition('translator.default');
-            $translator->addMethodCall('setFallbackLocale', array($config['fallback']));
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
 
-            // Discover translation directories
-            $dirs = array();
-            if (class_exists('Symfony\Component\Validator\Validator')) {
-                $r = new \ReflectionClass('Symfony\Component\Validator\Validator');
+        // Use the "real" translator instead of the identity default
+        $container->setAlias('translator', 'translator.default');
+        $translator = $container->findDefinition('translator.default');
+        if (!is_array($config['fallback'])) {
+            $config['fallback'] = array($config['fallback']);
+        }
+        $translator->addMethodCall('setFallbackLocales', array($config['fallback']));
 
-                $dirs[] = dirname($r->getFilename()).'/Resources/translations';
-            }
-            if (class_exists('Symfony\Component\Form\Form')) {
-                $r = new \ReflectionClass('Symfony\Component\Form\Form');
+        // Discover translation directories
+        $dirs = array();
+        if (class_exists('Symfony\Component\Validator\Validator')) {
+            $r = new \ReflectionClass('Symfony\Component\Validator\Validator');
 
-                $dirs[] = dirname($r->getFilename()).'/Resources/translations';
-            }
-            $overridePath = $container->getParameter('kernel.root_dir').'/Resources/%s/translations';
-            foreach ($container->getParameter('kernel.bundles') as $bundle => $class) {
-                $reflection = new \ReflectionClass($class);
-                if (is_dir($dir = dirname($reflection->getFilename()).'/Resources/translations')) {
-                    $dirs[] = $dir;
-                }
-                if (is_dir($dir = sprintf($overridePath, $bundle))) {
-                    $dirs[] = $dir;
-                }
-            }
-            if (is_dir($dir = $container->getParameter('kernel.root_dir').'/Resources/translations')) {
+            $dirs[] = dirname($r->getFilename()).'/Resources/translations';
+        }
+        if (class_exists('Symfony\Component\Form\Form')) {
+            $r = new \ReflectionClass('Symfony\Component\Form\Form');
+
+            $dirs[] = dirname($r->getFilename()).'/Resources/translations';
+        }
+        if (class_exists('Symfony\Component\Security\Core\Exception\AuthenticationException')) {
+            $r = new \ReflectionClass('Symfony\Component\Security\Core\Exception\AuthenticationException');
+
+            $dirs[] = dirname($r->getFilename()).'/../Resources/translations';
+        }
+        $overridePath = $container->getParameter('kernel.root_dir').'/Resources/%s/translations';
+        foreach ($container->getParameter('kernel.bundles') as $bundle => $class) {
+            $reflection = new \ReflectionClass($class);
+            if (is_dir($dir = dirname($reflection->getFilename()).'/Resources/translations')) {
                 $dirs[] = $dir;
             }
+            if (is_dir($dir = sprintf($overridePath, $bundle))) {
+                $dirs[] = $dir;
+            }
+        }
+        if (is_dir($dir = $container->getParameter('kernel.root_dir').'/Resources/translations')) {
+            $dirs[] = $dir;
+        }
 
-            // Register translation resources
-            if ($dirs) {
-                foreach ($dirs as $dir) {
-                    $container->addResource(new DirectoryResource($dir));
-                }
-                $finder = Finder::create()
-                    ->files()
-                    ->filter(function (\SplFileInfo $file) {
-                        return 2 === substr_count($file->getBasename(), '.') && preg_match('/\.\w+$/', $file->getBasename());
-                    })
-                    ->in($dirs)
-                ;
+        // Register translation resources
+        if ($dirs) {
+            foreach ($dirs as $dir) {
+                $container->addResource(new DirectoryResource($dir));
+            }
+            $finder = Finder::create()
+                ->files()
+                ->filter(function (\SplFileInfo $file) {
+                    return 2 === substr_count($file->getBasename(), '.') && preg_match('/\.\w+$/', $file->getBasename());
+                })
+                ->in($dirs)
+            ;
 
-                foreach ($finder as $file) {
-                    // filename is domain.locale.format
-                    list($domain, $locale, $format) = explode('.', $file->getBasename(), 3);
-                    $translator->addMethodCall('addResource', array($format, (string) $file, $locale, $domain));
-                }
+            foreach ($finder as $file) {
+                // filename is domain.locale.format
+                list($domain, $locale, $format) = explode('.', $file->getBasename(), 3);
+                $translator->addMethodCall('addResource', array($format, (string) $file, $locale, $domain));
             }
         }
     }
@@ -559,33 +676,77 @@ class FrameworkExtension extends Extension
      */
     private function registerValidationConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
+
         $loader->load('validator.xml');
 
-        $container->setParameter('validator.mapping.loader.xml_files_loader.mapping_files', $this->getValidatorXmlMappingFiles($container));
-        $container->setParameter('validator.mapping.loader.yaml_files_loader.mapping_files', $this->getValidatorYamlMappingFiles($container));
+        $validatorBuilder = $container->getDefinition('validator.builder');
+
+        $container->setParameter('validator.translation_domain', $config['translation_domain']);
+
+        $xmlMappings = $this->getValidatorXmlMappingFiles($container);
+        $yamlMappings = $this->getValidatorYamlMappingFiles($container);
+
+        if (count($xmlMappings) > 0) {
+            $validatorBuilder->addMethodCall('addXmlMappings', array($xmlMappings));
+        }
+
+        if (count($yamlMappings) > 0) {
+            $validatorBuilder->addMethodCall('addYamlMappings', array($yamlMappings));
+        }
+
+        $definition = $container->findDefinition('validator.email');
+        $definition->replaceArgument(0, $config['strict_email']);
 
         if (array_key_exists('enable_annotations', $config) && $config['enable_annotations']) {
-            $loaderChain = $container->getDefinition('validator.mapping.loader.loader_chain');
-            $arguments = $loaderChain->getArguments();
-            array_unshift($arguments[0], new Reference('validator.mapping.loader.annotation_loader'));
-            $loaderChain->setArguments($arguments);
+            $validatorBuilder->addMethodCall('enableAnnotationMapping', array(new Reference('annotation_reader')));
+        }
+
+        if (array_key_exists('static_method', $config) && $config['static_method']) {
+            foreach ($config['static_method'] as $methodName) {
+                $validatorBuilder->addMethodCall('addMethodMapping', array($methodName));
+            }
         }
 
         if (isset($config['cache'])) {
-            $container->getDefinition('validator.mapping.class_metadata_factory')
-                ->replaceArgument(1, new Reference('validator.mapping.cache.'.$config['cache']));
             $container->setParameter(
                 'validator.mapping.cache.prefix',
-                'validator_'.md5($container->getParameter('kernel.root_dir'))
+                'validator_'.hash('sha256', $container->getParameter('kernel.root_dir'))
             );
+
+            $validatorBuilder->addMethodCall('setMetadataCache', array(new Reference('validator.mapping.cache.'.$config['cache'])));
         }
+
+        switch ($config['api']) {
+            case '2.4':
+                $api = Validation::API_VERSION_2_4;
+                break;
+            case '2.5':
+                $api = Validation::API_VERSION_2_5;
+                break;
+            default:
+                $api = Validation::API_VERSION_2_5_BC;
+                break;
+        }
+
+        $validatorBuilder->addMethodCall('setApiVersion', array($api));
+
+        // You can use this parameter to check the API version in your own
+        // bundle extension classes
+        $container->setParameter('validator.api', $api);
     }
 
     private function getValidatorXmlMappingFiles(ContainerBuilder $container)
     {
-        $reflClass = new \ReflectionClass('Symfony\Component\Form\FormInterface');
-        $files = array(dirname($reflClass->getFileName()).'/Resources/config/validation.xml');
-        $container->addResource(new FileResource($files[0]));
+        $files = array();
+
+        if (interface_exists('Symfony\Component\Form\FormInterface')) {
+            $reflClass = new \ReflectionClass('Symfony\Component\Form\FormInterface');
+            $files[] = dirname($reflClass->getFileName()).'/Resources/config/validation.xml';
+            $container->addResource(new FileResource($files[0]));
+        }
 
         foreach ($container->getParameter('kernel.bundles') as $bundle) {
             $reflection = new \ReflectionClass($bundle);
@@ -613,7 +774,7 @@ class FrameworkExtension extends Extension
         return $files;
     }
 
-    private function registerAnnotationsConfiguration(array $config, ContainerBuilder $container,$loader)
+    private function registerAnnotationsConfiguration(array $config, ContainerBuilder $container, $loader)
     {
         $loader->load('annotations.xml');
 
@@ -637,6 +798,29 @@ class FrameworkExtension extends Extension
             ;
             $container->setAlias('annotation_reader', 'annotations.cached_reader');
         }
+    }
+
+    /**
+     * Loads the security configuration.
+     *
+     * @param array            $config    A CSRF configuration array
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param XmlFileLoader    $loader    An XmlFileLoader instance
+     *
+     * @throws \LogicException
+     */
+    private function registerSecurityCsrfConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
+
+        if (!$this->sessionConfigEnabled) {
+            throw new \LogicException('CSRF protection needs sessions to be enabled.');
+        }
+
+        // Enable services for CSRF protection (even without forms)
+        $loader->load('security_csrf.xml');
     }
 
     /**

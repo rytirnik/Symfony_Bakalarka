@@ -11,47 +11,46 @@
 
 namespace Symfony\Component\Validator\Tests\Constraints;
 
+use Symfony\Component\Intl\Util\IntlTestHelper;
 use Symfony\Component\Validator\Constraints\Country;
 use Symfony\Component\Validator\Constraints\CountryValidator;
+use Symfony\Component\Validator\Validation;
 
-class CountryValidatorTest extends LocalizedTestCase
+class CountryValidatorTest extends AbstractConstraintValidatorTest
 {
-    protected $context;
-    protected $validator;
-
     protected function setUp()
     {
-        parent::setUp();
+        IntlTestHelper::requireFullIntl($this);
 
-        $this->context = $this->getMock('Symfony\Component\Validator\ExecutionContext', array(), array(), '', false);
-        $this->validator = new CountryValidator();
-        $this->validator->initialize($this->context);
+        parent::setUp();
     }
 
-    protected function tearDown()
+    protected function getApiVersion()
     {
-        $this->context = null;
-        $this->validator = null;
+        return Validation::API_VERSION_2_5;
+    }
+
+    protected function createValidator()
+    {
+        return new CountryValidator();
     }
 
     public function testNullIsValid()
     {
-        $this->context->expects($this->never())
-            ->method('addViolation');
-
         $this->validator->validate(null, new Country());
+
+        $this->assertNoViolation();
     }
 
     public function testEmptyStringIsValid()
     {
-        $this->context->expects($this->never())
-            ->method('addViolation');
-
         $this->validator->validate('', new Country());
+
+        $this->assertNoViolation();
     }
 
     /**
-     * @expectedException Symfony\Component\Validator\Exception\UnexpectedTypeException
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
      */
     public function testExpectsStringCompatibleType()
     {
@@ -63,14 +62,9 @@ class CountryValidatorTest extends LocalizedTestCase
      */
     public function testValidCountries($country)
     {
-        if (!class_exists('Symfony\Component\Locale\Locale')) {
-            $this->markTestSkipped('The "Locale" component is not available');
-        }
-
-        $this->context->expects($this->never())
-            ->method('addViolation');
-
         $this->validator->validate($country, new Country());
+
+        $this->assertNoViolation();
     }
 
     public function getValidCountries()
@@ -87,21 +81,15 @@ class CountryValidatorTest extends LocalizedTestCase
      */
     public function testInvalidCountries($country)
     {
-        if (!class_exists('Symfony\Component\Locale\Locale')) {
-            $this->markTestSkipped('The "Locale" component is not available');
-        }
-
         $constraint = new Country(array(
-            'message' => 'myMessage'
+            'message' => 'myMessage',
         ));
 
-        $this->context->expects($this->once())
-            ->method('addViolation')
-            ->with('myMessage', array(
-                '{{ value }}' => $country,
-            ));
-
         $this->validator->validate($country, $constraint);
+
+        $this->buildViolation('myMessage')
+            ->setParameter('{{ value }}', '"'.$country.'"')
+            ->assertRaised();
     }
 
     public function getInvalidCountries()
@@ -110,5 +98,19 @@ class CountryValidatorTest extends LocalizedTestCase
             array('foobar'),
             array('EN'),
         );
+    }
+
+    public function testValidateUsingCountrySpecificLocale()
+    {
+        // in order to test with "en_GB"
+        IntlTestHelper::requireFullIntl($this);
+
+        \Locale::setDefault('en_GB');
+
+        $existingCountry = 'GB';
+
+        $this->validator->validate($existingCountry, new Country());
+
+        $this->assertNoViolation();
     }
 }

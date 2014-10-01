@@ -1,20 +1,20 @@
 <?php
 
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sensio\Bundle\FrameworkExtraBundle\Routing;
 
 use Symfony\Component\Routing\Loader\AnnotationClassLoader;
 use Symfony\Component\Routing\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route as FrameworkExtraBundleRoute;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
-/*
- * This file is part of the Symfony framework.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
 
 /**
  * AnnotatedRouteControllerLoader is an implementation of AnnotationClassLoader
@@ -30,9 +30,12 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
      * Configures the _controller default parameter and eventually the _method
      * requirement of a given Route instance.
      *
-     * @param Route            $route  A Route instance
-     * @param ReflectionClass  $class  A ReflectionClass instance
-     * @param ReflectionMethod $method A ReflectionClass method
+     * @param Route             $route  A route instance
+     * @param \ReflectionClass  $class  A ReflectionClass instance
+     * @param \ReflectionMethod $method A ReflectionClass method
+     * @param mixed             $annot  The annotation class instance
+     *
+     * @throws \LogicException When the service option is specified on a method
      */
     protected function configureRoute(Route $route, \ReflectionClass $class, \ReflectionMethod $method, $annot)
     {
@@ -48,16 +51,32 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
         foreach ($this->reader->getMethodAnnotations($method) as $configuration) {
             if ($configuration instanceof Method) {
                 $route->setRequirement('_method', implode('|', $configuration->getMethods()));
+            } elseif ($configuration instanceof FrameworkExtraBundleRoute && $configuration->getService()) {
+                throw new \LogicException('The service option can only be specified at class level.');
             }
         }
+    }
+
+    protected function getGlobals(\ReflectionClass $class)
+    {
+        $globals = parent::getGlobals($class);
+
+        foreach ($this->reader->getClassAnnotations($class) as $configuration) {
+            if ($configuration instanceof Method) {
+                $globals['methods'] = array_merge($globals['methods'], $configuration->getMethods());
+            }
+        }
+
+        return $globals;
     }
 
     /**
      * Makes the default route name more sane by removing common keywords.
      *
-     * @param ReflectionClass  $class  A ReflectionClass instance
-     * @param ReflectionMethod $method A ReflectionMethod instance
-     * @return string
+     * @param  \ReflectionClass  $class  A ReflectionClass instance
+     * @param  \ReflectionMethod $method A ReflectionMethod instance
+     *
+     * @return string The default route name
      */
     protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method)
     {

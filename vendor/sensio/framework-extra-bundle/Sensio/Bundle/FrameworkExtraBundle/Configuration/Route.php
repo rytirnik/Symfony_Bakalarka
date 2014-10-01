@@ -1,17 +1,17 @@
 <?php
 
-namespace Sensio\Bundle\FrameworkExtraBundle\Configuration;
-
-use Symfony\Component\Routing\Annotation\Route as BaseRoute;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Sensio\Bundle\FrameworkExtraBundle\Configuration;
+
+use Symfony\Component\Routing\Annotation\Route as BaseRoute;
 
 /**
  * @author Kris Wallsmith <kris@symfony.com>
@@ -29,5 +29,16 @@ class Route extends BaseRoute
     public function getService()
     {
         return $this->service;
+    }
+
+    /**
+     * Multiple route annotations are allowed
+     *
+     * @return bool
+     * @see ConfigurationInterface
+     */
+    public function allowArray()
+    {
+        return true;
     }
 }

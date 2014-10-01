@@ -311,4 +311,12 @@ class Fuse extends Part{
     {
         return $this->PCB_ID;
     }
+
+    public function setParams ($obj) {
+        $this->Label = $obj->Label;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Value = intval($obj->Value);
+        $this->Environment = $obj->Environment;
+    }
 }

@@ -77,13 +77,19 @@ class DateType extends AbstractType
                 $calendar,
                 $pattern
             );
+
+            // new \intlDateFormatter may return null instead of false in case of failure, see https://bugs.php.net/bug.php?id=66323
+            if (!$formatter) {
+                throw new InvalidOptionsException(intl_get_error_message(), intl_get_error_code());
+            }
+
             $formatter->setLenient(false);
 
             if ('choice' === $options['widget']) {
                 // Only pass a subset of the options to children
                 $yearOptions['choices'] = $this->formatTimestamps($formatter, '/y+/', $this->listYears($options['years']));
                 $yearOptions['empty_value'] = $options['empty_value']['year'];
-                $monthOptions['choices'] = $this->formatTimestamps($formatter, '/M+/', $this->listMonths($options['months']));
+                $monthOptions['choices'] = $this->formatTimestamps($formatter, '/[M|L]+/', $this->listMonths($options['months']));
                 $monthOptions['empty_value'] = $options['empty_value']['month'];
                 $dayOptions['choices'] = $this->formatTimestamps($formatter, '/d+/', $this->listDays($options['days']));
                 $dayOptions['empty_value'] = $options['empty_value']['day'];
@@ -137,13 +143,18 @@ class DateType extends AbstractType
         if ($form->getConfig()->hasAttribute('formatter')) {
             $pattern = $form->getConfig()->getAttribute('formatter')->getPattern();
 
+            // remove special characters unless the format was explicitly specified
+            if (!is_string($options['format'])) {
+                $pattern = preg_replace('/[^yMd]+/', '', $pattern);
+            }
+
             // set right order with respect to locale (e.g.: de_DE=dd.MM.yy; en_US=M/d/yy)
             // lookup various formats at http://userguide.icu-project.org/formatparse/datetime
-            if (preg_match('/^([yMd]+).+([yMd]+).+([yMd]+)$/', $pattern)) {
+            if (preg_match('/^([yMd]+)[^yMd]*([yMd]+)[^yMd]*([yMd]+)$/', $pattern)) {
                 $pattern = preg_replace(array('/y+/', '/M+/', '/d+/'), array('{{ year }}', '{{ month }}', '{{ day }}'), $pattern);
             } else {
                 // default fallback
-                $pattern = '{{ year }}-{{ month }}-{{ day }}';
+                $pattern = '{{ year }}{{ month }}{{ day }}';
             }
 
             $view->vars['date_pattern'] = $pattern;
@@ -176,18 +187,12 @@ class DateType extends AbstractType
             return array(
                 'year' => $emptyValue,
                 'month' => $emptyValue,
-                'day' => $emptyValue
+                'day' => $emptyValue,
             );
         };
 
-        // BC until Symfony 2.3
-        $modelTimezone = function (Options $options) {
-            return $options['data_timezone'];
-        };
-
-        // BC until Symfony 2.3
-        $viewTimezone = function (Options $options) {
-            return $options['user_timezone'];
+        $format = function (Options $options) {
+            return $options['widget'] === 'single_text' ? DateType::HTML5_FORMAT : DateType::DEFAULT_FORMAT;
         };
 
         $resolver->setDefaults(array(
@@ -196,12 +201,9 @@ class DateType extends AbstractType
             'days'           => range(1, 31),
             'widget'         => 'choice',
             'input'          => 'datetime',
-            'format'         => self::HTML5_FORMAT,
-            'model_timezone' => $modelTimezone,
-            'view_timezone'  => $viewTimezone,
-            // Deprecated timezone options
-            'data_timezone'  => null,
-            'user_timezone'  => null,
+            'format'         => $format,
+            'model_timezone' => null,
+            'view_timezone'  => null,
             'empty_value'    => $emptyValue,
             // Don't modify \DateTime classes by reference, we treat
             // them like immutable value objects
@@ -241,14 +243,6 @@ class DateType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getParent()
-    {
-        return 'field';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return 'date';
@@ -259,7 +253,11 @@ class DateType extends AbstractType
         $pattern = $formatter->getPattern();
         $timezone = $formatter->getTimezoneId();
 
-        $formatter->setTimezoneId(\DateTimeZone::UTC);
+        if ($setTimeZone = method_exists($formatter, 'setTimeZone')) {
+            $formatter->setTimeZone('UTC');
+        } else {
+            $formatter->setTimeZoneId('UTC');
+        }
 
         if (preg_match($regex, $pattern, $matches)) {
             $formatter->setPattern($matches[0]);
@@ -273,7 +271,11 @@ class DateType extends AbstractType
             $formatter->setPattern($pattern);
         }
 
-        $formatter->setTimezoneId($timezone);
+        if ($setTimeZone) {
+            $formatter->setTimeZone($timezone);
+        } else {
+            $formatter->setTimeZoneId($timezone);
+        }
 
         return $timestamps;
     }
@@ -283,7 +285,9 @@ class DateType extends AbstractType
         $result = array();
 
         foreach ($years as $year) {
-            $result[$year] = gmmktime(0, 0, 0, 6, 15, $year);
+            if (false !== $y = gmmktime(0, 0, 0, 6, 15, $year)) {
+                $result[$year] = $y;
+            }
         }
 
         return $result;

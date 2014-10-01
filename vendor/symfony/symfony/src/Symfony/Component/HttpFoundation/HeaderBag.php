@@ -20,8 +20,8 @@ namespace Symfony\Component\HttpFoundation;
  */
 class HeaderBag implements \IteratorAggregate, \Countable
 {
-    protected $headers;
-    protected $cacheControl;
+    protected $headers = array();
+    protected $cacheControl = array();
 
     /**
      * Constructor.
@@ -32,8 +32,6 @@ class HeaderBag implements \IteratorAggregate, \Countable
      */
     public function __construct(array $headers = array())
     {
-        $this->cacheControl = array();
-        $this->headers = array();
         foreach ($headers as $key => $values) {
             $this->set($key, $values);
         }
@@ -119,7 +117,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      *
      * @param string  $key     The header name
      * @param mixed   $default The default value
-     * @param Boolean $first   Whether to return the first value or all header values
+     * @param bool    $first   Whether to return the first value or all header values
      *
      * @return string|array The first header value if $first is true, an array of values otherwise
      *
@@ -149,7 +147,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      *
      * @param string       $key     The key
      * @param string|array $values  The value or an array of values
-     * @param Boolean      $replace Whether to replace the actual value of not (true by default)
+     * @param bool         $replace Whether to replace the actual value or not (true by default)
      *
      * @api
      */
@@ -175,7 +173,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      *
      * @param string $key The HTTP header
      *
-     * @return Boolean true if the parameter exists, false otherwise
+     * @return bool    true if the parameter exists, false otherwise
      *
      * @api
      */
@@ -190,7 +188,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * @param string $key   The HTTP header name
      * @param string $value The HTTP value
      *
-     * @return Boolean true if the value is contained in the header, false otherwise
+     * @return bool    true if the value is contained in the header, false otherwise
      *
      * @api
      */
@@ -223,7 +221,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * @param string    $key     The parameter key
      * @param \DateTime $default The default value
      *
-     * @return null|\DateTime The filtered value
+     * @return null|\DateTime The parsed DateTime or the default value if the header does not exist
      *
      * @throws \RuntimeException When the HTTP header is not parseable
      *
@@ -242,6 +240,12 @@ class HeaderBag implements \IteratorAggregate, \Countable
         return $date;
     }
 
+    /**
+     * Adds a custom Cache-Control directive.
+     *
+     * @param string $key   The Cache-Control directive name
+     * @param mixed  $value The Cache-Control directive value
+     */
     public function addCacheControlDirective($key, $value = true)
     {
         $this->cacheControl[$key] = $value;
@@ -249,16 +253,35 @@ class HeaderBag implements \IteratorAggregate, \Countable
         $this->set('Cache-Control', $this->getCacheControlHeader());
     }
 
+    /**
+     * Returns true if the Cache-Control directive is defined.
+     *
+     * @param string $key The Cache-Control directive
+     *
+     * @return bool true if the directive exists, false otherwise
+     */
     public function hasCacheControlDirective($key)
     {
         return array_key_exists($key, $this->cacheControl);
     }
 
+    /**
+     * Returns a Cache-Control directive value by name.
+     *
+     * @param string $key The directive name
+     *
+     * @return mixed|null The directive value if defined, null otherwise
+     */
     public function getCacheControlDirective($key)
     {
         return array_key_exists($key, $this->cacheControl) ? $this->cacheControl[$key] : null;
     }
 
+    /**
+     * Removes a Cache-Control directive.
+     *
+     * @param string $key The Cache-Control directive
+     */
     public function removeCacheControlDirective($key)
     {
         unset($this->cacheControl[$key]);
@@ -317,7 +340,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
         $cacheControl = array();
         preg_match_all('#([a-zA-Z][a-zA-Z_-]*)\s*(?:=(?:"([^"]*)"|([^ \t",;]*)))?#', $header, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $cacheControl[strtolower($match[1])] = isset($match[2]) && $match[2] ? $match[2] : (isset($match[3]) ? $match[3] : true);
+            $cacheControl[strtolower($match[1])] = isset($match[3]) ? $match[3] : (isset($match[2]) ? $match[2] : true);
         }
 
         return $cacheControl;

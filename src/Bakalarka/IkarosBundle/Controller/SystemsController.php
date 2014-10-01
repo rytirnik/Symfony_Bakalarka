@@ -17,7 +17,7 @@ use Bakalarka\IkarosBundle\Entity\PCB;
 class SystemsController extends Controller
 {
     /**
-     * @Route("/allSystems")
+     * @Route("/allSystems", name="allSystems")
      * @Template()
      */
     public function allSystemsAction()
@@ -43,7 +43,7 @@ class SystemsController extends Controller
     }
 
     /**
-     * @Route("/mySystems")
+     * @Route("/mySystems", name="mySystems")
      * @Template()
      */
     public function mySystemsAction($err = "")
@@ -99,7 +99,7 @@ class SystemsController extends Controller
     }
 
     /**
-     * @Route("/detail/{id}")
+     * @Route("/detail/{id}", name="detail")
      * @Template()
      */
     public function detailAction($id)
@@ -147,7 +147,7 @@ class SystemsController extends Controller
     }
 
     /**
-     * @Route("/detailA/{id}")
+     * @Route("/detailA/{id}", name="detailAdmin")
      * @Template()
      */
     public function detailAdminAction($id)
@@ -197,7 +197,7 @@ class SystemsController extends Controller
     }
 
     /**
-     * @Route("/newSystem")
+     * @Route("/newSystem", name="newSystem")
      * @Template()
      */
     public function newSystemAction()
@@ -266,7 +266,7 @@ class SystemsController extends Controller
     }
 
     /**
-     * @Route("/detailSystem/{id}")
+     * @Route("/detailSystem/{id}", name="detailSystem")
      * @Template()
      */
      public function detailSystemAction($id) {
@@ -316,7 +316,7 @@ class SystemsController extends Controller
 
 
     /**
-     * @Route("/editSystem/{id}")
+     * @Route("/editSystem/{id}", name="editSystem")
      * @Template()
      */
     public function editSystemAction($id) {
@@ -365,7 +365,7 @@ class SystemsController extends Controller
 
 
     /**
-     * @Route("/delSystem/{id}")
+     * @Route("/delSystem/{id}", name="delSystem")
      * @Template()
      */
     public function delSystemAction($id)

@@ -66,7 +66,7 @@ class PCBController extends Controller
     }
 
     /**
-     * @Route("/newPCB/{id}")
+     * @Route("/newPCB/{id}", name="newPCB")
      * @Template()
      */
     public function newPCBAction($id=-1)
@@ -289,7 +289,7 @@ class PCBController extends Controller
     }
 
     /**
-     * @Route("/delDesk/{id}")
+     * @Route("/delDesk/{id}", name="delDesk")
      * @Template()
      */
     public function delDeskAction($id)
@@ -355,7 +355,7 @@ class PCBController extends Controller
     }
 
     /**
-     * @Route("/delDeskAjax")
+     * @Route("/delDesk", name="delDeskAjax")
      * @Template()
      */
     public function delDeskAjaxAction()
@@ -430,7 +430,7 @@ class PCBController extends Controller
 
 
     /**
-     * @Route("/newPCBAjax")
+     * @Route("/newPCBA", name="newPCBAjax")
      * @Template()
      */
     public function newPCBAjaxAction() {
@@ -600,7 +600,7 @@ class PCBController extends Controller
     }
 
     /**
-     * @Route("/detailPCB/{id}")
+     * @Route("/detailPCB/{id}", name="detailPCB")
      * @Template()
      */
     public function detailPCBAction($id) {
@@ -764,7 +764,7 @@ class PCBController extends Controller
     }
 
     /**
-     * @Route("/editPCB/{id}")
+     * @Route("/editPCB/{id}", name="editPCB")
      * @Template()
      */
     public function editPCBAction($id) {
@@ -921,7 +921,7 @@ class PCBController extends Controller
 
 
     /**
-     * @Route("/delSMT")
+     * @Route("/delSMT", name="delSMT")
      * @Template()
      */
     public function delSMTAction($id=-1) {

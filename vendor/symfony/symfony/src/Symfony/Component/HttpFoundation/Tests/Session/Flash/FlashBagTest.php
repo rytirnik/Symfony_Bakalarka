@@ -91,7 +91,7 @@ class FlashBagTest extends \PHPUnit_Framework_TestCase
         $this->bag->set('error', 'Bar');
         $this->assertEquals(array(
             'notice' => array('Foo'),
-            'error' => array('Bar')), $this->bag->all()
+            'error' => array('Bar'),), $this->bag->all()
         );
 
         $this->assertEquals(array(), $this->bag->all());
@@ -134,19 +134,6 @@ class FlashBagTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Symfony\Component\HttpFoundation\Session\Flash\FlashBag::count
-     */
-    public function testCount()
-    {
-        $flashes = array('hello' => 'world', 'beep' => 'boop', 'notice' => 'nope');
-        foreach ($flashes as $key => $val) {
-            $this->bag->set($key, $val);
-        }
-
-        $this->assertEquals(count($flashes), count($this->bag));
-    }
-
-    /**
      * @covers Symfony\Component\HttpFoundation\Session\Flash\FlashBag::getIterator
      */
     public function testGetIterator()
@@ -163,6 +150,6 @@ class FlashBagTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals(count($flashes), $i);
-        $this->assertEquals(0, count($this->bag));
+        $this->assertCount(0, $this->bag->all());
     }
 }

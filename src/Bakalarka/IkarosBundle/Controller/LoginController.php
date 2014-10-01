@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\SecurityContext;
 class LoginController extends Controller
 {
     /**
-     * @Route("/login")
+     * @Route("/login", name="login")
      * @Template()
      */
     public function loginAction()

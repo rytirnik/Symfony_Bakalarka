@@ -18,9 +18,6 @@ use Symfony\Component\Security\Http\HttpUtils;
 /**
  * Class with the default authentication success handling logic.
  *
- * Can be optionally be extended from by the developer to alter the behaviour
- * while keeping the default behaviour.
- *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  * @author Alexander <iam.asm89@gmail.com>
@@ -51,13 +48,12 @@ class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandle
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
         return $this->httpUtils->createRedirectResponse($request, $this->determineTargetUrl($request));
     }
-
 
     /**
      * Get the provider key.

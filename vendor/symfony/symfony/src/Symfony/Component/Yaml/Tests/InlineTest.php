@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Yaml\Tests;
 
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Inline;
 
 class InlineTest extends \PHPUnit_Framework_TestCase
@@ -19,7 +18,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
     public function testParse()
     {
         foreach ($this->getTestsForParse() as $yaml => $value) {
-            $this->assertEquals($value, Inline::parse($yaml), sprintf('::parse() converts an inline YAML to a PHP structure (%s)', $yaml));
+            $this->assertSame($value, Inline::parse($yaml), sprintf('::parse() converts an inline YAML to a PHP structure (%s)', $yaml));
         }
     }
 
@@ -31,11 +30,11 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($yaml, Inline::dump($value), sprintf('::dump() converts a PHP structure to an inline YAML (%s)', $yaml));
         }
 
-        foreach ($this->getTestsForParse() as $yaml => $value) {
+        foreach ($this->getTestsForParse() as $value) {
             $this->assertEquals($value, Inline::parse(Inline::dump($value)), 'check consistency');
         }
 
-        foreach ($testsForDump as $yaml => $value) {
+        foreach ($testsForDump as $value) {
             $this->assertEquals($value, Inline::parse(Inline::dump($value)), 'check consistency');
         }
     }
@@ -49,7 +48,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
 
         $required_locales = array('fr_FR.UTF-8', 'fr_FR.UTF8', 'fr_FR.utf-8', 'fr_FR.utf8', 'French_France.1252');
         if (false === setlocale(LC_ALL, $required_locales)) {
-            $this->markTestSkipped('Could not set any of required locales: ' . implode(", ", $required_locales));
+            $this->markTestSkipped('Could not set any of required locales: '.implode(", ", $required_locales));
         }
 
         $this->assertEquals('1.2', Inline::dump(1.2));
@@ -92,12 +91,78 @@ class InlineTest extends \PHPUnit_Framework_TestCase
         Inline::parse($value);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     */
+    public function testParseInvalidMappingShouldThrowException()
+    {
+        Inline::parse('[foo] bar');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     */
+    public function testParseInvalidSequenceShouldThrowException()
+    {
+        Inline::parse('{ foo: bar } bar');
+    }
+
     public function testParseScalarWithCorrectlyQuotedStringShouldReturnString()
     {
         $value = "'don''t do somthin'' like that'";
         $expect = "don't do somthin' like that";
 
         $this->assertSame($expect, Inline::parseScalar($value));
+    }
+
+    /**
+     * @dataProvider getDataForParseReferences
+     */
+    public function testParseReferences($yaml, $expected)
+    {
+        $this->assertSame($expected, Inline::parse($yaml, false, false, array('var' => 'var-value')));
+    }
+
+    public function getDataForParseReferences()
+    {
+        return array(
+            'scalar' => array('*var', 'var-value'),
+            'list' => array('[ *var ]', array('var-value')),
+            'list-in-list' => array('[[ *var ]]', array(array('var-value'))),
+            'map-in-list' => array('[ { key: *var } ]', array(array('key' => 'var-value'))),
+            'embedded-mapping-in-list' => array('[ key: *var ]', array(array('key' => 'var-value'))),
+            'map' => array('{ key: *var }', array('key' => 'var-value')),
+            'list-in-map' => array('{ key: [*var] }', array('key' => array('var-value'))),
+            'map-in-map' => array('{ foo: { bar: *var } }', array('foo' => array('bar' => 'var-value'))),
+        );
+    }
+
+    public function testParseMapReferenceInSequence()
+    {
+        $foo = array(
+            'a' => 'Steve',
+            'b' => 'Clark',
+            'c' => 'Brian',
+        );
+        $this->assertSame(array($foo), Inline::parse('[*foo]', false, false, array('foo' => $foo)));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     * @expectedExceptionMessage A reference must contain at least one character.
+     */
+    public function testParseUnquotedAsterisk()
+    {
+        Inline::parse('{ foo: * }');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     * @expectedExceptionMessage A reference must contain at least one character.
+     */
+    public function testParseUnquotedAsteriskFollowedByAComment()
+    {
+        Inline::parse('{ foo: * #foo }');
     }
 
     protected function getTestsForParse()
@@ -108,6 +173,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             'false' => false,
             'true' => true,
             '12' => 12,
+            '-12' => -12,
             '"quoted string"' => 'quoted string',
             "'quoted string'" => 'quoted string',
             '12.30e+02' => 12.30e+02,
@@ -117,7 +183,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '-.Inf' => log(0),
             "'686e444'" => '686e444',
             '686e444' => 646e444,
-            '123456789123456789' => '123456789123456789',
+            '123456789123456789123456789123456789' => '123456789123456789123456789123456789',
             '"foo\r\nbar"' => "foo\r\nbar",
             "'foo#bar'" => 'foo#bar',
             "'foo # bar'" => 'foo # bar',
@@ -127,6 +193,8 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '2007-10-30' => mktime(0, 0, 0, 10, 30, 2007),
             '2007-10-30T02:59:43Z' => gmmktime(2, 59, 43, 10, 30, 2007),
             '2007-10-30 02:59:43 Z' => gmmktime(2, 59, 43, 10, 30, 2007),
+            '1960-10-30 02:59:43 Z' => gmmktime(2, 59, 43, 10, 30, 1960),
+            '1730-10-30T02:59:43Z' => gmmktime(2, 59, 43, 10, 30, 1730),
 
             '"a \\"string\\" with \'quoted strings inside\'"' => 'a "string" with \'quoted strings inside\'',
             "'a \"string\" with ''quoted strings inside'''" => 'a "string" with \'quoted strings inside\'',
@@ -160,7 +228,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '[foo, {bar: foo, foo: [foo, {bar: foo}]}, [foo, {bar: foo}]]' => array('foo', array('bar' => 'foo', 'foo' => array('foo', array('bar' => 'foo'))), array('foo', array('bar' => 'foo'))),
 
             '[foo, bar: { foo: bar }]' => array('foo', '1' => array('bar' => array('foo' => 'bar'))),
-            '[foo, \'@foo.baz\', { \'%foo%\': \'foo is %foo%\', bar: \'%foo%\' }, true, \'@service_container\']' => array('foo', '@foo.baz', array('%foo%' => 'foo is %foo%', 'bar' => '%foo%',), true, '@service_container',),
+            '[foo, \'@foo.baz\', { \'%foo%\': \'foo is %foo%\', bar: \'%foo%\' }, true, \'@service_container\']' => array('foo', '@foo.baz', array('%foo%' => 'foo is %foo%', 'bar' => '%foo%'), true, '@service_container'),
         );
     }
 
@@ -178,13 +246,15 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '.Inf' => -log(0),
             '-.Inf' => log(0),
             "'686e444'" => '686e444',
-            '.Inf' => 646e444,
             '"foo\r\nbar"' => "foo\r\nbar",
             "'foo#bar'" => 'foo#bar',
             "'foo # bar'" => 'foo # bar',
             "'#cfcfcf'" => '#cfcfcf',
 
             "'a \"string\" with ''quoted strings inside'''" => 'a "string" with \'quoted strings inside\'',
+
+            "'-dash'" => '-dash',
+            "'-'" => '-',
 
             // sequences
             '[foo, bar, false, null, 12]' => array('foo', 'bar', false, null, 12),
@@ -205,7 +275,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
 
             '[foo, { bar: foo, foo: [foo, { bar: foo }] }, [foo, { bar: foo }]]' => array('foo', array('bar' => 'foo', 'foo' => array('foo', array('bar' => 'foo'))), array('foo', array('bar' => 'foo'))),
 
-            '[foo, \'@foo.baz\', { \'%foo%\': \'foo is %foo%\', bar: \'%foo%\' }, true, \'@service_container\']' => array('foo', '@foo.baz', array('%foo%' => 'foo is %foo%', 'bar' => '%foo%',), true, '@service_container',),
+            '[foo, \'@foo.baz\', { \'%foo%\': \'foo is %foo%\', bar: \'%foo%\' }, true, \'@service_container\']' => array('foo', '@foo.baz', array('%foo%' => 'foo is %foo%', 'bar' => '%foo%'), true, '@service_container'),
         );
     }
 }

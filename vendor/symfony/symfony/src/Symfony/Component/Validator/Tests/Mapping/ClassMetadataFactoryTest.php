@@ -11,11 +11,10 @@
 
 namespace Symfony\Component\Validator\Tests\Mapping;
 
-use Symfony\Component\Validator\Tests\Fixtures\Entity;
-use Symfony\Component\Validator\Tests\Fixtures\ConstraintA;
-use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
 use Symfony\Component\Validator\Mapping\Loader\LoaderInterface;
+use Symfony\Component\Validator\Tests\Fixtures\ConstraintA;
 
 class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +24,7 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
     public function testLoadClassMetadata()
     {
         $factory = new ClassMetadataFactory(new TestLoader());
-        $metadata = $factory->getClassMetadata(self::PARENTCLASS);
+        $metadata = $factory->getMetadataFor(self::PARENTCLASS);
 
         $constraints = array(
             new ConstraintA(array('groups' => array('Default', 'EntityParent'))),
@@ -37,7 +36,7 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
     public function testMergeParentConstraints()
     {
         $factory = new ClassMetadataFactory(new TestLoader());
-        $metadata = $factory->getClassMetadata(self::CLASSNAME);
+        $metadata = $factory->getMetadataFor(self::CLASSNAME);
 
         $constraints = array(
             new ConstraintA(array('groups' => array(
@@ -77,11 +76,11 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
               ->will($this->returnValue(false));
         $cache->expects($this->once())
               ->method('write')
-              ->will($this->returnCallback(function($metadata) use ($tester, $constraints) {
+              ->will($this->returnCallback(function ($metadata) use ($tester, $constraints) {
                   $tester->assertEquals($constraints, $metadata->getConstraints());
               }));
 
-        $metadata = $factory->getClassMetadata(self::PARENTCLASS);
+        $metadata = $factory->getMetadataFor(self::PARENTCLASS);
 
         $this->assertEquals(self::PARENTCLASS, $metadata->getClassName());
         $this->assertEquals($constraints, $metadata->getConstraints());
@@ -106,7 +105,7 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
               ->method('read')
               ->will($this->returnValue($metadata));
 
-        $this->assertEquals($metadata,$factory->getClassMetadata(self::PARENTCLASS));
+        $this->assertEquals($metadata,$factory->getMetadataFor(self::PARENTCLASS));
     }
 }
 

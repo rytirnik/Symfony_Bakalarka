@@ -11,14 +11,62 @@
 
 namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
-class FileTypeTest extends TypeTestCase
+class FileTypeTest extends \Symfony\Component\Form\Test\TypeTestCase
 {
+    // https://github.com/symfony/symfony/pull/5028
+    public function testSetData()
+    {
+        $form = $this->factory->createBuilder('file')->getForm();
+        $data = $this->createUploadedFileMock('abcdef', 'original.jpg', true);
+
+        $form->setData($data);
+
+        $this->assertSame($data, $form->getData());
+    }
+
+    public function testSubmit()
+    {
+        $form = $this->factory->createBuilder('file')->getForm();
+        $data = $this->createUploadedFileMock('abcdef', 'original.jpg', true);
+
+        $form->submit($data);
+
+        $this->assertSame($data, $form->getData());
+    }
+
+    // https://github.com/symfony/symfony/issues/6134
+    public function testSubmitEmpty()
+    {
+        $form = $this->factory->createBuilder('file')->getForm();
+
+        $form->submit(null);
+
+        $this->assertNull($form->getData());
+    }
+
+    public function testSubmitMultiple()
+    {
+        $form = $this->factory->createBuilder('file', null, array(
+            'multiple' => true,
+        ))->getForm();
+
+        $data = array(
+            $this->createUploadedFileMock('abcdef', 'first.jpg', true),
+            $this->createUploadedFileMock('zyxwvu', 'second.jpg', true),
+        );
+
+        $form->submit($data);
+        $this->assertSame($data, $form->getData());
+
+        $view = $form->createView();
+        $this->assertSame('file[]', $view->vars['full_name']);
+        $this->assertArrayHasKey('multiple', $view->vars['attr']);
+    }
+
     public function testDontPassValueToView()
     {
         $form = $this->factory->create('file');
-        $form->bind(array(
+        $form->submit(array(
             'file' => $this->createUploadedFileMock('abcdef', 'original.jpg', true),
         ));
         $view = $form->createView();
@@ -30,7 +78,7 @@ class FileTypeTest extends TypeTestCase
     {
         $file = $this
             ->getMockBuilder('Symfony\Component\HttpFoundation\File\UploadedFile')
-            ->disableOriginalConstructor()
+            ->setConstructorArgs(array(__DIR__.'/../../../Fixtures/foo', 'foo'))
             ->getMock()
         ;
         $file

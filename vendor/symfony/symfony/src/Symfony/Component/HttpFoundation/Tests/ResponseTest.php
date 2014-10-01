@@ -14,7 +14,7 @@ namespace Symfony\Component\HttpFoundation\Tests;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends ResponseTestCase
 {
     public function testCreate()
     {
@@ -79,6 +79,19 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($response->isCacheable());
     }
 
+    public function testIsCacheableWithErrorCode()
+    {
+        $response = new Response('', 500);
+        $this->assertFalse($response->isCacheable());
+    }
+
+    public function testIsCacheableWithNoStoreDirective()
+    {
+        $response = new Response();
+        $response->headers->set('cache-control', 'private');
+        $this->assertFalse($response->isCacheable());
+    }
+
     public function testIsCacheableWithSetTtl()
     {
         $response = new Response();
@@ -118,6 +131,102 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($modified);
     }
 
+    public function testIsNotModifiedNotSafe()
+    {
+        $request = Request::create('/homepage', 'POST');
+
+        $response = new Response();
+        $this->assertFalse($response->isNotModified($request));
+    }
+
+    public function testIsNotModifiedLastModified()
+    {
+        $before   = 'Sun, 25 Aug 2013 18:32:31 GMT';
+        $modified = 'Sun, 25 Aug 2013 18:33:31 GMT';
+        $after    = 'Sun, 25 Aug 2013 19:33:31 GMT';
+
+        $request = new Request();
+        $request->headers->set('If-Modified-Since', $modified);
+
+        $response = new Response();
+
+        $response->headers->set('Last-Modified', $modified);
+        $this->assertTrue($response->isNotModified($request));
+
+        $response->headers->set('Last-Modified', $before);
+        $this->assertTrue($response->isNotModified($request));
+
+        $response->headers->set('Last-Modified', $after);
+        $this->assertFalse($response->isNotModified($request));
+
+        $response->headers->set('Last-Modified', '');
+        $this->assertFalse($response->isNotModified($request));
+    }
+
+    public function testIsNotModifiedEtag()
+    {
+        $etagOne = 'randomly_generated_etag';
+        $etagTwo = 'randomly_generated_etag_2';
+
+        $request = new Request();
+        $request->headers->set('if_none_match', sprintf('%s, %s, %s', $etagOne, $etagTwo, 'etagThree'));
+
+        $response = new Response();
+
+        $response->headers->set('ETag', $etagOne);
+        $this->assertTrue($response->isNotModified($request));
+
+        $response->headers->set('ETag', $etagTwo);
+        $this->assertTrue($response->isNotModified($request));
+
+        $response->headers->set('ETag', '');
+        $this->assertFalse($response->isNotModified($request));
+    }
+
+    public function testIsNotModifiedLastModifiedAndEtag()
+    {
+        $before   = 'Sun, 25 Aug 2013 18:32:31 GMT';
+        $modified = 'Sun, 25 Aug 2013 18:33:31 GMT';
+        $after    = 'Sun, 25 Aug 2013 19:33:31 GMT';
+        $etag     = 'randomly_generated_etag';
+
+        $request = new Request();
+        $request->headers->set('if_none_match', sprintf('%s, %s', $etag, 'etagThree'));
+        $request->headers->set('If-Modified-Since', $modified);
+
+        $response = new Response();
+
+        $response->headers->set('ETag', $etag);
+        $response->headers->set('Last-Modified', $after);
+        $this->assertFalse($response->isNotModified($request));
+
+        $response->headers->set('ETag', 'non-existent-etag');
+        $response->headers->set('Last-Modified', $before);
+        $this->assertFalse($response->isNotModified($request));
+
+        $response->headers->set('ETag', $etag);
+        $response->headers->set('Last-Modified', $modified);
+        $this->assertTrue($response->isNotModified($request));
+    }
+
+    public function testIsNotModifiedIfModifiedSinceAndEtagWithoutLastModified()
+    {
+        $modified = 'Sun, 25 Aug 2013 18:33:31 GMT';
+        $etag     = 'randomly_generated_etag';
+
+        $request = new Request();
+        $request->headers->set('if_none_match', sprintf('%s, %s', $etag, 'etagThree'));
+        $request->headers->set('If-Modified-Since', $modified);
+
+        $response = new Response();
+
+        $response->headers->set('ETag', $etag);
+        $this->assertTrue($response->isNotModified($request));
+
+        $response->headers->set('ETag', 'non-existent-etag');
+        $this->assertFalse($response->isNotModified($request));
+    }
+
     public function testIsValidateable()
     {
         $response = new Response('', 200, array('Last-Modified' => $this->createDateTimeOneHourAgo()->format(DATE_RFC2822)));
@@ -132,8 +241,9 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDate()
     {
-        $response = new Response('', 200, array('Date' => $this->createDateTimeOneHourAgo()->format(DATE_RFC2822)));
-        $this->assertEquals(0, $this->createDateTimeOneHourAgo()->diff($response->getDate())->format('%s'), '->getDate() returns the Date header if present');
+        $oneHourAgo = $this->createDateTimeOneHourAgo();
+        $response = new Response('', 200, array('Date' => $oneHourAgo->format(DATE_RFC2822)));
+        $this->assertEquals(0, $oneHourAgo->diff($response->getDate())->format('%s'), '->getDate() returns the Date header if present');
 
         $response = new Response();
         $date = $response->getDate();
@@ -142,7 +252,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response('', 200, array('Date' => $this->createDateTimeOneHourAgo()->format(DATE_RFC2822)));
         $now = $this->createDateTimeNow();
         $response->headers->set('Date', $now->format(DATE_RFC2822));
-        $this->assertEquals(0, $now->diff($response->getDate())->format('%s'), '->getDate() returns the date when the header has been modified');
+        $this->assertLessThanOrEqual(1, $now->diff($response->getDate())->format('%s'), '->getDate() returns the date when the header has been modified');
 
         $response = new Response('', 200);
         $response->headers->remove('Date');
@@ -162,7 +272,12 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $response->headers->set('Cache-Control', 'must-revalidate');
         $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(DATE_RFC2822));
-        $this->assertEquals(3600, $response->getMaxAge(), '->getMaxAge() falls back to Expires when no max-age or s-maxage directive present');
+        $this->assertLessThanOrEqual(1, $response->getMaxAge() - 3600, '->getMaxAge() falls back to Expires when no max-age or s-maxage directive present');
+
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'must-revalidate');
+        $response->headers->set('Expires', -1);
+        $this->assertEquals('Sat, 01 Jan 00 00:00:00 +0000', $response->getExpires()->format(DATE_RFC822));
 
         $response = new Response();
         $this->assertNull($response->getMaxAge(), '->getMaxAge() returns null if no freshness information available');
@@ -214,6 +329,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $response->expire();
         $this->assertFalse($response->headers->has('Age'), '->expire() does nothing when the response does not include freshness information');
+
+        $response = new Response();
+        $response->headers->set('Expires', -1);
+        $response->expire();
+        $this->assertNull($response->headers->get('Age'), '->expire() does not set the Age when the response is expired');
     }
 
     public function testGetTtl()
@@ -223,11 +343,16 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
         $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(DATE_RFC2822));
-        $this->assertLessThan(1, 3600 - $response->getTtl(), '->getTtl() uses the Expires header when no max-age is present');
+        $this->assertLessThanOrEqual(1, 3600 - $response->getTtl(), '->getTtl() uses the Expires header when no max-age is present');
 
         $response = new Response();
         $response->headers->set('Expires', $this->createDateTimeOneHourAgo()->format(DATE_RFC2822));
-        $this->assertLessThan(0, $response->getTtl(), '->getTtl() returns negative values when Expires is in part');
+        $this->assertLessThan(0, $response->getTtl(), '->getTtl() returns negative values when Expires is in past');
+
+        $response = new Response();
+        $response->headers->set('Expires', $response->getDate()->format(DATE_RFC2822));
+        $response->headers->set('Age', 0);
+        $this->assertSame(0, $response->getTtl(), '->getTtl() correctly handles zero');
 
         $response = new Response();
         $response->headers->set('Cache-Control', 'max-age=60');
@@ -269,6 +394,16 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $response->headers->set('Vary', 'Accept-Language,User-Agent,    X-Foo');
         $this->assertEquals(array('Accept-Language', 'User-Agent', 'X-Foo'), $response->getVary(), '->getVary() parses multiple header name values separated by commas');
+
+        $vary = array('Accept-Language', 'User-Agent', 'X-foo');
+
+        $response = new Response();
+        $response->headers->set('Vary', $vary);
+        $this->assertEquals($vary, $response->getVary(), '->getVary() parses multiple header name values in arrays');
+
+        $response = new Response();
+        $response->headers->set('Vary', 'Accept-Language, User-Agent, X-foo');
+        $this->assertEquals($vary, $response->getVary(), '->getVary() parses multiple header name values in arrays');
     }
 
     public function testSetVary()
@@ -281,7 +416,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('Accept-Language', 'User-Agent'), $response->getVary(), '->setVary() replace the vary header by default');
 
         $response->setVary('X-Foo', false);
-        $this->assertEquals(array('Accept-Language', 'User-Agent'), $response->getVary(), '->setVary() doesn\'t change the Vary header if replace is set to false');
+        $this->assertEquals(array('Accept-Language', 'User-Agent', 'X-Foo'), $response->getVary(), '->setVary() doesn\'t wipe out earlier Vary headers if replace is set to false');
     }
 
     public function testDefaultContentType()
@@ -346,9 +481,63 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response('foo');
         $request = Request::create('/', 'HEAD');
 
+        $length = 12345;
+        $response->headers->set('Content-Length', $length);
         $response->prepare($request);
 
         $this->assertEquals('', $response->getContent());
+        $this->assertEquals($length, $response->headers->get('Content-Length'), 'Content-Length should be as if it was GET; see RFC2616 14.13');
+    }
+
+    public function testPrepareRemovesContentForInformationalResponse()
+    {
+        $response = new Response('foo');
+        $request = Request::create('/');
+
+        $response->setContent('content');
+        $response->setStatusCode(101);
+        $response->prepare($request);
+        $this->assertEquals('', $response->getContent());
+        $this->assertFalse($response->headers->has('Content-Type'));
+        $this->assertFalse($response->headers->has('Content-Type'));
+
+        $response->setContent('content');
+        $response->setStatusCode(304);
+        $response->prepare($request);
+        $this->assertEquals('', $response->getContent());
+        $this->assertFalse($response->headers->has('Content-Type'));
+        $this->assertFalse($response->headers->has('Content-Length'));
+    }
+
+    public function testPrepareRemovesContentLength()
+    {
+        $response = new Response('foo');
+        $request = Request::create('/');
+
+        $response->headers->set('Content-Length', 12345);
+        $response->prepare($request);
+        $this->assertEquals(12345, $response->headers->get('Content-Length'));
+
+        $response->headers->set('Transfer-Encoding', 'chunked');
+        $response->prepare($request);
+        $this->assertFalse($response->headers->has('Content-Length'));
+    }
+
+    public function testPrepareSetsPragmaOnHttp10Only()
+    {
+        $request = Request::create('/', 'GET');
+        $request->server->set('SERVER_PROTOCOL', 'HTTP/1.0');
+
+        $response = new Response('foo');
+        $response->prepare($request);
+        $this->assertEquals('no-cache', $response->headers->get('pragma'));
+        $this->assertEquals('-1', $response->headers->get('expires'));
+
+        $request->server->set('SERVER_PROTOCOL', 'HTTP/1.1');
+        $response = new Response('foo');
+        $response->prepare($request);
+        $this->assertFalse($response->headers->has('pragma'));
+        $this->assertFalse($response->headers->has('expires'));
     }
 
     public function testSetCache()
@@ -487,7 +676,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
             array('200', 'foo', 'foo'),
             array('199', null, ''),
             array('199', false, ''),
-            array('199', 'foo', 'foo')
+            array('199', 'foo', 'foo'),
         );
     }
 
@@ -536,7 +725,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     public function testIsEmpty()
     {
-        foreach (array(201, 204, 304) as $code) {
+        foreach (array(204, 304) as $code) {
             $response = new Response('', $code);
             $this->assertTrue($response->isEmpty());
         }
@@ -602,7 +791,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @dataProvider invalidContentProvider
      */
     public function testSetContentInvalid($content)
@@ -620,7 +809,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
             'setCharset' => 'UTF-8',
             'setPublic' => null,
             'setPrivate' => null,
-            'setDate' => new \DateTime,
+            'setDate' => new \DateTime(),
             'expire' => null,
             'setMaxAge' => 1,
             'setSharedMaxAge' => 1,
@@ -636,7 +825,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function validContentProvider()
     {
         return array(
-            'obj'    => array(new StringableObject),
+            'obj'    => array(new StringableObject()),
             'string' => array('Foo'),
             'int'    => array(2),
         );
@@ -645,7 +834,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function invalidContentProvider()
     {
         return array(
-            'obj'   => array(new \stdClass),
+            'obj'   => array(new \stdClass()),
             'array' => array(array()),
             'bool'   => array(true, '1'),
         );
@@ -668,6 +857,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     protected function createDateTimeNow()
     {
         return new \DateTime();
+    }
+
+    protected function provideResponse()
+    {
+        return new Response();
     }
 }
 

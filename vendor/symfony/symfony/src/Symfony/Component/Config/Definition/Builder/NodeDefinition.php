@@ -12,6 +12,7 @@
 namespace Symfony\Component\Config\Definition\Builder;
 
 use Symfony\Component\Config\Definition\NodeInterface;
+use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 
 /**
  * This class provides a fluent interface for defining a node.
@@ -24,30 +25,30 @@ abstract class NodeDefinition implements NodeParentInterface
     protected $normalization;
     protected $validation;
     protected $defaultValue;
-    protected $default;
-    protected $required;
+    protected $default = false;
+    protected $required = false;
     protected $merge;
-    protected $allowEmptyValue;
+    protected $allowEmptyValue = true;
     protected $nullEquivalent;
-    protected $trueEquivalent;
-    protected $falseEquivalent;
+    protected $trueEquivalent = true;
+    protected $falseEquivalent = false;
+
+    /**
+     * @var NodeParentInterface|null
+     */
     protected $parent;
     protected $attributes = array();
 
     /**
      * Constructor
      *
-     * @param string              $name   The name of the node
-     * @param NodeParentInterface $parent The parent
+     * @param string                   $name   The name of the node
+     * @param NodeParentInterface|null $parent The parent
      */
     public function __construct($name, NodeParentInterface $parent = null)
     {
         $this->parent = $parent;
         $this->name = $name;
-        $this->default = false;
-        $this->required = false;
-        $this->trueEquivalent = true;
-        $this->falseEquivalent = false;
     }
 
     /**
@@ -106,7 +107,7 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Returns the parent node.
      *
-     * @return NodeParentInterface The builder of the parent node
+     * @return NodeParentInterface|null The builder of the parent node
      */
     public function end()
     {
@@ -116,7 +117,7 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Creates the node.
      *
-     * @param Boolean $forceRootNode Whether to force this node as the root node
+     * @param bool    $forceRootNode Whether to force this node as the root node
      *
      * @return NodeInterface
      */
@@ -278,7 +279,7 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Sets whether the node can be overwritten.
      *
-     * @param Boolean $deny Whether the overwriting is forbidden or not
+     * @param bool    $deny Whether the overwriting is forbidden or not
      *
      * @return NodeDefinition
      */
@@ -336,8 +337,7 @@ abstract class NodeDefinition implements NodeParentInterface
      *
      * @return NodeInterface $node The node instance
      *
-     * @throws Symfony\Component\Config\Definition\Exception\InvalidDefinitionException When the definition is invalid
+     * @throws InvalidDefinitionException When the definition is invalid
      */
     abstract protected function createNode();
-
 }

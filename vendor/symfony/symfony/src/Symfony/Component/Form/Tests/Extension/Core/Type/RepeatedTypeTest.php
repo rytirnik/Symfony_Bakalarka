@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
-class RepeatedTypeTest extends TypeTestCase
+class RepeatedTypeTest extends \Symfony\Component\Form\Test\TypeTestCase
 {
     protected $form;
 
@@ -52,7 +52,7 @@ class RepeatedTypeTest extends TypeTestCase
             // the global required value cannot be overridden
             'type'           => 'text',
             'first_options'  => array('label' => 'Test', 'required' => false),
-            'second_options' => array('label' => 'Test2')
+            'second_options' => array('label' => 'Test2'),
         ));
 
         $this->assertEquals('Test', $form['first']->getConfig()->getOption('label'));
@@ -72,12 +72,47 @@ class RepeatedTypeTest extends TypeTestCase
         $this->assertFalse($form['second']->isRequired());
     }
 
+    public function testSetErrorBubblingToTrue()
+    {
+        $form = $this->factory->create('repeated', null, array(
+            'error_bubbling' => true,
+        ));
+
+        $this->assertTrue($form->getConfig()->getOption('error_bubbling'));
+        $this->assertTrue($form['first']->getConfig()->getOption('error_bubbling'));
+        $this->assertTrue($form['second']->getConfig()->getOption('error_bubbling'));
+    }
+
+    public function testSetErrorBubblingToFalse()
+    {
+        $form = $this->factory->create('repeated', null, array(
+            'error_bubbling' => false,
+        ));
+
+        $this->assertFalse($form->getConfig()->getOption('error_bubbling'));
+        $this->assertFalse($form['first']->getConfig()->getOption('error_bubbling'));
+        $this->assertFalse($form['second']->getConfig()->getOption('error_bubbling'));
+    }
+
+    public function testSetErrorBubblingIndividually()
+    {
+        $form = $this->factory->create('repeated', null, array(
+            'error_bubbling' => true,
+            'options' => array('error_bubbling' => false),
+            'second_options' => array('error_bubbling' => true),
+        ));
+
+        $this->assertTrue($form->getConfig()->getOption('error_bubbling'));
+        $this->assertFalse($form['first']->getConfig()->getOption('error_bubbling'));
+        $this->assertTrue($form['second']->getConfig()->getOption('error_bubbling'));
+    }
+
     public function testSetOptionsPerChildAndOverwrite()
     {
         $form = $this->factory->create('repeated', null, array(
             'type'           => 'text',
             'options'        => array('label' => 'Label'),
-            'second_options' => array('label' => 'Second label')
+            'second_options' => array('label' => 'Second label'),
         ));
 
         $this->assertEquals('Label', $form['first']->getConfig()->getOption('label'));
@@ -90,7 +125,7 @@ class RepeatedTypeTest extends TypeTestCase
     {
         $input = array('first' => 'foo', 'second' => 'bar');
 
-        $this->form->bind($input);
+        $this->form->submit($input);
 
         $this->assertEquals('foo', $this->form['first']->getViewData());
         $this->assertEquals('bar', $this->form['second']->getViewData());
@@ -103,7 +138,7 @@ class RepeatedTypeTest extends TypeTestCase
     {
         $input = array('first' => 'foo', 'second' => 'foo');
 
-        $this->form->bind($input);
+        $this->form->submit($input);
 
         $this->assertEquals('foo', $this->form['first']->getViewData());
         $this->assertEquals('foo', $this->form['second']->getViewData());

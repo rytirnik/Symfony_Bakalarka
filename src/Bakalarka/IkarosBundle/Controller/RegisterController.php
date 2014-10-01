@@ -14,7 +14,7 @@ use Bakalarka\IkarosBundle\Entity\User;
 class RegisterController extends Controller
 {
     /**
-     * @Route("/register")
+     * @Route("/register", name="register")
      * @Template()
      */
     public function registerAction()

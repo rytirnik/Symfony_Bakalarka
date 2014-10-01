@@ -1,12 +1,5 @@
 <?php
 
-namespace Sensio\Bundle\FrameworkExtraBundle\EventListener;
-
-use Doctrine\Common\Annotations\Reader;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
-use Doctrine\Common\Util\ClassUtils;
-
 /*
  * This file is part of the Symfony framework.
  *
@@ -16,16 +9,25 @@ use Doctrine\Common\Util\ClassUtils;
  * with this source code in the file LICENSE.
  */
 
+namespace Sensio\Bundle\FrameworkExtraBundle\EventListener;
+
+use Doctrine\Common\Annotations\Reader;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
+use Doctrine\Common\Util\ClassUtils;
+
 /**
  * The ControllerListener class parses annotation blocks located in
  * controller classes.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class ControllerListener
+class ControllerListener implements EventSubscriberInterface
 {
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var Reader
      */
     protected $reader;
 
@@ -59,13 +61,27 @@ class ControllerListener
         $classConfigurations  = $this->getConfigurations($this->reader->getClassAnnotations($object));
         $methodConfigurations = $this->getConfigurations($this->reader->getMethodAnnotations($method));
 
-        $configurations = array_merge($classConfigurations, $methodConfigurations);
+        $configurations = array();
+        foreach (array_merge(array_keys($classConfigurations), array_keys($methodConfigurations)) as $key) {
+            if (!array_key_exists($key, $classConfigurations)) {
+                $configurations[$key] = $methodConfigurations[$key];
+            } elseif (!array_key_exists($key, $methodConfigurations)) {
+                $configurations[$key] = $classConfigurations[$key];
+            } else {
+                if (is_array($classConfigurations[$key])) {
+                    if (!is_array($methodConfigurations[$key])) {
+                        throw new \UnexpectedValueException('Configurations should both be an array or both not be an array');
+                    }
+                    $configurations[$key] = array_merge($classConfigurations[$key], $methodConfigurations[$key]);
+                } else {
+                    // method configuration overrides class configuration
+                    $configurations[$key] = $methodConfigurations[$key];
+                }
+            }
+        }
 
         $request = $event->getRequest();
         foreach ($configurations as $key => $attributes) {
-            if (is_array($attributes) && count($attributes) == 1) {
-                $attributes = $attributes[0];
-            }
             $request->attributes->set($key, $attributes);
         }
     }
@@ -75,10 +91,21 @@ class ControllerListener
         $configurations = array();
         foreach ($annotations as $configuration) {
             if ($configuration instanceof ConfigurationInterface) {
-                $configurations['_'.$configuration->getAliasName()][] = $configuration;
+                if ($configuration->allowArray()) {
+                    $configurations['_'.$configuration->getAliasName()][] = $configuration;
+                } else {
+                    $configurations['_'.$configuration->getAliasName()] = $configuration;
+                }
             }
         }
 
         return $configurations;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::CONTROLLER => 'onKernelController',
+        );
     }
 }

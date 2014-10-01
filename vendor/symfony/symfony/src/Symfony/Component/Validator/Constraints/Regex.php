@@ -15,6 +15,9 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
+ *
+ * @author Bernhard Schussek <bschussek@gmail.com>
  *
  * @api
  */
@@ -26,7 +29,7 @@ class Regex extends Constraint
     public $match = true;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getDefaultOption()
     {
@@ -34,7 +37,7 @@ class Regex extends Constraint
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRequiredOptions()
     {
@@ -59,10 +62,10 @@ class Regex extends Constraint
     }
 
     /**
-     * Convert the htmlPattern to a suitable format for HTML5 pattern.
+     * Converts the htmlPattern to a suitable format for HTML5 pattern.
      * Example: /^[a-z]+$/ would be converted to [a-z]+
      * However, if options are specified, it cannot be converted
-     * 
+     *
      * Pattern is also ignored if match=false since the pattern should
      * then be reversed before application.
      *
@@ -76,9 +79,9 @@ class Regex extends Constraint
     {
         // If match = false, pattern should not be added to HTML5 validation
         if (!$this->match) {
-            return null;
+            return;
         }
-        
+
         if (preg_match('/^(.)(\^?)(.*?)(\$?)\1$/', $this->pattern, $matches)) {
             $delimiter = $matches[1];
             $start     = empty($matches[2]) ? '.*' : '';
@@ -86,11 +89,9 @@ class Regex extends Constraint
             $end       = empty($matches[4]) ? '.*' : '';
 
             // Unescape the delimiter in pattern
-            $pattern = str_replace('\\' . $delimiter, $delimiter, $pattern);
+            $pattern = str_replace('\\'.$delimiter, $delimiter, $pattern);
 
-            return $start . $pattern . $end;
+            return $start.$pattern.$end;
         }
-
-        return null;
     }
 }

@@ -32,7 +32,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newPart/{id}")
+     * @Route("/newPart/{id}", name="newPart")
      * @Template()
      */
     public function newPartAction($id)
@@ -433,7 +433,7 @@ class PartsController extends Controller
         $service = $this->get('ikaros_systemService');
         $envChoices = $service->getEnvChoices();
 
-        $formFuse = $this->createForm(new FuseForm(), $fuse, array('envChoices' => $envChoices , 'sysEnv' => $sysEnv));
+        $formFuse = $this->createForm(new FuseForm(), array(), array('envChoices' => $envChoices , 'sysEnv' => $sysEnv));
 
 
         $stmt = $this->getDoctrine()->getManager()
@@ -835,7 +835,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newResistor")
+     * @Route("/newResistor", name="newResistorAjax")
      * @Template()
      */
     public function newResistorAjaxAction() {
@@ -929,7 +929,7 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/newCapacitor")
+     * @Route("/newCapacitor", name="newCapacitor")
      * @Template()
      */
     public function newCapacitorAction() {
@@ -1027,16 +1027,16 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/newFuse")
+     * @Route("/newFuse", name="newFuse")
      * @Template()
      */
     public function newFuseAction() {
         $post = $this->get('request')->request;
         $id = $post->get('id');
-        //$formData = $post->get('formData');
+        $formData = $post->get('formData');
 
-        //$objF = json_decode($formData);
-        //$obj = $objF->fuseForm;
+        $objF = json_decode($formData);
+        $obj = $objF->fuseForm;
 
         $fuse = new Fuse();
         /*$fuse->setLabel($obj->Label);
@@ -1044,10 +1044,7 @@ class PartsController extends Controller
         $fuse->setCasePart($obj->CasePart);
         $fuse->setValue(intval($obj->Value));
         $fuse->setEnvironment($obj->Environment);*/
-
-        $form = $this->createForm(new FuseForm(), $fuse);
-        $request = $this->get('request');
-        $request->request;
+        $fuse->setParams($obj);
 
         $em =  $this->getDoctrine()->getManager();
         $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
@@ -1105,7 +1102,7 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/newConnection")
+     * @Route("/newConnection", name="newConnection")
      * @Template()
      */
     public function newConnectionAction() {
@@ -1185,7 +1182,7 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/newConSoc")
+     * @Route("/newConSoc", name="newConSoc")
      * @Template()
      */
     public function newConSocAction() {
@@ -1259,7 +1256,7 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/newConGen")
+     * @Route("/newConGen", name="newConGen")
      * @Template()
      */
     public function newConGenAction() {
@@ -1341,7 +1338,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newSwitch")
+     * @Route("/newSwitch", name="newSwitch")
      * @Template()
      */
     public function newSwitchAction() {
@@ -1421,7 +1418,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newFilter")
+     * @Route("/newFilter", name="newFilter")
      * @Template()
      */
     public function newFilterAction() {
@@ -1497,7 +1494,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newRotElaps")
+     * @Route("/newRotElaps", name="newRotElaps")
      * @Template()
      */
     public function newRotElapsAction() {
@@ -1574,7 +1571,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/newTubeWave")
+     * @Route("/newTubeWave", name="newTubeWave")
      * @Template()
      */
     public function newTubeWaveAction() {
@@ -1650,7 +1647,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/detailPart/{id}")
+     * @Route("/detailPart/{id}", name="detailPart")
      * @Template()
      */
     public function detailPartAction($id) {
@@ -2415,7 +2412,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/delPartID/{id}")
+     * @Route("/delPartID/{id}", name="delPartID")
      * @Template()
      */
     public function delPartIDAction($id)
@@ -2454,7 +2451,7 @@ class PartsController extends Controller
     }
 
     /**
-     * @Route("/delPart")
+     * @Route("/delPart", name="delPart")
      * @Template()
      */
     public function delPartAction()
@@ -2520,7 +2517,7 @@ class PartsController extends Controller
 
 
     /**
-     * @Route("/editPart/{id}")
+     * @Route("/editPart/{id}", name="editPart")
      * @Template()
      */
     public function editPartAction($id) {

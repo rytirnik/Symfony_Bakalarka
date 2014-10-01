@@ -11,8 +11,6 @@
 /**
  * Redirects all email to a single recipient.
  *
- * @package    Swift
- * @subpackage Plugins
  * @author     Fabien Potencier
  */
 class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
@@ -20,7 +18,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     /**
      * The recipient who will receive all messages.
      *
-     * @var string
+     * @var mixed
      */
     private $_recipient;
 
@@ -34,7 +32,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     /**
      * Create a new RedirectingPlugin.
      *
-     * @param string $recipient
+     * @param mixed $recipient
      * @param array  $whitelist
      */
     public function __construct($recipient, array $whitelist = array())
@@ -46,7 +44,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     /**
      * Set the recipient of all messages.
      *
-     * @param string $recipient
+     * @param mixed $recipient
      */
     public function setRecipient($recipient)
     {
@@ -56,7 +54,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     /**
      * Get the recipient of all messages.
      *
-     * @return int
+     * @return mixed
      */
     public function getRecipient()
     {
@@ -93,18 +91,36 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
         $message = $evt->getMessage();
         $headers = $message->getHeaders();
 
-        // save current recipients
-        $headers->addMailboxHeader('X-Swift-To', $message->getTo());
-        $headers->addMailboxHeader('X-Swift-Cc', $message->getCc());
-        $headers->addMailboxHeader('X-Swift-Bcc', $message->getBcc());
+        // conditionally save current recipients
 
-        // Add hard coded recipient
-        $message->addTo($this->_recipient);
+        if ($headers->has('to')) {
+            $headers->addMailboxHeader('X-Swift-To', $message->getTo());
+        }
+
+        if ($headers->has('cc')) {
+            $headers->addMailboxHeader('X-Swift-Cc', $message->getCc());
+        }
+
+        if ($headers->has('bcc')) {
+            $headers->addMailboxHeader('X-Swift-Bcc', $message->getBcc());
+        }
 
         // Filter remaining headers against whitelist
         $this->_filterHeaderSet($headers, 'To');
         $this->_filterHeaderSet($headers, 'Cc');
         $this->_filterHeaderSet($headers, 'Bcc');
+
+        // Add each hard coded recipient
+        $to = $message->getTo();
+        if (null === $to) {
+            $to = array();
+        }
+
+        foreach ( (array) $this->_recipient as $recipient) {
+            if (!array_key_exists($recipient, $to)) {
+                $message->addTo($recipient);
+            }
+        }
     }
 
     /**
@@ -147,7 +163,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
      */
     protected function _isWhitelisted($recipient)
     {
-        if ($recipient === $this->_recipient) {
+        if (in_array($recipient, (array) $this->_recipient)) {
             return true;
         }
 
@@ -170,8 +186,6 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
         $this->_restoreMessage($evt->getMessage());
     }
 
-    // -- Private methods
-
     private function _restoreMessage(Swift_Mime_Message $message)
     {
         // restore original headers
@@ -180,6 +194,8 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
         if ($headers->has('X-Swift-To')) {
             $message->setTo($headers->get('X-Swift-To')->getNameAddresses());
             $headers->removeAll('X-Swift-To');
+        } else {
+            $message->setTo(null);
         }
 
         if ($headers->has('X-Swift-Cc')) {
