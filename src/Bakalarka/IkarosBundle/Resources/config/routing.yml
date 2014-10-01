@@ -1,0 +1,3 @@
+bakalarka_ikaros_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: BakalarkaIkarosBundle:Default:index }
