@@ -1033,43 +1033,20 @@ class PartsController extends Controller
     public function newFuseAction() {
         $post = $this->get('request')->request;
         $id = $post->get('id');
-        $formData = $post->get('formData');
 
+        $formData = $post->get('formData');
         $objF = json_decode($formData);
         $obj = $objF->fuseForm;
 
         $fuse = new Fuse();
-        /*$fuse->setLabel($obj->Label);
-        $fuse->setType($obj->Type);
-        $fuse->setCasePart($obj->CasePart);
-        $fuse->setValue(intval($obj->Value));
-        $fuse->setEnvironment($obj->Environment);*/
         $fuse->setParams($obj);
-
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-        //$lambda = $this->lamFuse($fuse);
 
         $service = $this->get('ikaros_fuseService');
         $lambda = $service->lamFuse($fuse);
 
-        $fuse->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $fuse->setPCBID($pcb);
-            $em->persist($fuse);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $fuse, $id);
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1079,7 +1056,6 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
 
         return new Response(
             json_encode(array(
@@ -1091,9 +1067,7 @@ class PartsController extends Controller
                 'Environment' => $fuse->getEnvironment(),
                 'idP' => $fuse->getIDPart()
             )),
-            //HTTP status
             200,
-            //headers
             array(
                 'Content-Type' => 'application/json; charset=utf-8'
             )
