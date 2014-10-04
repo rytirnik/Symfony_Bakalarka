@@ -2156,21 +2156,7 @@ class PartsController extends Controller
             case 'resistor':
                 $RU = $em->getRepository('BakalarkaIkarosBundle:Resistor');
                 $res = $RU->findOneBy(array('ID_Part' => $id));
-                $res->setLabel($obj->Label);
-                $res->setType($obj->Type);
-                $res->setCasePart($obj->CasePart);
-                $res->setValue(intval($obj->Value));
-                $res->setMaxPower(floatval($obj->MaxPower));
-                $res->setVoltageOperational(floatval($obj->VoltageOperational));
-                $res->setCurrentOperational(floatval($obj->CurrentOperational));
-                $res->setDissipationPower(floatval($obj->DissipationPower));
-                $res->setDPTemp(floatval($obj->DPTemp));
-                $res->setPassiveTemp(floatval($obj->PassiveTemp));
-                $res->setAlternate(floatval($obj->Alternate));
-                $res->setEnvironment($obj->Environment);
-                $res->setQuality(floatval($obj->Quality));
-                $res->setMaterial($obj->Material);
-
+                $res->setParams($obj);
 
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
                 $pcb = $RU->findOneBy(array('ID_PCB' => $res->getPCBID()));
@@ -2219,27 +2205,27 @@ class PartsController extends Controller
                 break;
 
             case 'fuse':
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Fuse');
-                $fuse = $RU->findOneBy(array('ID_Part' => $id));
-                $fuse->setLabel($obj->Label);
-                $fuse->setType($obj->Type);
-                $fuse->setCasePart($obj->CasePart);
-                $fuse->setValue(intval($obj->Value));
-                $fuse->setEnvironment($obj->Environment);
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Fuse');
+                //$fuse = $RU->findOneBy(array('ID_Part' => $id));
 
-                $em =  $this->getDoctrine()->getManager();
+                $service = $this->get('ikaros_fuseService');
+                $fuse = $service->getItem($id);
+                $fuse->setParams($obj);
+
+                /*$em =  $this->getDoctrine()->getManager();
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
                 $pcb = $RU->findOneBy(array('ID_PCB' => $fuse->getPCBID()));
 
                 $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-                $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
+                $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));*/
 
                 $oldLam = $fuse->getLam();
-                //$lambda = $this->lamFuse($fuse);
-                $service = $this->get('ikaros_fuseService');
                 $lambda = $service->lamFuse($fuse);
 
-                $fuse->setLam($lambda);
+                $servicePart = $this->get('ikaros_partService');
+                $e = $servicePart->setLams($lambda, $fuse, $oldLam, -1);
+
+                /*$fuse->setLam($lambda);
                 $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
                 $system->setLam($system->getLam() + $lambda - $oldLam);
 
@@ -2249,7 +2235,8 @@ class PartsController extends Controller
                     $em->persist($system);
                     $em->flush();
 
-                } catch (\Exception $e) {
+                } catch (\Exception $e) {*/
+                if($e != "")
                     return new Response(
                         json_encode(array(
                             'e' => $e
@@ -2259,36 +2246,23 @@ class PartsController extends Controller
                             'Content-Type' => 'application/json; charset=utf-8'
                         )
                     );
-                }
-
-                return new Response(
-                    json_encode(array(
-                        'Lam' => $fuse->getLam(),
-                        'Label' => $fuse->getLabel()
-                    )),
-                    200,
-                    array(
-                        'Content-Type' => 'application/json; charset=utf-8'
-                    )
-                );
+                //}
+                else
+                    return new Response(
+                        json_encode(array(
+                            'Lam' => $fuse->getLam(),
+                            'Label' => $fuse->getLabel()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
                 break;
             case 'capacitor':
                 $RU = $em->getRepository('BakalarkaIkarosBundle:Capacitor');
                 $cap = $RU->findOneBy(array('ID_Part' => $id));
-                $cap->setLabel($obj->Label);
-                $cap->setType($obj->Type);
-                $cap->setCasePart($obj->CasePart);
-                $cap->setValue(intval($obj->Value));
-                $cap->setVoltageMax(floatval($obj->VoltageMax));
-                $cap->setVoltageAC(floatval($obj->VoltageAC));
-                $cap->setVoltageDC(floatval($obj->VoltageDC));
-                $cap->setVoltageOperational(floatval($obj->VoltageOperational));
-                $cap->setSerialResistor(intval($obj->SerialResistor));
-                $cap->setPassiveTemp(intval($obj->PassiveTemp));
-
-                $cap->setEnvironment($obj->Environment);
-                $cap->setQuality(floatval($obj->Quality));
-                $cap->setMaterial($obj->Material);
+                $cap->setParams($obj);
 
                 $em =  $this->getDoctrine()->getManager();
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
@@ -2342,11 +2316,7 @@ class PartsController extends Controller
             case 'connection':
                 $RU = $em->getRepository('BakalarkaIkarosBundle:Connections');
                 $con = $RU->findOneBy(array('ID_Part' => $id));
-                $con->setLabel($obj->Label);
-                $con->setConnectionType($obj->ConnectionType);
-                $con->setCasePart($obj->CasePart);
-                $con->setEnvironment($obj->Environment);
-                $con->setType($obj->Type);
+                $con->setParams($obj);
 
                 $em =  $this->getDoctrine()->getManager();
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
@@ -2398,13 +2368,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorSoc');
                 $conSoc = $RU->findOneBy(array('ID_Part' => $id));
 
-                $conSoc->setLabel($obj->Label);
-                $conSoc->setConnectorType($obj->ConnectorType);
-                $conSoc->setCasePart($obj->CasePart);
-                $conSoc->setEnvironment($obj->Environment);
-                $conSoc->setQuality($obj->Quality);
-                $conSoc->setActivePins(intval($obj->ActivePins));
-                $conSoc->setType($obj->Type);
+                $conSoc->setParams($obj);
 
                 $em =  $this->getDoctrine()->getManager();
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
@@ -2456,16 +2420,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorGen');
                 $conGen = $RU->findOneBy(array('ID_Part' => $id));
 
-                $conGen->setLabel($obj->Label);
-                $conGen->setConnectorType($obj->ConnectorType);
-                $conGen->setCasePart($obj->CasePart);
-                $conGen->setEnvironment($obj->Environment);
-                $conGen->setQuality($obj->Quality);
-                $conGen->setContactCnt(intval($obj->ContactCnt));
-                $conGen->setType($obj->Type);
-                $conGen->setMatingFactor(intval($obj->MatingFactor));
-                $conGen->setPassiveTemp(intval($obj->PassiveTemp));
-                $conGen->setCurrentContact(floatval($obj->CurrentContact));
+                $conGen->setParams($obj);
 
                 $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
                 $pcb = $RU->findOneBy(array('ID_PCB' => $conGen->getPCBID()));
@@ -2523,16 +2478,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:System');
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-                $switch->setLabel($obj->Label);
-                $switch->setSwitchType($obj->SwitchType);
-                $switch->setCasePart($obj->CasePart);
-                $switch->setEnvironment($obj->Environment);
-                $switch->setQuality($obj->Quality);
-                $switch->setContactCnt(intval($obj->ContactCnt));
-                $switch->setType($obj->Type);
-                $switch->setLoadType($obj->LoadType);
-                $switch->setOperatingCurrent(floatval($obj->OperatingCurrent));
-                $switch->setRatedResistiveCurrent(floatval($obj->RatedResistiveCurrent));
+                $switch->setParams($obj);
 
                 $oldLam = $switch->getLam();
                 //$lambda = $this->lamSwitch($switch);
@@ -2583,12 +2529,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:System');
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-                $filter->setLabel($obj->Label);
-                $filter->setType($obj->Type);
-                $filter->setCasePart($obj->CasePart);
-                $filter->setQuality($obj->Quality);
-                $filter->setFilterType($obj->FilterType);
-                $filter->setEnvironment($obj->Environment);
+                $filter->setParams($obj);
 
                 $oldLam = $filter->getLam();
                 //$lambda = $this->lamFilter($filter);
@@ -2638,13 +2579,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:System');
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-                $rotElaps->setLabel($obj->Label);
-                $rotElaps->setType($obj->Type);
-                $rotElaps->setCasePart($obj->CasePart);
-                $rotElaps->setDevType(intval($obj->DevType));
-                $rotElaps->setEnvironment($obj->Environment);
-                $rotElaps->setTempMax(intval($obj->TempMax));
-                $rotElaps->setTempOperational(intval($obj->TempOperational));
+                $rotElaps->setParams($obj);
 
                 $oldLam = $rotElaps->getLam();
                 //$lambda = $this->lamRotElaps($rotElaps);
@@ -2694,12 +2629,7 @@ class PartsController extends Controller
                 $RU = $em->getRepository('BakalarkaIkarosBundle:System');
                 $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
 
-                $tubeWave->setLabel($obj->Label);
-                $tubeWave->setType($obj->Type);
-                $tubeWave->setCasePart($obj->CasePart);
-                $tubeWave->setPower($obj->Power);
-                $tubeWave->setFrequency($obj->Frequency);
-                $tubeWave->setEnvironment($obj->Environment);
+                $tubeWave->setParams($obj);
 
                 $oldLam = $tubeWave->getLam();
                 //$lambda = $this->lamTubeWave($tubeWave);

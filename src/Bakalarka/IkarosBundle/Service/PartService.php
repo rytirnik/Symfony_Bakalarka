@@ -34,16 +34,19 @@ class PartService {
 	}
 
 
-   public function setLams($lambda, Part $part, $pcbID) {
+   public function setLams($lambda, Part $part, $oldLam = 0, $pcbID = -1) {
 
-       $pcb = $this->pcbService->getItem($pcbID);
+       if($pcbID == -1)
+           $pcb = $this->pcbService->getItem($part->getPCBID());
+       else {
+            $pcb = $this->pcbService->getItem($pcbID);
+            $part->setPCBID($pcb);
+       }
        $system = $this->systemService->getItem($pcb->getSystemID());
 
        $part->setLam($lambda);
-       $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-       $system->setLam($system->getLam() + $lambda);
-
-       $part->setPCBID($pcb);
+       $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda - $oldLam);
+       $system->setLam($system->getLam() + $lambda - $oldLam);
 
        try {
            $this->doctrine->getManager()->persist($part);
