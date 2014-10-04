@@ -8,12 +8,15 @@ use Bakalarka\IkarosBundle\Entity\ConnectorSoc;
 
 
 class ConnectorService {
-	
 	protected $doctrine;
-	
-	public function __construct(Registry $doctrine) {
-		$this->doctrine = $doctrine;
-	}
+    protected $systemService;
+    protected $pcbService;
+
+    public function __construct(Registry $doctrine, SystemService $systemService, PcbService $pcbService) {
+        $this->doctrine = $doctrine;
+        $this->systemService = $systemService;
+        $this->pcbService = $pcbService;
+    }
 	
 	protected function getRepositoryGen() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:ConnectorGen');
@@ -40,6 +43,23 @@ class ConnectorService {
         return $this->getRepositorySoc()->find($id);
     }
 
+    public function getConSocTypeAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectorSocType');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getConGenTypeAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectorGenType');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
     public function lamConSoc (ConnectorSoc $conSoc) {
         $stmt = $this->doctrine->getManager()
@@ -153,4 +173,29 @@ class ConnectorService {
     }
 
 
+    public function setLamsConGen(ConnectorGen $conGen, $pcbID) {
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
+
+        $lambda = $this->lamConGen($conGen);
+
+        $conGen->setLam($lambda);
+        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
+        $system->setLam($system->getLam() + $lambda);
+
+        $conGen->setPCBID($pcb);
+        try {
+            $em = $this->doctrine->getManager();
+            $em->persist($conGen);
+            $em->persist($pcb);
+            $em->persist($system);
+            $em->flush();
+
+        } catch (\Exception $e) {
+            return $e;
+        }
+        return "";
+    }
 }

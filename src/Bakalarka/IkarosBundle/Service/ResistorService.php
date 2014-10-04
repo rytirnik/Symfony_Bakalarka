@@ -42,6 +42,23 @@ class ResistorService {
         return $qualR[0]['Description'];
     }
 
+    public function getResQualityAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM QualityResistor');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getResMaterialAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM MaterialResistor');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
     public function lamResistor (Resistor $res) {
         $mat = $res->getMaterial();
@@ -108,10 +125,11 @@ class ResistorService {
         $res->setPCBID($pcb);
 
         try {
-            $this->doctrine->getManager()->persist($res);
-            $this->doctrine->getManager()->persist($pcb);
-            $this->doctrine->getManager()->persist($system);
-            $this->doctrine->getManager()->flush();
+            $em = $this->doctrine->getManager();
+            $em->persist($res);
+            $em->persist($pcb);
+            $em->persist($system);
+            $em->flush();
 
         } catch (\Exception $e) {
             return $e;

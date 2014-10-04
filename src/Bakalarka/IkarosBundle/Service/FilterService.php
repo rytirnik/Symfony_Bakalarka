@@ -28,6 +28,14 @@ class FilterService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getFilterTypeAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM FilterType');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
     public function lamFilter (Filter $filter) {
         $stmt = $this->doctrine->getManager()

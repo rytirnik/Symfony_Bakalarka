@@ -849,44 +849,11 @@ class PartsController extends Controller
         $res = new Resistor();
         $res->setParams($obj);
 
-        /*$em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-        $sysTemp = $system->getTemp();
-        $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());*/
-
-        /*$stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT m.*
-                        FROM QualityResistor m
-                        WHERE m.Value = :m');
-        $stmt->execute(array('m' => $res->getQuality()));
-        $qualR = $stmt->fetchAll();
-        $qualR = $qualR[0]['Description'];*/
-
-        //$lambda = $this->lamRes($res);
         $service = $this->get('ikaros_resistorService');
-        //$lambda = $service->lamResistor($res);
 
         $e = $service->setLams($res, $id);
 
         $qualR = $service->getResQuality($res->getQuality());
-
-        /*$res->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);*/
-
-        /*try {
-            $res->setPCBID($pcb);
-            $em->persist($res);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {*/
 
         if($e != "")
             return new Response(
@@ -898,7 +865,6 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        //}
 
         return new Response(
             json_encode(array(
@@ -936,40 +902,13 @@ class PartsController extends Controller
         $cap = new Capacitor();
         $cap->setParams($obj);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-        $sysTemp = $system->getTemp();
-        $cap->setTemp($sysTemp + $cap->getPassiveTemp());
-
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT m.*
-                        FROM QualityCapacitor m
-                        WHERE m.Value = :m');
-        $stmt->execute(array('m' => $cap->getQuality()));
-        $qualC = $stmt->fetchAll();
-        $qualC = $qualC[0]['Description'];
-
-        //$lambda = $this->lamCap($cap);
         $service = $this->get('ikaros_capacitorService');
-        $lambda = $service->lamCapacitor($cap);
 
-        $cap->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
+        $e = $service->setLams($cap, $id);
 
-        try {
-            $cap->setPCBID($pcb);
-            $em->persist($cap);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
+        $qualC = $service->getCapQuality($cap->getQuality());
 
-        } catch (\Exception $e) {
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -979,8 +918,6 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
-
 
         return new Response(
             json_encode(array(
@@ -995,9 +932,7 @@ class PartsController extends Controller
                 'Environment' => $cap->getEnvironment(),
                 'idP' => $cap->getIDPart()
             )),
-            //HTTP status
-            200,
-            //headers
+              200,
             array(
                 'Content-Type' => 'application/json; charset=utf-8'
             )
@@ -1070,40 +1005,10 @@ class PartsController extends Controller
         $con = new Connections();
         $con->setParams($obj);
 
-        /*$em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));*/
-
-        /*$stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM ConnectionType c
-                        WHERE c.Lamb = :lamb');
-        $stmt->execute(array('lamb' => $con->getConnectionType()));
-        $conType = $stmt->fetchAll();
-        $conType = $conType[0]['Description'];*/
-
-        //$lambda = $this->lamConnection($con);
         $service = $this->get('ikaros_connectionService');
         $lambda = $service->lamConnection($con);
 
         $conType = $service->getConType($con->getConnectionType());
-
-        /*$con->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $con->setPCBID($pcb);
-            $em->persist($con);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {*/
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $con, $id);
@@ -1117,7 +1022,6 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        //}
 
         return new Response(
             json_encode(array(
@@ -1152,29 +1056,13 @@ class PartsController extends Controller
         $conSoc = new ConnectorSoc();
         $conSoc->setParams($obj);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-        //$lambda = $this->lamConSoc($conSoc);
         $service = $this->get('ikaros_connectorService');
         $lambda = $service->lamConSoc($conSoc);
 
-        $conSoc->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $conSoc, $id);
+        if($e != "")
 
-        try {
-            $conSoc->setPCBID($pcb);
-            $em->persist($conSoc);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1184,7 +1072,7 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        //}
 
         return new Response(
             json_encode(array(
@@ -1217,35 +1105,13 @@ class PartsController extends Controller
         $objF = json_decode($formData);
         $obj = $objF->form;
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-
         $conGen = new ConnectorGen();
         $conGen->setParams($obj);
-        $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
-        //$lambda = $this->lamConGen($conGen);
         $service = $this->get('ikaros_connectorService');
-        $lambda = $service->lamConGen($conGen);
-
-        $conGen->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $conGen->setPCBID($pcb);
-            $em->persist($conGen);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
-            return new Response(
+        $e = $service->setLamsConGen($conGen, $id);
+        if($e != "")
+                return new Response(
                 json_encode(array(
                     'e' => $e
                 )),
@@ -1254,7 +1120,7 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        //}
 
         return new Response(
             json_encode(array(
@@ -1290,14 +1156,6 @@ class PartsController extends Controller
         $objF = json_decode($formData);
         $obj = $objF->form;
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-
         $switch = new Switches();
         $switch->setParams($obj);
 
@@ -1305,18 +1163,9 @@ class PartsController extends Controller
         $service = $this->get('ikaros_switchService');
         $lambda = $service->lamSwitch($switch);
 
-        $switch->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $switch->setPCBID($pcb);
-            $em->persist($switch);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $switch, $id);
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1326,7 +1175,7 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        //}
 
         return new Response(
             json_encode(array(
@@ -1364,29 +1213,12 @@ class PartsController extends Controller
         $filter = new Filter();
         $filter->setParams($obj);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-        //$lambda = $this->lamFilter($filter);
         $service = $this->get('ikaros_filterService');
         $lambda = $service->lamFilter($filter);
 
-        $filter->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $filter->setPCBID($pcb);
-            $em->persist($filter);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $filter, $id);
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1396,7 +1228,7 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        //}
 
         return new Response(
             json_encode(array(
@@ -1435,30 +1267,12 @@ class PartsController extends Controller
         $rotElaps = new RotDevElaps();
         $rotElaps->setParams($obj);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-        //$lambda = $this->lamRotElaps($rotElaps);
         $service = $this->get('ikaros_rotDevElapsService');
         $lambda = $service->lamRotElaps($rotElaps);
 
-
-        $rotElaps->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $rotElaps->setPCBID($pcb);
-            $em->persist($rotElaps);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $rotElaps, $id);
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1468,7 +1282,7 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        //}
 
         return new Response(
             json_encode(array(
@@ -1506,29 +1320,12 @@ class PartsController extends Controller
         $tubeWave = new TubeWave();
         $tubeWave->setParams($obj);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-
-        //$lambda = $this->lamTubeWave($tubeWave);
         $service = $this->get('ikaros_tubeWaveService');
         $lambda = $service->lamTubeWave($tubeWave);
 
-        $tubeWave->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        try {
-            $tubeWave->setPCBID($pcb);
-            $em->persist($tubeWave);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $tubeWave, $id);
+        if($e != "")
             return new Response(
                 json_encode(array(
                     'e' => $e
@@ -1538,7 +1335,6 @@ class PartsController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
 
         return new Response(
             json_encode(array(
@@ -1568,40 +1364,24 @@ class PartsController extends Controller
      */
     public function detailPartAction($id) {
 
-        $stmt = $this->getDoctrine()->getManager()
-            ->getConnection()
-            ->prepare('SELECT part.entity_type
-                       FROM Part part
-                       WHERE part.ID_Part = :id');
-
-        $stmt->execute(array(':id' => $id));
-        $type = $stmt->fetchAll();
-        $type = $type[0]["entity_type"];
+        $servicePart = $this->get('ikaros_partService');
+        $type = $servicePart->getType($id);
 
         $em =  $this->getDoctrine()->getManager();
 
-        $envChoices = array(
-            "GB"  =>"Gb", "GF"  => "Gf", "GM"  => "Gm", "NS"  => "Ns","NU"  => "Nu", "AIC" => "Aic", "AIF" => "Aif",
-            "AUC" => "Auc", "AUF" => "Auf", "ARW" => "Arw", "Sf" => "Sf", "Mf" => "Mf", "ML" => "Ml", "CL" => "Cl");
+        $serviceSystem = $this->get('ikaros_systemService');
+        $envChoices = $serviceSystem->getEnvChoices();
 
         switch($type) {
             case "rezistor":
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Resistor');
-                $res = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Resistor');
+                //$res = $RU->findOneBy(array('ID_Part' => $id));
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM QualityResistor');
-                $stmt->execute();
-                $qr = $stmt->fetchAll();
+                $serviceRes = $this->get('ikaros_resistorService');
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM MaterialResistor');
-                $stmt->execute();
-                $mat = $stmt->fetchAll();
+                $res = $serviceRes->getItem($id);
+                $qr = $serviceRes->getResQualityAll();
+                $mat = $serviceRes->getResMaterialAll();
 
                 foreach($qr as $q) {
                     $QualityChoices[$q['Value']] = $q['Description'];
@@ -1747,22 +1527,14 @@ class PartsController extends Controller
                 return array('type'=> $type, 'formFuse' => $formFuse->createView(),'IDPart' => $fuse->getIDPart(), 'Label' => $fuse->getLabel(), 'Lam' => $fuse->getLam());
 
             case 'kondenzátor':
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Capacitor');
-                $capacitor = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Capacitor');
+                //$capacitor = $RU->findOneBy(array('ID_Part' => $id));
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM QualityCapacitor');
-                $stmt->execute();
-                $qc = $stmt->fetchAll();
+                $serviceCap = $this->get('ikaros_capacitorService');
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM MaterialCapacitor');
-                $stmt->execute();
-                $mc = $stmt->fetchAll();
+                $capacitor = $serviceCap->getItem($id);
+                $qc = $serviceCap->getCapQualityAll();
+                $mc = $serviceCap->getCapMaterialAll();
 
                 foreach($qc as $q) {
                     $QualityChoicesC[$q['Value']] = $q['Description'];
@@ -1859,19 +1631,16 @@ class PartsController extends Controller
                 return array('type'=> $type, 'formCapacitor' => $formCapacitor->createView(),'IDPart' => $capacitor->getIDPart(), 'Label' => $capacitor->getLabel(), 'Lam' => $capacitor->getLam());
 
             case 'propojení':
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM ConnectionType');
-                $stmt->execute();
-                $conType = $stmt->fetchAll();
+                $serviceConnection = $this->get('ikaros_connectionService');
+                $con = $serviceConnection->getItem($id);
+                $conType = $serviceConnection->getConTypeAll();
 
                 foreach($conType as $m) {
                     $conTypeChoices[$m['Lamb']] = $m['Description'];
                 }
 
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Connections');
-                $con = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Connections');
+                //$con = $RU->findOneBy(array('ID_Part' => $id));
 
                 $formConnection = $this->createFormBuilder($con)
                     ->add('Environment', 'choice', array(
@@ -1911,19 +1680,17 @@ class PartsController extends Controller
                 return array('type'=> $type, 'formConnection' => $formConnection->createView(),'IDPart' => $con->getIDPart(), 'Label' => $con->getLabel(), 'Lam' => $con->getLam());
 
             case 'konektor, soket':
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM ConnectorSocType');
-                $stmt->execute();
-                $conSocType = $stmt->fetchAll();
+                $serviceConSoc = $this->get('ikaros_connectorService');
+
+                $connectorSoc = $serviceConSoc->getItemSoc($id);
+                $conSocType = $serviceConSoc->getConSocTypeAll();
 
                 foreach($conSocType as $m) {
                     $conSocTypeChoices[$m['Description']] = $m['Description'];
                 }
 
-                $RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorSoc');
-                $connectorSoc = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorSoc');
+                //$connectorSoc = $RU->findOneBy(array('ID_Part' => $id));
 
                 $formConSoc = $this->createFormBuilder($connectorSoc)
                     ->add('Environment', 'choice', array(
@@ -1978,19 +1745,17 @@ class PartsController extends Controller
                     'IDPart' => $connectorSoc->getIDPart(), 'Label' => $connectorSoc->getLabel(), 'Lam' => $connectorSoc->getLam());
 
             case 'konektor, obecný':
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM ConnectorGenType');
-                $stmt->execute();
-                $conGenType = $stmt->fetchAll();
+                $serviceConGen = $this->get('ikaros_connectorService');
+
+                $connectorGen = $serviceConGen->getItemGen($id);
+                $conGenType = $serviceConGen->getConGenTypeAll();
 
                 foreach($conGenType as $m) {
                     $conGenTypeChoices[$m['Description']] = $m['Description'];
                 }
 
-                $RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorGen');
-                $connectorGen = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:ConnectorGen');
+                //$connectorGen = $RU->findOneBy(array('ID_Part' => $id));
 
                 $formConGen = $this->createFormBuilder($connectorGen)
                     ->add('Environment', 'choice', array(
@@ -2062,15 +1827,12 @@ class PartsController extends Controller
                     'IDPart' => $connectorGen->getIDPart(), 'Label' => $connectorGen->getLabel(), 'Lam' => $connectorGen->getLam());
 
             case 'spínač':
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Switches');
-                $switch = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Switches');
+                //$switch = $RU->findOneBy(array('ID_Part' => $id));
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM SwitchType');
-                $stmt->execute();
-                $swType = $stmt->fetchAll();
+                $serviceSwitch = $this->get('ikaros_switchService');
+                $switch = $serviceSwitch->getItem($id);
+                $swType = $serviceSwitch->getSwitchTypeAll();
 
                 foreach($swType as $m) {
                     $swTypeChoices[$m['Description']] = $m['Description'];
@@ -2149,15 +1911,12 @@ class PartsController extends Controller
                     'IDPart' => $switch->getIDPart(), 'Label' => $switch->getLabel(), 'Lam' => $switch->getLam());
 
             case 'filtr':
-                $RU = $em->getRepository('BakalarkaIkarosBundle:Filter');
-                $filter = $RU->findOneBy(array('ID_Part' => $id));
+                //$RU = $em->getRepository('BakalarkaIkarosBundle:Filter');
+                //$filter = $RU->findOneBy(array('ID_Part' => $id));
 
-                $stmt = $this->getDoctrine()->getManager()
-                    ->getConnection()
-                    ->prepare('SELECT *
-                        FROM FilterType');
-                $stmt->execute();
-                $filterType = $stmt->fetchAll();
+                $serviceFilter = $this->get('ikaros_filterService');
+                $filter = $serviceFilter->getItem($id);
+                $filterType = $serviceFilter->getFilterTypeAll();
 
                 foreach($filterType as $m) {
                     $filterTypeChoices[$m['Description']] = $m['Description'];
@@ -2331,37 +2090,12 @@ class PartsController extends Controller
      * @Route("/delPartID/{id}", name="delPartID")
      * @Template()
      */
-    public function delPartIDAction($id)
-    {
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:Part');
-        $part = $RU->findOneBy(array('ID_Part' => $id));
-        $lam = $part->getLam();
+    public function delPartIDAction($id)   {
+        $service = $this->get('ikaros_partService');
+        $msg = $service->subtractLam($id);
 
-        $idPCB = $part->getPCBID();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $idPCB));
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() - $lam);
-
-        $idS = $pcb->getSystemID();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $idS));
-        $system->setLam($system->getLam() - $lam);
-
-
-        try {
-            //$part->setIsActive(0);
-            $part->setDeleteDate(new \DateTime());
-            $em->persist($part);
-            $em->persist($pcb);
-            $em->persist($system);
-        } catch (\Exception $e) {
-            $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
+        if(strpos($msg, "lam_") != 0)
             return $this->redirect($this->generateUrl('mySystems'));
-        }
-
-        $em->flush();
-
 
         return $this->redirect($this->generateUrl('mySystems'));
     }
@@ -2370,64 +2104,36 @@ class PartsController extends Controller
      * @Route("/delPart", name="delPart")
      * @Template()
      */
-    public function delPartAction()
-    {
+    public function delPartAction()    {
         $post = $this->get('request')->request;
         $id = $post->get('id');
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:Part');
-        $part = $RU->findOneBy(array('ID_Part' => $id));
-        $lam = $part->getLam();
+        $service = $this->get('ikaros_partService');
+        $msg = $service->subtractLam($id);
 
-        $idPCB = $part->getPCBID();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $idPCB));
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() - $lam);
-
-        $idS = $pcb->getSystemID();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $idS));
-        $system->setLam($system->getLam() - $lam);
-
-
-        try {
-            //$part->setIsActive(0);
-            $part->setDeleteDate(new \DateTime());
-            $em->persist($part);
-            $em->persist($pcb);
-            $em->persist($system);
-        } catch (\Exception $e) {
-            //$error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
-
-            //return $this->redirect($this->generateUrl('mySystems'));
+        if(strpos($msg, "lam_") != 0)
             return new Response(
-                json_encode(array(
-                    'e' => $e
-                )),
-                //HTTP status
-                400,
-                //headers
-                array(
-                    'Content-Type' => 'application/json; charset=utf-8'
-                )
-            );
-        }
-
-        $em->flush();
-        return new Response(
             json_encode(array(
-                'lam' => $lam
+                'e' => $msg
             )),
-            //HTTP status
-            200,
-            //headers
+            400,
             array(
                 'Content-Type' => 'application/json; charset=utf-8'
             )
         );
 
-        //return $this->redirect($this->generateUrl('mySystems'));
+        $lam = substr($msg, 4);
+
+        return new Response(
+            json_encode(array(
+                'lam' => floatval($lam)
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+
     }
 
 

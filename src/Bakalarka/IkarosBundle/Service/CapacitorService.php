@@ -9,10 +9,14 @@ use Bakalarka\IkarosBundle\Entity\Capacitor;
 class CapacitorService {
 	
 	protected $doctrine;
-	
-	public function __construct(Registry $doctrine) {
-		$this->doctrine = $doctrine;
-	}
+    protected $systemService;
+    protected $pcbService;
+
+    public function __construct(Registry $doctrine, SystemService $systemService, PcbService $pcbService) {
+        $this->doctrine = $doctrine;
+        $this->systemService = $systemService;
+        $this->pcbService = $pcbService;
+    }
 	
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Capacitor');
@@ -27,6 +31,34 @@ class CapacitorService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getCapQuality ($quality) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT m.*
+                        FROM QualityCapacitor m
+                        WHERE m.Value = :m');
+        $stmt->execute(array('m' => $quality));
+        $qualC = $stmt->fetchAll();
+        return $qualC[0]['Description'];
+    }
+
+    public function getCapQualityAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM QualityCapacitor');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getCapMaterialAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM MaterialCapacitor');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
     public function lamCapacitor (Capacitor $cap) {
         $matC = $cap->getMaterial();
@@ -104,5 +136,32 @@ class CapacitorService {
         return $lambda;
     }
 
+    public function setLams(Capacitor $cap, $pcbID) {
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $sysTemp = $system->getTemp();
+        $cap->setTemp($sysTemp + $cap->getPassiveTemp());
+
+        $lambda = $this->lamCapacitor($cap);
+
+        $cap->setLam($lambda);
+        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
+        $system->setLam($system->getLam() + $lambda);
+
+        $cap->setPCBID($pcb);
+
+        try {
+            $em = $this->doctrine->getManager();
+            $em->persist($cap);
+            $em->persist($pcb);
+            $em->persist($system);
+            $em->flush();
+
+        } catch (\Exception $e) {
+            return $e;
+        }
+        return "";
+    }
 
 }

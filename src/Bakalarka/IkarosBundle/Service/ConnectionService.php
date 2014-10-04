@@ -39,6 +39,15 @@ class ConnectionService {
         return $conType[0]['Description'];
     }
 
+    public function getConTypeAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectionType');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function lamConnection (Connections $con) {
         $sEnv = $con->getEnvironment();
         $stmt = $this->doctrine->getManager()

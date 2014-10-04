@@ -58,5 +58,40 @@ class PartService {
        return "";
    }
 
+    public function getType($id) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT part.entity_type
+                       FROM Part part
+                       WHERE part.ID_Part = :id');
 
+        $stmt->execute(array(':id' => $id));
+        $type = $stmt->fetchAll();
+        return $type[0]["entity_type"];
+    }
+
+    public function subtractLam ($id) {
+        $part = $this->getItem($id);
+        $lam = $part->getLam();
+
+        $pcb = $this->pcbService->getItem($part->getPCBID());
+        $pcb->setSumPartsLam($pcb->getSumPartsLam() - $lam);
+
+        $system = $this->systemService->getItem($pcb->getSystemID());
+        $system->setLam($system->getLam() - $lam);
+
+        $part->setDeleteDate(new \DateTime());
+
+        try {
+            $em = $this->doctrine->getManager();
+            $em->persist($part);
+            $em->persist($pcb);
+            $em->persist($system);
+            $em->flush();
+        } catch (\Exception $e) {
+            $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
+            return $error;
+        }
+        return "lam_".$lam;
+    }
 }

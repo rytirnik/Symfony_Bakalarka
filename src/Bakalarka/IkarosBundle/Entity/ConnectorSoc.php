@@ -160,6 +160,6 @@ class ConnectorSoc extends Part{
         $this->CasePart = $obj->CasePart;
         $this->Quality = $obj->Quality;
         $this->ActivePins = intval($obj->ActivePins);
-        $this->tType = $obj->Type;
+        $this->Type = $obj->Type;
     }
 }

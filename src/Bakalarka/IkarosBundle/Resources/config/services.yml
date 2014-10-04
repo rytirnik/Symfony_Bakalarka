@@ -1,13 +1,13 @@
 services:
   ikaros_capacitorService:
       class: 'Bakalarka\IkarosBundle\Service\CapacitorService'
-      arguments: ['@doctrine']
+      arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_connectionService:
         class: 'Bakalarka\IkarosBundle\Service\ConnectionService'
         arguments: ['@doctrine']
   ikaros_connectorService:
         class: 'Bakalarka\IkarosBundle\Service\ConnectorService'
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_filterService:
         class: 'Bakalarka\IkarosBundle\Service\FilterService'
         arguments: ['@doctrine']

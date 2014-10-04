@@ -28,6 +28,15 @@ class SwitchService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getSwitchTypeAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM SwitchType');
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
 
     public function lamSwitch (Switches $switch) {
         $stmt = $this->doctrine->getManager()
