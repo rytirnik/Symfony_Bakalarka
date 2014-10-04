@@ -313,4 +313,12 @@ class Connections extends Part{
     {
         return $this->ConnectionType;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->ConnectionType = $obj->ConnectionType;
+        $this->CasePart = $obj->CasePart;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+    }
 }

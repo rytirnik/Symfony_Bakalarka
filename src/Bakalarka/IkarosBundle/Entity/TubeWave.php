@@ -126,4 +126,13 @@ class TubeWave extends Part{
     {
         return $this->Frequency;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Power = $obj->Power;
+        $this->Frequency = $obj->Frequency;
+    }
 }

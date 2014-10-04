@@ -524,4 +524,9 @@ class PCB {
     {
         return $this->DeleteDate;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+
+    }
 }

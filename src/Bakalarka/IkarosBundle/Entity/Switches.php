@@ -237,4 +237,18 @@ class Switches extends Part{
     {
         return $this->RatedResistiveCurrent;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->SwitchType = $obj->SwitchType;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality;
+        $this->ContactCnt = intval($obj->ContactCnt);
+        $this->Type = $obj->Type;
+        $this->LoadType = $obj->LoadType;
+        $this->OperatingCurrent = floatval($obj->OperatingCurrent);
+        $this->RatedResistiveCurrent = floatval($obj->RatedResistiveCurrent);
+
+    }
 }

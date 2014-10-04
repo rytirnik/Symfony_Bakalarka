@@ -155,7 +155,7 @@
                         {% for resistor in resistors %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}" {{ resistor.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Material }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Description }}</td>

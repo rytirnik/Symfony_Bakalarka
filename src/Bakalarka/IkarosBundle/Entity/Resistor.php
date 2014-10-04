@@ -565,4 +565,21 @@ class Resistor extends Part{
     {
         return $this->Material;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Value = intval($obj->Value);
+        $this->MaxPower = floatval($obj->MaxPower);
+        $this->VoltageOperational = floatval($obj->VoltageOperational);
+        $this->CurrentOperational = floatval($obj->CurrentOperational);
+        $this->DissipationPower = floatval($obj->DissipationPower);
+        $this->DPTemp = floatval($obj->DPTemp);
+        $this->PassiveTemp = floatval($obj->PassiveTemp);
+        $this->Alternate = floatval($obj->Alternate);
+        $this->Quality = floatval($obj->Quality);
+        $this->Material = $obj->Material;
+    }
 }

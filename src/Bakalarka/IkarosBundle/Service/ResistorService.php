@@ -9,10 +9,14 @@ use Bakalarka\IkarosBundle\Entity\Resistor;
 class ResistorService {
 	
 	protected $doctrine;
+    protected $systemService;
+    protected $pcbService;
 
-	public function __construct(Registry $doctrine) {
-		$this->doctrine = $doctrine;
-	}
+    public function __construct(Registry $doctrine, SystemService $systemService, PcbService $pcbService) {
+        $this->doctrine = $doctrine;
+        $this->systemService = $systemService;
+        $this->pcbService = $pcbService;
+    }
 	
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Resistor');
@@ -26,6 +30,17 @@ class ResistorService {
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
+
+    public function getResQuality ($quality) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT m.*
+                        FROM QualityResistor m
+                        WHERE m.Value = :m');
+        $stmt->execute(array('m' => $quality));
+        $qualR = $stmt->fetchAll();
+        return $qualR[0]['Description'];
+    }
 
 
     public function lamResistor (Resistor $res) {
@@ -75,6 +90,33 @@ class ResistorService {
         $lambda = $base * $piT * $piP * $piS * $piQ * $piE * pow(10, -6);
 
         return $lambda;
+    }
+
+    public function setLams(Resistor $res, $pcbID) {
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $sysTemp = $system->getTemp();
+        $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
+
+        $lambda = $this->lamResistor($res);
+
+        $res->setLam($lambda);
+        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
+        $system->setLam($system->getLam() + $lambda);
+
+        $res->setPCBID($pcb);
+
+        try {
+            $this->doctrine->getManager()->persist($res);
+            $this->doctrine->getManager()->persist($pcb);
+            $this->doctrine->getManager()->persist($system);
+            $this->doctrine->getManager()->flush();
+
+        } catch (\Exception $e) {
+            return $e;
+        }
+        return "";
     }
 
 

@@ -539,4 +539,20 @@ class Capacitor extends Part{
     {
         return $this->Quality;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Value = floatval($obj->Value);
+        $this->VoltageMax = floatval($obj->VoltageMax);
+        $this->VoltageAC = floatval($obj->VoltageAC);
+        $this->VoltageDC = floatval($obj->VoltageDC);
+        $this->VoltageOperational = floatval($obj->VoltageOperational);
+        $this->SerialResistor = intval($obj->SerialResistor);
+        $this->PassiveTemp = intval($obj->PassiveTemp);
+        $this->Quality = floatval($obj->Quality);
+        $this->Material = $obj->Material;
+    }
 }

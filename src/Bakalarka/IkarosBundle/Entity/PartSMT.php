@@ -328,4 +328,9 @@ class PartSMT {
     {
         return $this->DeleteDate;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+
+    }
 }

@@ -152,4 +152,14 @@ class ConnectorSoc extends Part{
     {
         return $this->ActivePins;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->ConnectorType = $obj->ConnectorType;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality;
+        $this->ActivePins = intval($obj->ActivePins);
+        $this->tType = $obj->Type;
+    }
 }

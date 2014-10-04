@@ -16,7 +16,7 @@ services:
       arguments: ['@doctrine']
   ikaros_resistorService:
       class: 'Bakalarka\IkarosBundle\Service\ResistorService'
-      arguments: ['@doctrine']
+      arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_rotDevElapsService:
         class: 'Bakalarka\IkarosBundle\Service\RotDevElapsService'
         arguments: ['@doctrine']

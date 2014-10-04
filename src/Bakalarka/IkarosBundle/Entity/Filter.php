@@ -124,4 +124,14 @@ class Filter extends Part{
     {
         return $this->Quality;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality;
+        $this->FilterType = $obj->FilterType;
+
+    }
 }

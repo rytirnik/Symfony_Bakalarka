@@ -152,4 +152,14 @@ class RotDevElaps extends Part{
     {
         return $this->DevType;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->DevType = intval($obj->DevType);
+        $this->TempMax = intval($obj->TempMax);
+        $this->TempOperational = intval($obj->TempOperational);
+    }
 }

@@ -237,4 +237,18 @@ class ConnectorGen extends Part{
     {
         return $this->CurrentContact;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+
+        $this->ConnectorType = $obj->ConnectorType;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality ;
+        $this->ContactCnt = intval($obj->ContactCnt);
+        $this->Type = $obj->Type;
+        $this->MatingFactor = intval($obj->MatingFactor);
+        $this->PassiveTemp = intval($obj->PassiveTemp);
+        $this->CurrentContact = floatval($obj->CurrentContact);
+    }
 }

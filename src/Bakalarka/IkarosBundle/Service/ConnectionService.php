@@ -28,6 +28,16 @@ class ConnectionService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getConType($conType) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectionType c
+                        WHERE c.Lamb = :lamb');
+        $stmt->execute(array('lamb' => $conType));
+        $conType = $stmt->fetchAll();
+        return $conType[0]['Description'];
+    }
 
     public function lamConnection (Connections $con) {
         $sEnv = $con->getEnvironment();
