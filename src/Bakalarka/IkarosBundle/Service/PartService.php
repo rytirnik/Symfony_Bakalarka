@@ -34,7 +34,7 @@ class PartService {
 	}
 
 
-   public function setLams($lambda, Part $part, $oldLam = 0, $pcbID = -1) {
+   public function setLams($lambda, Part $part, $pcbID = -1, $oldLam = 0) {
 
        if($pcbID == -1)
            $pcb = $this->pcbService->getItem($part->getPCBID());

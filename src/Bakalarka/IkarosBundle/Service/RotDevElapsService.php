@@ -19,11 +19,11 @@ class RotDevElapsService {
 	}
 	
 	public function getItems() {
-		return $this->getRepositoryGen()->findAll();
+		return $this->getRepository()->findAll();
 	}
 
 	public function getItem($id) {
-		return $this->getRepositoryGen()->find($id);
+		return $this->getRepository()->find($id);
 	}
 
 

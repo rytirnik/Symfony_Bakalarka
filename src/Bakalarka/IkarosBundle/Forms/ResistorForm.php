@@ -1,0 +1,109 @@
+<?php
+
+namespace Bakalarka\IkarosBundle\Forms;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+
+class ResistorForm extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)   {
+
+        $envChoices = $options['envChoices'];
+        $sysEnv = $options['sysEnv'];
+        $QualityChoices = $options['qualityChoices'];
+        $MatChoices = $options['matChoices'];
+
+        $builder
+            ->add('Environment', 'choice', array(
+                'label' => 'Prostředí',
+                'choices' => $envChoices,
+                'required' => true,
+                'data' => $sysEnv
+            ))
+            ->add('Label', 'text', array(
+                'required' => true,
+                'label' => 'Název',
+                'error_bubbling' => true,
+                'max_length' => 64,
+            ))
+            ->add('Quality', 'choice', array(
+                'label' => 'Kvalita',
+                'choices' => $QualityChoices,
+                'required' => true,
+            ))
+            ->add('Material', 'choice', array(
+                'label' => 'Materiál',
+                'choices' => $MatChoices,
+                'required' => true,
+            ))
+            ->add('Type', 'text', array(
+                'required' => false,
+                'label' => 'Typ',
+                'error_bubbling' => true,
+                'max_length' => 64,
+            ))
+            ->add('CasePart', 'text', array(
+                'required' => false,
+                'label' => 'Pouzdro',
+                'error_bubbling' => true,
+                'max_length' => 64,
+            ))
+            ->add('Value', 'integer', array(
+                'required' => false,
+                'label' => 'Hodnota [Ω]',
+                'error_bubbling' => true,
+            ))
+            ->add('MaxPower', 'number', array(
+                'required' => true,
+                'label' => 'Maximální výkon [W]',
+                'error_bubbling' => true,
+            ))
+            ->add('VoltageOperational', 'number', array(
+                'required' => false,
+                'label' => 'Provozní napětí [V]',
+                'error_bubbling' => true,
+            ))
+            ->add('CurrentOperational', 'number', array(
+                'required' => false,
+                'label' => 'Provozní proud [A]',
+                'error_bubbling' => true,
+            ))
+            ->add('DissipationPower', 'number', array(
+                'required' => true,
+                'label' => 'Ztrátový výkon [W]',
+                'error_bubbling' => true,
+            ))
+            ->add('DPTemp', 'number', array(
+                'required' => true,
+                'label' => 'Oteplení ztrát. výkonem [°C]',
+                'error_bubbling' => true,
+                'data' => 0
+            ))
+            ->add('PassiveTemp', 'number', array(
+                'required' => true,
+                'label' => 'Pasivní oteplení [°C]',
+                'error_bubbling' => true,
+                'data' => 0
+            ))
+            ->add('Alternate', 'number', array(
+                'required' => false,
+                'label' => 'Střídavý proud [A]',
+                'error_bubbling' => true,
+            ));
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+        $resolver->setDefaults(array(
+            'envChoices' => array(),
+            'sysEnv' => "GB",
+            'qualityChoices' => array(),
+            'matChoices' => array()
+        ));
+    }
+
+    public function getName() {
+        return 'resistorForm';
+    }
+}

@@ -514,32 +514,6 @@ a:link, a:visited {
 }
 
 
-#resistorForm div {
-    float: left;
-    width: 8%;
-    font-size: 0.8em;
-}
-
-#resistorForm div label {
-    display: block;
-    min-height: 3em;
-    text-align: center;
-    vertical-align: bottom;
-    border: solid #1a2959;
-    border-right: none;
-    border-collapse: collapse;
-    padding-top: 0.1em;
-}
-
-#resistorForm div:last-child label {
-    border-right: solid #1a2959;
-}
-
-#resistorForm div input {
-    width: 100%;
-
-}
-
 #formRes p, .validErr, #formCap p, .pRed {
     color:red;
     margin-left: 0.5em;
@@ -574,6 +548,7 @@ a:link, a:visited {
     margin-bottom: 1em;
     float:left;
 }
+
 
 #MatResTable {
     float:right;
