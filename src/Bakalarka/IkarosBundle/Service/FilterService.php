@@ -41,6 +41,19 @@ class FilterService {
         return $filterTypeChoices;
     }
 
+    public function getActiveFilters($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, f.*
+                       FROM Filter f LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(f.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "filtr"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
+
     public function lamFilter (Filter $filter) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()

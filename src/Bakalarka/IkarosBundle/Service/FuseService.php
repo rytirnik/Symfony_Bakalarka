@@ -30,6 +30,20 @@ class FuseService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getActiveFuses($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, fuse.*
+                       FROM Fuse fuse LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(fuse.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "pojistka"');
+
+        $stmt->execute(array(':id' => $pcbID));
+        $fuses = $stmt->fetchAll();
+        return $fuses;
+    }
 
     public function lamFuse (Fuse $fuse) {
         $sEnv = $fuse->getEnvironment();

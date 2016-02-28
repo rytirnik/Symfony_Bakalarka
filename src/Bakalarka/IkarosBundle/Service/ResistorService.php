@@ -81,6 +81,23 @@ class ResistorService {
         return $materialAll;
     }
 
+    public function getActiveResistors($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, resQ.*
+                        FROM
+                       (SELECT res.*, q.Description
+                       FROM Resistor res LEFT JOIN QualityResistor q ON (res.Quality = q.Value)) AS resQ
+                       LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(resQ.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "rezistor"');
+        $stmt->execute(array(':id' => $pcbID));
+        $resistors = $stmt->fetchAll();
+        return $resistors;
+    }
+
     public function lamResistor (Resistor $res) {
         $mat = $res->getMaterial();
         $stmt = $this->doctrine->getManager()

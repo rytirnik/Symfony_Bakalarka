@@ -27,6 +27,18 @@ class TubeWaveService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getActiveTubeWaves($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, tube.*
+                       FROM TubeWave tube LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(tube.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "permaktron"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
 
     public function lamTubeWave (TubeWave $tubeWave) {
         $sEnv = $tubeWave->getEnvironment();

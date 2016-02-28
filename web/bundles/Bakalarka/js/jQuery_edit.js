@@ -381,7 +381,7 @@ function saveFuse(event) {
     if (err || !save) {
         $('#formFuseE input[id="fuseForm_Label"]').val(oldFuse['Label']);
         $('#formFuseE input[id="fuseForm_Type"]').val(oldFuse['Type']);
-        $('#formResE input[id="fuseForm_Value"]').val(oldFuse['Value']);
+        $('#formFuseE input[id="fuseForm_Value"]').val(oldFuse['Value']);
         $('#formFuseE select[id="fuseForm_Environment"]').val(oldFuse['Environment']);
         $('#formFuseE input[id="fuseForm_CasePart"]').val(oldFuse['CasePart']);
     }
@@ -397,7 +397,7 @@ function saveConnection(event) {
     var err = 0;
     if(save) {
         $data =  $("#formConnectionE").serializeJSON();
-        var val = $('#formConnectionE input[id="form_Label"]').val();
+        var val = $('#formConnectionE input[id="connectionForm_Label"]').val();
         if ( val == "" ) {
             $("#formConnectionE .submitMsg").remove();
             $("#formConnectionE").append('<span class="submitMsg"> Vyplňte název </span>');
@@ -429,11 +429,11 @@ function saveConnection(event) {
 
     }
     if (err || !save) {
-        $('#formConnectionE input[id="form_Label"]').val(oldConnection['Label']);
-        $('#formConnectionE input[id="form_ConnectionType"]').val(oldConnection['ConnectionType']);
-        $('#formConnectionE select[id="form_Environment"]').val(oldConnection['Environment']);
-        $('#formConnectionE input[id="form_CasePart"]').val(oldConnection['CasePart']);
-        $('#formConnectionE input[id="form_Type"]').val(oldConnection['Type']);
+        $('#formConnectionE input[id="connectionForm_Label"]').val(oldConnection['Label']);
+        $('#formConnectionE select[id="connectionForm_ConnectionType"]').val(oldConnection['ConnectionType']);
+        $('#formConnectionE select[id="connectionForm_Environment"]').val(oldConnection['Environment']);
+        $('#formConnectionE input[id="connectionForm_CasePart"]').val(oldConnection['CasePart']);
+        $('#formConnectionE input[id="connectionForm_Type"]').val(oldConnection['Type']);
     }
     $("#formConnectionE input:not(:submit), #formConnectionE select").attr('disabled', 'disabled');
     $('#SaveConnection').remove();
@@ -486,7 +486,7 @@ function saveConSoc(event) {
     }
     if (err || !save) {
         $('#formConSocE input[id="connectorSocForm_Label"]').val(oldConSoc['Label']);
-        $('#formConSocE select[id="connectorSocForm_ConnectionType"]').val(oldConSoc['ConnectionType']);
+        $('#formConSocE select[id="connectorSocForm_ConnectorType"]').val(oldConSoc['ConnectorType']);
         $('#formConSocE select[id="connectorSocForm_Environment"]').val(oldConSoc['Environment']);
         $('#formConSocE select[id="connectorSocForm_Quality"]').val(oldConSoc['Quality']);
         $('#formConSocE input[id="connectorSocForm_CasePart"]').val(oldConSoc['CasePart']);
@@ -562,7 +562,7 @@ function saveConGen(event) {
     }
     if (err || !save) {
         $('#formConGenE input[id="connectorGenForm_Label"]').val(oldConGen['Label']);
-        $('#formConGenE select[id="connectorGenForm_ConnectionType"]').val(oldConGen['ConnectionType']);
+        $('#formConGenE select[id="connectorGenForm_ConnectorType"]').val(oldConGen['ConnectorType']);
         $('#formConGenE select[id="connectorGenForm_Environment"]').val(oldConGen['Environment']);
         $('#formConGenE select[id="connectorGenForm_Quality"]').val(oldConGen['Quality']);
         $('#formConGenE input[id="connectorGenForm_CasePart"]').val(oldConGen['CasePart']);
@@ -1145,11 +1145,11 @@ jQuery(document).ready(function($) {
         $("#formConnectionE input:not(:submit), #formConnectionE select").removeAttr('disabled');
         $this = $(this);
         $("#EditConnection").hide();
-        oldConnection['Label'] = $('#formConnectionE input[id="form_Label"]').val();
-        oldConnection['ConnectionType'] = $('#formConnectionE input[id="form_ConnectionType"]').val();
-        oldConnection['Environment'] = ($('#formConnectionE select[id="form_Environment"]').val());
-        oldConnection['CasePart'] = $('#formConnectionE input[id="form_CasePart"]').val();
-        oldConnection['Type'] = $('#formConnectionE input[id="form_Type"]').val();
+        oldConnection['Label'] = $('#formConnectionE input[id="connectionForm_Label"]').val();
+        oldConnection['ConnectionType'] = $('#formConnectionE select[id="connectionForm_ConnectionType"]').val();
+        oldConnection['Environment'] = ($('#formConnectionE select[id="connectionForm_Environment"]').val());
+        oldConnection['CasePart'] = $('#formConnectionE input[id="connectionForm_CasePart"]').val();
+        oldConnection['Type'] = $('#formConnectionE input[id="connectionForm_Type"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1180,13 +1180,13 @@ jQuery(document).ready(function($) {
         $("#formConSocE input:not(:submit), #formConSocE select").removeAttr('disabled');
         $this = $(this);
         $("#EditConSoc").hide();
-        oldConSoc['Label'] = $('#formConSocE input[id="form_Label"]').val();
-        oldConSoc['ConnectorType'] = $('#formConSocE select[id="form_ConnectorType"]').val();
-        oldConSoc['Environment'] = ($('#formConSocE select[id="form_Environment"]').val());
-        oldConSoc['Quality'] = ($('#formConSocE select[id="form_Quality"]').val());
-        oldConSoc['CasePart'] = $('#formConSocE input[id="form_CasePart"]').val();
-        oldConSoc['ActivePins'] = $('#formConSocE input[id="form_ActivePins"]').val();
-        oldConSoc['Type'] = $('#formConSocE input[id="form_Type"]').val();
+        oldConSoc['Label'] = $('#formConSocE input[id="connectorSocForm_Label"]').val();
+        oldConSoc['ConnectorType'] = $('#formConSocE select[id="connectorSocForm_ConnectorType"]').val();
+        oldConSoc['Environment'] = ($('#formConSocE select[id="connectorSocForm_Environment"]').val());
+        oldConSoc['Quality'] = ($('#formConSocE select[id="connectorSocForm_Quality"]').val());
+        oldConSoc['CasePart'] = $('#formConSocE input[id="connectorSocForm_CasePart"]').val();
+        oldConSoc['ActivePins'] = $('#formConSocE input[id="connectorSocForm_ActivePins"]').val();
+        oldConSoc['Type'] = $('#formConSocE input[id="connectorSocForm_Type"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1217,16 +1217,16 @@ jQuery(document).ready(function($) {
         $("#formConGenE input:not(:submit), #formConGenE select").removeAttr('disabled');
         $this = $(this);
         $("#EditConGen").hide();
-        oldConGen['Label'] = $('#formConGenE input[id="form_Label"]').val();
-        oldConGen['ConnectorType'] = $('#formConGenE select[id="form_ConnectorType"]').val();
-        oldConGen['Environment'] = ($('#formConGenE select[id="form_Environment"]').val());
-        oldConGen['Quality'] = ($('#formConGenE select[id="form_Quality"]').val());
-        oldConGen['Type'] = ($('#formConGenE input[id="form_Type"]').val());
-        oldConGen['CasePart'] = $('#formConGenE input[id="form_CasePart"]').val();
-        oldConGen['ContactCnt'] = $('#formConGenE input[id="form_ContactCnt"]').val();
-        oldConGen['CurrentContact'] = ($('#formConGenE input[id="form_CurrentContact"]').val());
-        oldConGen['MatingFactor'] = ($('#formConGenE input[id="form_MatingFactor"]').val());
-        oldConGen['PassiveTemp'] = ($('#formConGenE input[id="form_PassiveTemp"]').val());
+        oldConGen['Label'] = $('#formConGenE input[id="connectorGenForm_Label"]').val();
+        oldConGen['ConnectorType'] = $('#formConGenE select[id="connectorGenForm_ConnectorType"]').val();
+        oldConGen['Environment'] = ($('#formConGenE select[id="connectorGenForm_Environment"]').val());
+        oldConGen['Quality'] = ($('#formConGenE select[id="connectorGenForm_Quality"]').val());
+        oldConGen['Type'] = ($('#formConGenE input[id="connectorGenForm_Type"]').val());
+        oldConGen['CasePart'] = $('#formConGenE input[id="connectorGenForm_CasePart"]').val();
+        oldConGen['ContactCnt'] = $('#formConGenE input[id="connectorGenForm_ContactCnt"]').val();
+        oldConGen['CurrentContact'] = ($('#formConGenE input[id="connectorGenForm_CurrentContact"]').val());
+        oldConGen['MatingFactor'] = ($('#formConGenE input[id="connectorGenForm_MatingFactor"]').val());
+        oldConGen['PassiveTemp'] = ($('#formConGenE input[id="connectorGenForm_PassiveTemp"]').val());
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1257,16 +1257,16 @@ jQuery(document).ready(function($) {
         $("#formSwitchE input:not(:submit), #formSwitchE select").removeAttr('disabled');
         $this = $(this);
         $("#EditSwitch").hide();
-        oldSwitch['Label'] = $('#formSwitchE input[id="form_Label"]').val();
-        oldSwitch['SwitchType'] = $('#formSwitchE select[id="form_SwitchType"]').val();
-        oldSwitch['Environment'] = ($('#formSwitchE select[id="form_Environment"]').val());
-        oldSwitch['Quality'] = ($('#formSwitchE select[id="form_Quality"]').val());
-        oldSwitch['Type'] = ($('#formSwitchE select[id="form_Type"]').val());
-        oldSwitch['CasePart'] = $('#formSwitchE input[id="form_CasePart"]').val();
-        oldSwitch['ContactCnt'] = $('#formSwitchE input[id="form_ContactCnt"]').val();
-        oldSwitch['LoadType'] = ($('#formSwitchE select[id="form_LoadType"]').val());
-        oldSwitch['OperatingCurrent'] = ($('#formSwitchE input[id="form_OperatingCurrent"]').val());
-        oldSwitch['RatedResistiveCurrent'] = ($('#formSwitchE input[id="form_RatedResistiveCurrent"]').val());
+        oldSwitch['Label'] = $('#formSwitchE input[id="switchForm_Label"]').val();
+        oldSwitch['SwitchType'] = $('#formSwitchE select[id="switchForm_SwitchType"]').val();
+        oldSwitch['Environment'] = ($('#formSwitchE select[id="switchForm_Environment"]').val());
+        oldSwitch['Quality'] = ($('#formSwitchE select[id="switchForm_Quality"]').val());
+        oldSwitch['Type'] = ($('#formSwitchE select[id="switchForm_Type"]').val());
+        oldSwitch['CasePart'] = $('#formSwitchE input[id="switchForm_CasePart"]').val();
+        oldSwitch['ContactCnt'] = $('#formSwitchE input[id="switchForm_ContactCnt"]').val();
+        oldSwitch['LoadType'] = ($('#formSwitchE select[id="switchForm_LoadType"]').val());
+        oldSwitch['OperatingCurrent'] = ($('#formSwitchE input[id="switchForm_OperatingCurrent"]').val());
+        oldSwitch['RatedResistiveCurrent'] = ($('#formSwitchE input[id="switchForm_RatedResistiveCurrent"]').val());
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1298,12 +1298,12 @@ jQuery(document).ready(function($) {
         $("#formFilterE input:not(:submit), #formFilterE select").removeAttr('disabled');
         $this = $(this);
         $("#EditFilter").hide();
-        oldFilter['Label'] = $('#formFilterE input[id="form_Label"]').val();
-        oldFilter['Type'] = $('#formFilterE input[id="form_Type"]').val();
-        oldFilter['FilterType'] = $('#formFilterE select[id="form_FilterType"]').val();
-        oldFilter['Quality'] = $('#formFilterE select[id="form_Quality"]').val();
-        oldFilter['Environment'] = ($('#formFilterE select[id="form_Environment"]').val());
-        oldFilter['CasePart'] = $('#formFilterE input[id="form_CasePart"]').val();
+        oldFilter['Label'] = $('#formFilterE input[id="filterForm_Label"]').val();
+        oldFilter['Type'] = $('#formFilterE input[id="filterForm_Type"]').val();
+        oldFilter['FilterType'] = $('#formFilterE select[id="filterForm_FilterType"]').val();
+        oldFilter['Quality'] = $('#formFilterE select[id="filterForm_Quality"]').val();
+        oldFilter['Environment'] = ($('#formFilterE select[id="filterForm_Environment"]').val());
+        oldFilter['CasePart'] = $('#formFilterE input[id="filterForm_CasePart"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1335,13 +1335,13 @@ jQuery(document).ready(function($) {
         $("#formRotElapsE input:not(:submit), #formRotElapsE select").removeAttr('disabled');
         $this = $(this);
         $("#EditRotElaps").hide();
-        oldRotElaps['Label'] = $('#formRotElapsE input[id="form_Label"]').val();
-        oldRotElaps['Type'] = $('#formRotElapsE input[id="form_Type"]').val();
-        oldRotElaps['DevType'] = $('#formRotElapsE select[id="form_DevType"]').val();
-        oldRotElaps['TempMax'] = $('#formRotElapsE input[id="form_TempMax"]').val();
-        oldRotElaps['TempOperational'] = $('#formRotElapsE input[id="form_TempOperational"]').val();
-        oldRotElaps['Environment'] = ($('#formRotElapsE select[id="form_Environment"]').val());
-        oldRotElaps['CasePart'] = $('#formRotElapsE input[id="form_CasePart"]').val();
+        oldRotElaps['Label'] = $('#formRotElapsE input[id="rotDevElapsForm_Label"]').val();
+        oldRotElaps['Type'] = $('#formRotElapsE input[id="rotDevElapsForm_Type"]').val();
+        oldRotElaps['DevType'] = $('#formRotElapsE select[id="rotDevElapsForm_DevType"]').val();
+        oldRotElaps['TempMax'] = $('#formRotElapsE input[id="rotDevElapsForm_TempMax"]').val();
+        oldRotElaps['TempOperational'] = $('#formRotElapsE input[id="rotDevElapsForm_TempOperational"]').val();
+        oldRotElaps['Environment'] = ($('#formRotElapsE select[id="rotDevElapsForm_Environment"]').val());
+        oldRotElaps['CasePart'] = $('#formRotElapsE input[id="rotDevElapsForm_CasePart"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1372,12 +1372,12 @@ jQuery(document).ready(function($) {
         $("#formTubeWaveE input:not(:submit), #formTubeWaveE select").removeAttr('disabled');
         $this = $(this);
         $("#EditTubeWave").hide();
-        oldTubeWave['Label'] = $('#formTubeWaveE input[id="form_Label"]').val();
-        oldTubeWave['Type'] = $('#formTubeWaveE input[id="form_Type"]').val();
-        oldTubeWave['Power'] = $('#formTubeWaveE input[id="form_Power"]').val();
-        oldTubeWave['Frequency'] = $('#formTubeWaveE input[id="form_Frequency"]').val();
-        oldTubeWave['Environment'] = ($('#formTubeWaveE select[id="form_Environment"]').val());
-        oldTubeWave['CasePart'] = $('#formTubeWaveE input[id="form_CasePart"]').val();
+        oldTubeWave['Label'] = $('#formTubeWaveE input[id="tubeWaveForm_Label"]').val();
+        oldTubeWave['Type'] = $('#formTubeWaveE input[id="tubeWaveForm_Type"]').val();
+        oldTubeWave['Power'] = $('#formTubeWaveE input[id="tubeWaveForm_Power"]').val();
+        oldTubeWave['Frequency'] = $('#formTubeWaveE input[id="tubeWaveForm_Frequency"]').val();
+        oldTubeWave['Environment'] = ($('#formTubeWaveE select[id="tubeWaveForm_Environment"]').val());
+        oldTubeWave['CasePart'] = $('#formTubeWaveE input[id="tubeWaveForm_CasePart"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');

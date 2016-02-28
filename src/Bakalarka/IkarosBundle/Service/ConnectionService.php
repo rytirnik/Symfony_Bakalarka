@@ -51,6 +51,22 @@ class ConnectionService {
         return $conTypeChoices;
     }
 
+    public function getActiveConnections($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, conQ.*
+                        FROM
+                       (SELECT con.*, q.Description
+                       FROM Connections con LEFT JOIN ConnectionType q ON (con.ConnectionType = q.Lamb)) AS conQ
+                       LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(conQ.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "propojení"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
+
     public function lamConnection (Connections $con) {
         $sEnv = $con->getEnvironment();
         $stmt = $this->doctrine->getManager()

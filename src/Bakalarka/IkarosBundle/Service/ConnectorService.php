@@ -71,6 +71,32 @@ class ConnectorService {
         return $conGenTypeChoices;
     }
 
+    public function getActiveConnectorsSoc ($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, conS.*
+                       FROM ConnectorSoc conS LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(conS.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "konektor, soket"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
+
+    public function getActiveConnectorsGen($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, conG.*
+                       FROM ConnectorGen conG LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(conG.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "konektor, obecný"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
+
     public function lamConSoc (ConnectorSoc $conSoc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()

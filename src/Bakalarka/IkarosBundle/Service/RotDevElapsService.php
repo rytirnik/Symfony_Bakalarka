@@ -26,6 +26,18 @@ class RotDevElapsService {
 		return $this->getRepository()->find($id);
 	}
 
+    public function getActiveRotDevElaps($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, rot.*
+                       FROM RotDevElaps rot LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(rot.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "měřič motohodin"');
+        $stmt->execute(array(':id' => $pcbID));
+        return $stmt->fetchAll();
+    }
 
     public function lamRotElaps (RotDevElaps $rotElaps) {
         $sEnv = $rotElaps->getEnvironment();

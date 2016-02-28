@@ -80,6 +80,23 @@ class CapacitorService {
         return $capMaterialAll;
     }
 
+    public function getActiveCapacitors($pcbID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*, capQ.*
+                        FROM
+                       (SELECT cap.*, q.Description
+                       FROM Capacitor cap LEFT JOIN QualityCapacitor q ON (cap.Quality = q.Value)) AS capQ
+                       LEFT JOIN (SELECT part.*
+                        FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
+                       ON(capQ.ID_Part = p.ID_Part)
+                       WHERE p.entity_type = "kondenzátor"');
+        $stmt->execute(array(':id' => $pcbID));
+        $capacitors = $stmt->fetchAll();
+        return $capacitors;
+    }
+
     public function lamCapacitor (Capacitor $cap) {
         $matC = $cap->getMaterial();
         $stmt = $this->doctrine->getManager()
