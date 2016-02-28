@@ -188,25 +188,25 @@ function saveRes(event) {
     var err = 0;
     if(save) {
         $data =  $("#formResE").serializeJSON();
-        var val = $('#formResE input[id="form_MaxPower"]').val();
+        var val = $('#formResE input[id="resistorForm_MaxPower"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formResE .submitMsg").remove();
             $("#formResE").append('<span class="submitMsg"> Vyplňte maximální výkon (celé číslo) </span>');
             return;
         }
-        val = $('#formResE input[id="form_Label"]').val();
+        val = $('#formResE input[id="resistorForm_Label"]').val();
         if ( val == "" ) {
             $("#formResE .submitMsg").remove();
             $("#formResE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formResE input[id="form_DissipationPower"]').val();
+        val = $('#formResE input[id="resistorForm_DissipationPower"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formResE .submitMsg").remove();
             $("#formResE").append('<span class="submitMsg"> Vyplňte ztrátový výkon (desetinné číslo) </span>');
             return;
         }
-        val = $('#formResE input[id="form_DPTemp"]').val();
+        val = $('#formResE input[id="resistorForm_DPTemp"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formResE .submitMsg").remove();
             $("#formResE").append('<span class="submitMsg"> Vyplňte oteplení ZV (desetinné číslo) </span>');
@@ -238,20 +238,20 @@ function saveRes(event) {
 
     }
     if (err || !save) {
-        $('#formResE input[id="form_Label"]').val(oldRes['Label']);
-        $('#formResE input[id="form_Type"]').val(oldRes['Type']);
-        $('#formResE input[id="form_Value"]').val(oldRes['Value']);
-        $('#formResE select[id="form_Quality"]').val(oldRes['Quality']);
-        $('#formResE select[id="form_Material"]').val(oldRes['Material']);
-        $('#formResE select[id="form_Environment"]').val(oldRes['Environment']);
-        $('#formResE input[id="form_MaxPower"]').val(oldRes['MaxPower']);
-        $('#formResE input[id="form_VoltageOperational"]').val(oldRes['VoltageOperational']);
-        $('#formResE input[id="form_CurrentOperational"]').val(oldRes['CurrentOperational']);
-        $('#formResE input[id="form_DissipationPower"]').val(oldRes['DissipationPower']);
-        $('#formResE input[id="form_DPTemp"]').val(oldRes['DPTemp']);
-        $('#formResE input[id="form_PassiveTemp"]').val(oldRes['PassiveTemp']);
-        $('#formResE input[id="form_Alternate"]').val(oldRes['Alternate']);
-        $('#formResE input[id="form_CasePart"]').val(oldRes['CasePart']);
+        $('#formResE input[id="resistorForm_Label"]').val(oldRes['Label']);
+        $('#formResE input[id="resistorForm_Type"]').val(oldRes['Type']);
+        $('#formResE input[id="resistorForm_Value"]').val(oldRes['Value']);
+        $('#formResE select[id="resistorForm_Quality"]').val(oldRes['Quality']);
+        $('#formResE select[id="resistorForm_Material"]').val(oldRes['Material']);
+        $('#formResE select[id="resistorForm_Environment"]').val(oldRes['Environment']);
+        $('#formResE input[id="resistorForm_MaxPower"]').val(oldRes['MaxPower']);
+        $('#formResE input[id="resistorForm_VoltageOperational"]').val(oldRes['VoltageOperational']);
+        $('#formResE input[id="resistorForm_CurrentOperational"]').val(oldRes['CurrentOperational']);
+        $('#formResE input[id="resistorForm_DissipationPower"]').val(oldRes['DissipationPower']);
+        $('#formResE input[id="resistorForm_DPTemp"]').val(oldRes['DPTemp']);
+        $('#formResE input[id="resistorForm_PassiveTemp"]').val(oldRes['PassiveTemp']);
+        $('#formResE input[id="resistorForm_Alternate"]').val(oldRes['Alternate']);
+        $('#formResE input[id="resistorForm_CasePart"]').val(oldRes['CasePart']);
     }
     $("#formResE input:not(:submit), #formResE select").attr('disabled', 'disabled');
     $('#SaveRes').remove();
@@ -265,31 +265,31 @@ function saveCap(event) {
     var err = 0;
     if(save) {
         $data =  $("#formCapE").serializeJSON();
-        var val = $('#formCapE input[id="form_Value"]').val();
+        var val = $('#formCapE input[id="capacitorForm_Value"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formCapE .submitMsg").remove();
             $("#formCapE").append('<span class="submitMsg"> Vyplňte hodnotu (celé číslo) </span>');
             return;
         }
-        val = $('#formCapE input[id="form_Label"]').val();
+        val = $('#formCapE input[id="capacitorForm_Label"]').val();
         if ( val == "" ) {
             $("#formCapE .submitMsg").remove();
             $("#formCapE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formCapE input[id="form_VoltageMax"]').val();
+        val = $('#formCapE input[id="capacitorForm_VoltageMax"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formCapE .submitMsg").remove();
             $("#formCapE").append('<span class="submitMsg"> Vyplňte maximální napětí (desetinné číslo) </span>');
             return;
         }
-        val = $('#formCapE input[id="form_VoltageOperational"]').val();
+        val = $('#formCapE input[id="capacitorForm_VoltageOperational"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formCapE .submitMsg").remove();
             $("#formCapE").append('<span class="submitMsg"> Vyplňte provozní napětí (desetinné číslo) </span>');
             return;
         }
-        val = $('#formCapE input[id="form_PassiveTemp"]').val();
+        val = $('#formCapE input[id="capacitorForm_PassiveTemp"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formCapE .submitMsg").remove();
             $("#formCapE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (celé číslo) </span>');
@@ -321,19 +321,19 @@ function saveCap(event) {
 
     }
     if (err || !save) {
-        $('#formCapE input[id="form_Label"]').val(oldCap['Label']);
-        $('#formCapE input[id="form_Type"]').val(oldCap['Type']);
-        $('#formCapE input[id="form_Value"]').val(oldCap['Value']);
-        $('#formCapE select[id="form_Quality"]').val(oldCap['Quality']);
-        $('#formCapE select[id="form_Material"]').val(oldCap['Material']);
-        $('#formCapE select[id="form_Environment"]').val(oldCap['Environment']);
-        $('#formCapE input[id="form_CasePart"]').val(oldCap['CasePart']);
-        $('#formCapE input[id="form_PassiveTemp"]').val(oldCap['PassiveTemp']);
-        $('#formCapE input[id="form_VoltageOperational"]').val(oldCap['VoltageOperational']);
-        $('#formCapE input[id="form_VoltageMax"]').val(oldCap['VoltageMax']);
-        $('#formCapE input[id="form_VoltageAC"]').val(oldCap['VoltageAC']);
-        $('#formCapE input[id="form_VoltageDC"]').val(oldCap['VoltageDC']);
-        $('#formCapE input[id="form_SerialResistor"]').val(oldCap['SerialResistor']);
+        $('#formCapE input[id="capacitorForm_Label"]').val(oldCap['Label']);
+        $('#formCapE input[id="capacitorForm_Type"]').val(oldCap['Type']);
+        $('#formCapE input[id="capacitorForm_Value"]').val(oldCap['Value']);
+        $('#formCapE select[id="capacitorForm_Quality"]').val(oldCap['Quality']);
+        $('#formCapE select[id="capacitorForm_Material"]').val(oldCap['Material']);
+        $('#formCapE select[id="capacitorForm_Environment"]').val(oldCap['Environment']);
+        $('#formCapE input[id="capacitorForm_CasePart"]').val(oldCap['CasePart']);
+        $('#formCapE input[id="capacitorForm_PassiveTemp"]').val(oldCap['PassiveTemp']);
+        $('#formCapE input[id="capacitorForm_VoltageOperational"]').val(oldCap['VoltageOperational']);
+        $('#formCapE input[id="capacitorForm_VoltageMax"]').val(oldCap['VoltageMax']);
+        $('#formCapE input[id="capacitorForm_VoltageAC"]').val(oldCap['VoltageAC']);
+        $('#formCapE input[id="capacitorForm_VoltageDC"]').val(oldCap['VoltageDC']);
+        $('#formCapE input[id="capacitorForm_SerialResistor"]').val(oldCap['SerialResistor']);
     }
     $("#formCapE input:not(:submit), #formCapE select").attr('disabled', 'disabled');
     $('#SaveCap').remove();
@@ -347,7 +347,7 @@ function saveFuse(event) {
     var err = 0;
     if(save) {
         $data =  $("#formFuseE").serializeJSON();
-        var val = $('#formFuseE input[id="form_Label"]').val();
+        var val = $('#formFuseE input[id="fuseForm_Label"]').val();
         if ( val == "" ) {
             $("#formFuseE .submitMsg").remove();
             $("#formFuseE").append('<span class="submitMsg"> Vyplňte název </span>');
@@ -379,11 +379,11 @@ function saveFuse(event) {
 
     }
     if (err || !save) {
-        $('#formFuseE input[id="form_Label"]').val(oldFuse['Label']);
-        $('#formFuseE input[id="form_Type"]').val(oldFuse['Type']);
-        $('#formResE input[id="form_Value"]').val(oldFuse['Value']);
-        $('#formFuseE select[id="form_Environment"]').val(oldFuse['Environment']);
-        $('#formFuseE input[id="form_CasePart"]').val(oldFuse['CasePart']);
+        $('#formFuseE input[id="fuseForm_Label"]').val(oldFuse['Label']);
+        $('#formFuseE input[id="fuseForm_Type"]').val(oldFuse['Type']);
+        $('#formResE input[id="fuseForm_Value"]').val(oldFuse['Value']);
+        $('#formFuseE select[id="fuseForm_Environment"]').val(oldFuse['Environment']);
+        $('#formFuseE input[id="fuseForm_CasePart"]').val(oldFuse['CasePart']);
     }
     $("#formFuseE input:not(:submit), #formFuseE select").attr('disabled', 'disabled');
     $('#SaveFuse').remove();
@@ -447,13 +447,13 @@ function saveConSoc(event) {
     var err = 0;
     if(save) {
         $data =  $("#formConSocE").serializeJSON();
-        var val = $('#formConSocE input[id="form_Label"]').val();
+        var val = $('#formConSocE input[id="connectorSocForm_Label"]').val();
         if ( val == "" ) {
             $("#formConSocE .submitMsg").remove();
             $("#formConSocE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formConSocE input[id="form_ActivePins"]').val();
+        val = $('#formConSocE input[id="connectorSocForm_ActivePins"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formConSocE .submitMsg").remove();
             $("#formConSocE").append('<span class="submitMsg"> Vyplňte aktivní piny (celé číslo) </span>');
@@ -485,13 +485,13 @@ function saveConSoc(event) {
 
     }
     if (err || !save) {
-        $('#formConSocE input[id="form_Label"]').val(oldConSoc['Label']);
-        $('#formConSocE select[id="form_ConnectionType"]').val(oldConSoc['ConnectionType']);
-        $('#formConSocE select[id="form_Environment"]').val(oldConSoc['Environment']);
-        $('#formConSocE select[id="form_Quality"]').val(oldConSoc['Quality']);
-        $('#formConSocE input[id="form_CasePart"]').val(oldConSoc['CasePart']);
-        $('#formConSocE input[id="form_ActivePins"]').val(oldConSoc['ActivePins']);
-        $('#formConSocE input[id="form_Type"]').val(oldConSoc['Type']);
+        $('#formConSocE input[id="connectorSocForm_Label"]').val(oldConSoc['Label']);
+        $('#formConSocE select[id="connectorSocForm_ConnectionType"]').val(oldConSoc['ConnectionType']);
+        $('#formConSocE select[id="connectorSocForm_Environment"]').val(oldConSoc['Environment']);
+        $('#formConSocE select[id="connectorSocForm_Quality"]').val(oldConSoc['Quality']);
+        $('#formConSocE input[id="connectorSocForm_CasePart"]').val(oldConSoc['CasePart']);
+        $('#formConSocE input[id="connectorSocForm_ActivePins"]').val(oldConSoc['ActivePins']);
+        $('#formConSocE input[id="connectorSocForm_Type"]').val(oldConSoc['Type']);
     }
     $("#formConSocE input:not(:submit), #formConSocE select").attr('disabled', 'disabled');
     $('#SaveConSoc').remove();
@@ -505,31 +505,31 @@ function saveConGen(event) {
     var err = 0;
     if(save) {
         $data =  $("#formConGenE").serializeJSON();
-        var val = $('#formConGenE input[id="form_Label"]').val();
+        var val = $('#formConGenE input[id="connectorGenForm_Label"]').val();
         if ( val == "" ) {
             $("#formConGenE .submitMsg").remove();
             $("#formConGenE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formConGenE input[id="form_ContactCnt"]').val();
+        val = $('#formConGenE input[id="connectorGenForm_ContactCnt"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formConGenE .submitMsg").remove();
             $("#formConGenE").append('<span class="submitMsg"> Vyplňte počet kontaktů (celé číslo) </span>');
             return;
         }
-        val = $('#formConGenE input[id="form_CurrentContact"]').val();
+        val = $('#formConGenE input[id="connectorGenForm_CurrentContact"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formConGenE .submitMsg").remove();
             $("#formConGenE").append('<span class="submitMsg"> Vyplňte proud na kontakt (desetinné číslo) </span>');
             return;
         }
-        val = $('#formConGenE input[id="form_MatingFactor"]').val();
+        val = $('#formConGenE input[id="connectorGenForm_MatingFactor"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formConGenE .submitMsg").remove();
             $("#formConGenE").append('<span class="submitMsg"> Vyplňte počet spoj/rozpoj (celé číslo) </span>');
             return;
         }
-        val = $('#formConGenE input[id="form_PassiveTemp"]').val();
+        val = $('#formConGenE input[id="connectorGenForm_PassiveTemp"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formConGenE .submitMsg").remove();
             $("#formConGenE").append('<span class="submitMsg"> Vyplňte pasivní teplotu (celé číslo) </span>');
@@ -561,16 +561,16 @@ function saveConGen(event) {
 
     }
     if (err || !save) {
-        $('#formConGenE input[id="form_Label"]').val(oldConGen['Label']);
-        $('#formConGenE select[id="form_ConnectionType"]').val(oldConGen['ConnectionType']);
-        $('#formConGenE select[id="form_Environment"]').val(oldConGen['Environment']);
-        $('#formConGenE select[id="form_Quality"]').val(oldConGen['Quality']);
-        $('#formConGenE input[id="form_CasePart"]').val(oldConGen['CasePart']);
-        $('#formConGenE input[id="form_Type"]').val(oldConGen['Type']);
-        $('#formConGenE input[id="form_ContactCnt"]').val(oldConGen['ContactCnt']);
-        $('#formConGenE input[id="form_CurrentContact"]').val(oldConGen['CurrentContact']);
-        $('#formConGenE input[id="form_MatingFactor"]').val(oldConGen['MatingFactor']);
-        $('#formConGenE input[id="form_PassiveTemp"]').val(oldConGen['PassiveTemp']);
+        $('#formConGenE input[id="connectorGenForm_Label"]').val(oldConGen['Label']);
+        $('#formConGenE select[id="connectorGenForm_ConnectionType"]').val(oldConGen['ConnectionType']);
+        $('#formConGenE select[id="connectorGenForm_Environment"]').val(oldConGen['Environment']);
+        $('#formConGenE select[id="connectorGenForm_Quality"]').val(oldConGen['Quality']);
+        $('#formConGenE input[id="connectorGenForm_CasePart"]').val(oldConGen['CasePart']);
+        $('#formConGenE input[id="connectorGenForm_Type"]').val(oldConGen['Type']);
+        $('#formConGenE input[id="connectorGenForm_ContactCnt"]').val(oldConGen['ContactCnt']);
+        $('#formConGenE input[id="connectorGenForm_CurrentContact"]').val(oldConGen['CurrentContact']);
+        $('#formConGenE input[id="connectorGenForm_MatingFactor"]').val(oldConGen['MatingFactor']);
+        $('#formConGenE input[id="connectorGenForm_PassiveTemp"]').val(oldConGen['PassiveTemp']);
     }
     $("#formConGenE input:not(:submit), #formConGenE select").attr('disabled', 'disabled');
     $('#SaveConGen').remove();
@@ -584,25 +584,25 @@ function saveSwitch(event) {
     var err = 0;
     if(save) {
         $data =  $("#formSwitchE").serializeJSON();
-        var val = $('#formSwitchE input[id="form_Label"]').val();
+        var val = $('#formSwitchE input[id="switchForm_Label"]').val();
         if ( val == "" ) {
             $("#formSwitchE .submitMsg").remove();
             $("#formSwitchE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formSwitchE input[id="form_ContactCnt"]').val();
+        val = $('#formSwitchE input[id="switchForm_ContactCnt"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formSwitchE .submitMsg").remove();
             $("#formSwitchE").append('<span class="submitMsg"> Vyplňte počet kontaktů (celé číslo) </span>');
             return;
         }
-        val = $('#formSwitchE input[id="form_OperatingCurrent"]').val();
+        val = $('#formSwitchE input[id="switchForm_OperatingCurrent"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formSwitchE .submitMsg").remove();
             $("#formSwitchE").append('<span class="submitMsg"> Vyplňte pracovní proud (desetinné číslo) </span>');
             return;
         }
-        val = $('#formSwitchE input[id="form_RatedResistiveCurrent"]').val();
+        val = $('#formSwitchE input[id="switchForm_RatedResistiveCurrent"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formSwitchE .submitMsg").remove();
             $("#formSwitchE").append('<span class="submitMsg"> Vyplňte maximální proud (desetinné číslo) </span>');
@@ -634,16 +634,16 @@ function saveSwitch(event) {
 
     }
     if (err || !save) {
-        $('#formSwitchE input[id="form_Label"]').val(oldSwitch['Label']);
-        $('#formSwitchE select[id="form_SwitchType"]').val(oldSwitch['SwitchType']);
-        $('#formSwitchE select[id="form_Environment"]').val(oldSwitch['Environment']);
-        $('#formSwitchE select[id="form_Quality"]').val(oldSwitch['Quality']);
-        $('#formSwitchE input[id="form_CasePart"]').val(oldSwitch['CasePart']);
-        $('#formSwitchE input[id="form_Type"]').val(oldSwitch['Type']);
-        $('#formSwitchE input[id="form_ContactCnt"]').val(oldSwitch['ContactCnt']);
-        $('#formSwitchE input[id="form_OperatingCurrent"]').val(oldSwitch['OperatingCurrent']);
-        $('#formSwitchE input[id="form_RatedResistiveCurrent"]').val(oldSwitch['RatedResistiveCurrent']);
-        $('#formSwitchE select[id="form_LoadType"]').val(oldSwitch['LoadType']);
+        $('#formSwitchE input[id="switchForm_Label"]').val(oldSwitch['Label']);
+        $('#formSwitchE select[id="switchForm_SwitchType"]').val(oldSwitch['SwitchType']);
+        $('#formSwitchE select[id="switchForm_Environment"]').val(oldSwitch['Environment']);
+        $('#formSwitchE select[id="switchForm_Quality"]').val(oldSwitch['Quality']);
+        $('#formSwitchE input[id="switchForm_CasePart"]').val(oldSwitch['CasePart']);
+        $('#formSwitchE input[id="switchForm_Type"]').val(oldSwitch['Type']);
+        $('#formSwitchE input[id="switchForm_ContactCnt"]').val(oldSwitch['ContactCnt']);
+        $('#formSwitchE input[id="switchForm_OperatingCurrent"]').val(oldSwitch['OperatingCurrent']);
+        $('#formSwitchE input[id="switchForm_RatedResistiveCurrent"]').val(oldSwitch['RatedResistiveCurrent']);
+        $('#formSwitchE select[id="switchForm_LoadType"]').val(oldSwitch['LoadType']);
     }
     $("#formSwitchE input:not(:submit), #formSwitchE select").attr('disabled', 'disabled');
     $('#SaveSwitch').remove();
@@ -657,7 +657,7 @@ function saveFilter(event) {
     var err = 0;
     if(save) {
         $data =  $("#formFilterE").serializeJSON();
-        var val = $('#formFilterE input[id="form_Label"]').val();
+        var val = $('#formFilterE input[id="filterForm_Label"]').val();
         if ( val == "" ) {
             $("#formFilterE .submitMsg").remove();
             $("#formFilterE").append('<span class="submitMsg"> Vyplňte název </span>');
@@ -689,12 +689,12 @@ function saveFilter(event) {
 
     }
     if (err || !save) {
-        $('#formFilterE input[id="form_Label"]').val(oldFilter['Label']);
-        $('#formFilterE input[id="form_Type"]').val(oldFilter['Type']);
-        $('#formFilterE select[id="form_Quality"]').val(oldFilter['Quality']);
-        $('#formFilterE select[id="form_FilterType"]').val(oldFilter['FilterType']);
-        $('#formFilterE select[id="form_Environment"]').val(oldFilter['Environment']);
-        $('#formFilterE input[id="form_CasePart"]').val(oldFilter['CasePart']);
+        $('#formFilterE input[id="filterForm_Label"]').val(oldFilter['Label']);
+        $('#formFilterE input[id="filterForm_Type"]').val(oldFilter['Type']);
+        $('#formFilterE select[id="filterForm_Quality"]').val(oldFilter['Quality']);
+        $('#formFilterE select[id="filterForm_FilterType"]').val(oldFilter['FilterType']);
+        $('#formFilterE select[id="filterForm_Environment"]').val(oldFilter['Environment']);
+        $('#formFilterE input[id="filterForm_CasePart"]').val(oldFilter['CasePart']);
     }
     $("#formFilterE input:not(:submit), #formFilterE select").attr('disabled', 'disabled');
     $('#SaveFilter').remove();
@@ -708,19 +708,19 @@ function saveRotElaps(event) {
     var err = 0;
     if(save) {
         $data =  $("#formRotElapsE").serializeJSON();
-        var val = $('#formRotElapsE input[id="form_Label"]').val();
+        var val = $('#formRotElapsE input[id="rotDevElapsForm_Label"]').val();
         if ( val == "" ) {
             $("#formRotElapsE .submitMsg").remove();
             $("#formRotElapsE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formRotElapsE input[id="form_TempMax"]').val();
+        val = $('#formRotElapsE input[id="rotDevElapsForm_TempMax"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formRotElapsE .submitMsg").remove();
             $("#formRotElapsE").append('<span class="submitMsg"> Vyplňte maximální teplotu (celé číslo) </span>');
             return;
         }
-        val = $('#formRotElapsE input[id="form_TempOperational"]').val();
+        val = $('#formRotElapsE input[id="rotDevElapsForm_TempOperational"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formRotElapsE .submitMsg").remove();
             $("#formRotElapsE").append('<span class="submitMsg"> Vyplňte provozní teplotu (celé číslo) </span>');
@@ -753,13 +753,13 @@ function saveRotElaps(event) {
     }
     if (err || !save) {
         $(".submitMsg").remove();
-        $('#formRotElapsE input[id="form_Label"]').val(oldRotElaps['Label']);
-        $('#formRotElapsE input[id="form_Type"]').val(oldRotElaps['Type']);
-        $('#formRotElapsE select[id="form_DevType"]').val(oldRotElaps['DevType']);
-        $('#formRotElapsE input[id="form_TempMax"]').val(oldRotElaps['TempMax']);
-        $('#formRotElapsE input[id="form_TempOperational"]').val(oldRotElaps['TempOperational']);
-        $('#formRotElapsE select[id="form_Environment"]').val(oldRotElaps['Environment']);
-        $('#formRotElapsE input[id="form_CasePart"]').val(oldRotElaps['CasePart']);
+        $('#formRotElapsE input[id="rotDevElapsForm_Label"]').val(oldRotElaps['Label']);
+        $('#formRotElapsE input[id="rotDevElapsForm_Type"]').val(oldRotElaps['Type']);
+        $('#formRotElapsE select[id="rotDevElapsForm_DevType"]').val(oldRotElaps['DevType']);
+        $('#formRotElapsE input[id="rotDevElapsForm_TempMax"]').val(oldRotElaps['TempMax']);
+        $('#formRotElapsE input[id="rotDevElapsForm_TempOperational"]').val(oldRotElaps['TempOperational']);
+        $('#formRotElapsE select[id="rotDevElapsForm_Environment"]').val(oldRotElaps['Environment']);
+        $('#formRotElapsE input[id="rotDevElapsForm_CasePart"]').val(oldRotElaps['CasePart']);
     }
     $("#formRotElapsE input:not(:submit), #formRotElapsE select").attr('disabled', 'disabled');
     $('#SaveRotElaps').remove();
@@ -773,13 +773,13 @@ function saveTubeWave(event) {
     var err = 0;
     if(save) {
         $data =  $("#formTubeWaveE").serializeJSON();
-        var val = $('#formTubeWaveE input[id="form_Label"]').val();
+        var val = $('#formTubeWaveE input[id="tubeWaveForm_Label"]').val();
         if ( val == "" ) {
             $("#formTubeWaveE .submitMsg").remove();
             $("#formTubeWaveE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#formTubeWaveE input[id="form_Power"]').val();
+        val = $('#formTubeWaveE input[id="tubeWaveForm_Power"]').val();
         if ( val == "" || Math.floor(val) != val || !($.isNumeric(val))) {
             $("#formTubeWaveE .submitMsg").remove();
             $("#formTubeWaveE").append('<span class="submitMsg"> Vyplňte výkon (celé číslo) </span>');
@@ -790,7 +790,7 @@ function saveTubeWave(event) {
             $("#formTubeWaveE").append('<span class="submitMsg"> Výkon musí být v rozsahu <10-40000> </span>');
             return;
         }
-        val = $('#formTubeWaveE input[id="form_Frequency"]').val();
+        val = $('#formTubeWaveE input[id="tubeWaveForm_Frequency"]').val();
         if ( val == "" || !($.isNumeric(val))) {
             $("#formTubeWaveE .submitMsg").remove();
             $("#formTubeWaveE").append('<span class="submitMsg"> Vyplňte frekvenci (desetinné číslo) </span>');
@@ -828,12 +828,12 @@ function saveTubeWave(event) {
     }
     if (err || !save) {
         $(".submitMsg").remove();
-        $('#formTubeWaveE input[id="form_Label"]').val(oldTubeWave['Label']);
-        $('#formTubeWaveE input[id="form_Type"]').val(oldTubeWave['Type']);
-        $('#formTubeWaveE input[id="form_Power"]').val(oldTubeWave['Power']);
-        $('#formTubeWaveE input[id="form_Frequency"]').val(oldTubeWave['Frequency']);
-        $('#formTubeWaveE select[id="form_Environment"]').val(oldTubeWave['Environment']);
-        $('#formTubeWaveE input[id="form_CasePart"]').val(oldTubeWave['CasePart']);
+        $('#formTubeWaveE input[id="tubeWaveForm_Label"]').val(oldTubeWave['Label']);
+        $('#formTubeWaveE input[id="tubeWaveForm_Type"]').val(oldTubeWave['Type']);
+        $('#formTubeWaveE input[id="tubeWaveForm_Power"]').val(oldTubeWave['Power']);
+        $('#formTubeWaveE input[id="tubeWaveForm_Frequency"]').val(oldTubeWave['Frequency']);
+        $('#formTubeWaveE select[id="tubeWaveForm_Environment"]').val(oldTubeWave['Environment']);
+        $('#formTubeWaveE input[id="tubeWaveForm_CasePart"]').val(oldTubeWave['CasePart']);
     }
     $("#formTubeWaveE input:not(:submit), #formTubeWaveE select").attr('disabled', 'disabled');
     $('#SaveTubeWave').remove();
@@ -1066,20 +1066,20 @@ jQuery(document).ready(function($) {
         $("#formResE input:not(:submit), #formResE select").removeAttr('disabled');
         $this = $(this);
         $("#EditRes").hide();
-        oldRes['Label'] = $('#formResE input[id="form_Label"]').val();
-        oldRes['Type'] = $('#formResE input[id="form_Type"]').val();
-        oldRes['Value'] = $('#formResE input[id="form_Value"]').val();
-        oldRes['Quality'] = $('#formResE select[id="form_Quality"]').val();
-        oldRes['Material'] = $('#formResE select[id="form_Material"]').val();
-        oldRes['Environment'] = ($('#formResE select[id="form_Environment"]').val());
-        oldRes['MaxPower'] = $('#formResE input[id="form_MaxPower"]').val();
-        oldRes['VoltageOperational'] = $('#formResE input[id="form_VoltageOperational"]').val();
-        oldRes['CurrentOperational'] = $('#formResE input[id="form_CurrentOperational"]').val();
-        oldRes['DissipationPower'] = $('#formResE input[id="form_DissipationPower"]').val();
-        oldRes['DPTemp'] = $('#formResE input[id="form_DPTemp"]').val();
-        oldRes['PassiveTemp'] = $('#formResE input[id="form_PassiveTemp"]').val();
-        oldRes['Alternate'] = $('#formResE input[id="form_Alternate"]').val();
-        oldRes['CasePart'] = $('#formResE input[id="form_CasePart"]').val();
+        oldRes['Label'] = $('#formResE input[id="resistorForm_Label"]').val();
+        oldRes['Type'] = $('#formResE input[id="resistorForm_Type"]').val();
+        oldRes['Value'] = $('#formResE input[id="resistorForm_Value"]').val();
+        oldRes['Quality'] = $('#formResE select[id="resistorForm_Quality"]').val();
+        oldRes['Material'] = $('#formResE select[id="resistorForm_Material"]').val();
+        oldRes['Environment'] = ($('#formResE select[id="resistorForm_Environment"]').val());
+        oldRes['MaxPower'] = $('#formResE input[id="resistorForm_MaxPower"]').val();
+        oldRes['VoltageOperational'] = $('#formResE input[id="resistorForm_VoltageOperational"]').val();
+        oldRes['CurrentOperational'] = $('#formResE input[id="resistorForm_CurrentOperational"]').val();
+        oldRes['DissipationPower'] = $('#formResE input[id="resistorForm_DissipationPower"]').val();
+        oldRes['DPTemp'] = $('#formResE input[id="resistorForm_DPTemp"]').val();
+        oldRes['PassiveTemp'] = $('#formResE input[id="resistorForm_PassiveTemp"]').val();
+        oldRes['Alternate'] = $('#formResE input[id="resistorForm_Alternate"]').val();
+        oldRes['CasePart'] = $('#formResE input[id="resistorForm_CasePart"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1110,11 +1110,11 @@ jQuery(document).ready(function($) {
         $("#formFuseE input:not(:submit), #formFuseE select").removeAttr('disabled');
         $this = $(this);
         $("#EditFuse").hide();
-        oldFuse['Label'] = $('#formFuseE input[id="form_Label"]').val();
-        oldFuse['Type'] = $('#formFuseE input[id="form_Type"]').val();
-        oldFuse['Value'] = $('#formFuseE input[id="form_Value"]').val();
-        oldFuse['Environment'] = ($('#formFuseE select[id="form_Environment"]').val());
-        oldFuse['CasePart'] = $('#formFuseE input[id="form_CasePart"]').val();
+        oldFuse['Label'] = $('#formFuseE input[id="fuseForm_Label"]').val();
+        oldFuse['Type'] = $('#formFuseE input[id="fuseForm_Type"]').val();
+        oldFuse['Value'] = $('#formFuseE input[id="fuseForm_Value"]').val();
+        oldFuse['Environment'] = ($('#formFuseE select[id="fuseForm_Environment"]').val());
+        oldFuse['CasePart'] = $('#formFuseE input[id="fuseForm_CasePart"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
@@ -1407,19 +1407,19 @@ jQuery(document).ready(function($) {
         $("#formCapE input:not(:submit), #formCapE select").removeAttr('disabled');
         $this = $(this);
         $("#EditCap").hide();
-        oldCap['Label'] = $('#formCapE input[id="form_Label"]').val();
-        oldCap['Type'] = $('#formCapE input[id="form_Type"]').val();
-        oldCap['Value'] = $('#formCapE input[id="form_Value"]').val();
-        oldCap['Quality'] = $('#formCapE select[id="form_Quality"]').val();
-        oldCap['Material'] = $('#formCapE select[id="form_Material"]').val();
-        oldCap['Environment'] = ($('#formCapE select[id="form_Environment"]').val());
-        oldCap['CasePart'] = $('#formCapE input[id="form_CasePart"]').val();
-        oldCap['PassiveTemp'] = $('#formCapE input[id="form_PassiveTemp"]').val();
-        oldCap['VoltageMax'] = $('#formCapE input[id="form_VoltageMax"]').val();
-        oldCap['VoltageOperational'] = $('#formCapE input[id="form_VoltageOperational"]').val();
-        oldCap['VoltageAC'] = $('#formCapE input[id="form_VoltageAC"]').val();
-        oldCap['VoltageDC'] = $('#formCapE input[id="form_VoltageDC"]').val();
-        oldCap['SerialResistor'] = $('#formCapE input[id="form_SerialResistor"]').val();
+        oldCap['Label'] = $('#formCapE input[id="capacitorForm_Label"]').val();
+        oldCap['Type'] = $('#formCapE input[id="capacitorForm_Type"]').val();
+        oldCap['Value'] = $('#formCapE input[id="capacitorForm_Value"]').val();
+        oldCap['Quality'] = $('#formCapE select[id="capacitorForm_Quality"]').val();
+        oldCap['Material'] = $('#formCapE select[id="capacitorForm_Material"]').val();
+        oldCap['Environment'] = ($('#formCapE select[id="capacitorForm_Environment"]').val());
+        oldCap['CasePart'] = $('#formCapE input[id="capacitorForm_CasePart"]').val();
+        oldCap['PassiveTemp'] = $('#formCapE input[id="capacitorForm_PassiveTemp"]').val();
+        oldCap['VoltageMax'] = $('#formCapE input[id="capacitorForm_VoltageMax"]').val();
+        oldCap['VoltageOperational'] = $('#formCapE input[id="capacitorForm_VoltageOperational"]').val();
+        oldCap['VoltageAC'] = $('#formCapE input[id="capacitorForm_VoltageAC"]').val();
+        oldCap['VoltageDC'] = $('#formCapE input[id="capacitorForm_VoltageDC"]').val();
+        oldCap['SerialResistor'] = $('#formCapE input[id="capacitorForm_SerialResistor"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');

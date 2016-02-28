@@ -582,4 +582,24 @@ class Resistor extends Part{
         $this->Quality = floatval($obj->Quality);
         $this->Material = $obj->Material;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Value' => $this->Value,
+            'MaxPower' => $this->MaxPower,
+            'Quality' => $this->Quality,
+            'Material' => $this->Material,
+            'Alternate' => $this->Alternate,
+            'PassiveTemp' => $this->PassiveTemp,
+            'DPTemp' => $this->DPTemp,
+            'DissipationPower' => $this->DissipationPower,
+            'VoltageOperational' => $this->VoltageOperational,
+            'CurrentOperational' => $this->CurrentOperational
+        ));
+    }
 }

@@ -9,20 +9,18 @@ use Bakalarka\IkarosBundle\Entity\Connections;
 class ConnectionService {
 	
 	protected $doctrine;
-
 	
 	public function __construct(Registry $doctrine) {
 		$this->doctrine = $doctrine;
 	}
 	
 	protected function getRepository() {
-		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Connnections');
+		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Connections');
 	}
 	
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
@@ -45,7 +43,12 @@ class ConnectionService {
             ->prepare('SELECT *
                         FROM ConnectionType');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $conTypes = $stmt->fetchAll();
+
+        foreach($conTypes as $m) {
+            $conTypeChoices[$m['Lamb']] = $m['Description'];
+        }
+        return $conTypeChoices;
     }
 
     public function lamConnection (Connections $con) {

@@ -241,7 +241,6 @@ class ConnectorGen extends Part{
     public function setParams($obj) {
         $this->Label = $obj->Label;
         $this->Environment = $obj->Environment;
-
         $this->ConnectorType = $obj->ConnectorType;
         $this->CasePart = $obj->CasePart;
         $this->Quality = $obj->Quality ;
@@ -250,5 +249,21 @@ class ConnectorGen extends Part{
         $this->MatingFactor = intval($obj->MatingFactor);
         $this->PassiveTemp = intval($obj->PassiveTemp);
         $this->CurrentContact = floatval($obj->CurrentContact);
+    }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'ConnectorType' => $this->ConnectorType,
+            'ContactCnt' => $this->ContactCnt,
+            'CurrentContact' => $this->CurrentContact,
+            'Quality' => $this->Quality,
+            'MatingFactor' => $this->MatingFactor,
+            'PassiveTemp' => $this->PassiveTemp
+        ));
     }
 }

@@ -203,9 +203,9 @@ class SystemsController extends Controller
     public function newSystemAction()
     {
         $error = "";
-        $envChoices = array(
-         "GB"  =>"Gb", "GF"  => "Gf", "GM"  => "Gm", "NS"  => "Ns","NU"  => "Nu", "AIC" => "Aic", "AIF" => "Aif",
-         "AUC" => "Auc", "AUF" => "Auf", "ARW" => "Arw", "Sf" => "Sf", "Mf" => "Mf", "ML" => "Ml", "CL" => "Cl");
+        $serviceSystem = $this->get('ikaros_systemService');
+        $envChoices = $serviceSystem->getEnvChoices();
+
         $system = new System();
         $form = $this->createFormBuilder($system)
             ->add('Environment', 'choice', array(
@@ -271,9 +271,8 @@ class SystemsController extends Controller
      */
      public function detailSystemAction($id) {
         $error = "";
-        $envChoices = array(
-            "GB"  =>"Gb", "GF"  => "Gf", "GM"  => "Gm", "NS"  => "Ns","NU"  => "Nu", "AIC" => "Aic", "AIF" => "Aif",
-            "AUC" => "Auc", "AUF" => "Auf", "ARW" => "Arw", "Sf" => "Sf", "Mf" => "Mf", "ML" => "Ml", "CL" => "Cl");
+        $serviceSystem = $this->get('ikaros_systemService');
+        $envChoices = $serviceSystem->getEnvChoices();
 
         $em =  $this->getDoctrine()->getManager();
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
@@ -327,8 +326,12 @@ class SystemsController extends Controller
         $obj = $objF->form;
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $id));
+
+        /*$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        $system = $RU->findOneBy(array('ID_System' => $id));*/
+
+        $serviceSystem = $this->get('ikaros_systemService');
+        $system = $serviceSystem->getItem($id);
 
         $system->setTitle($obj->Title);
         $system->setTemp($obj->Temp);
@@ -373,8 +376,12 @@ class SystemsController extends Controller
         //$error = "";
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $id));
+        /*$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        $system = $RU->findOneBy(array('ID_System' => $id));*/
+
+        $serviceSystem = $this->get('ikaros_systemService');
+        $system = $serviceSystem->getItem($id);
+
         $system->setDeleteDate(new \DateTime());
         try {
             $em->persist($system);
@@ -437,10 +444,5 @@ class SystemsController extends Controller
 
        return $this->redirect($this->generateUrl('mySystems'));
     }
-
-
-
-
-
 }
 

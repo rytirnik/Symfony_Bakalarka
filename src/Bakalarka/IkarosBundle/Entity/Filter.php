@@ -134,4 +134,16 @@ class Filter extends Part{
         $this->FilterType = $obj->FilterType;
 
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'FilterType' => $this->FilterType,
+            'Quality' => $this->Quality,
+        ));
+    }
 }

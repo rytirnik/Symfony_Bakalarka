@@ -333,4 +333,14 @@ class PartSMT {
         $this->Label = $obj->Label;
 
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+        ));
+    }
 }

@@ -162,4 +162,18 @@ class ConnectorSoc extends Part{
         $this->ActivePins = intval($obj->ActivePins);
         $this->Type = $obj->Type;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'ConnectorType' => $this->ConnectorType,
+            'Quality' => $this->Quality,
+            'ActivePins' => $this->ActivePins
+
+        ));
+    }
 }

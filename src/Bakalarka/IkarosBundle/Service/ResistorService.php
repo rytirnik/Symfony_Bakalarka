@@ -48,7 +48,12 @@ class ResistorService {
             ->prepare('SELECT *
                         FROM QualityResistor');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $qualityAll = $stmt->fetchAll();
+
+        foreach($qualityAll as $q) {
+            $QualityChoices[$q['Value']] = $q['Description'];
+        }
+        return $QualityChoices;
     }
 
     public function getResMaterialAll() {
@@ -57,7 +62,23 @@ class ResistorService {
             ->prepare('SELECT *
                         FROM MaterialResistor');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $materialAll = $stmt->fetchAll();
+
+        foreach($materialAll as $m) {
+            $MatChoices[$m['ResShortcut']] = $m['ResShortcut'];
+        }
+        return $MatChoices;
+    }
+
+    public function getResMaterialDescAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM MaterialResistor');
+        $stmt->execute();
+        $materialAll = $stmt->fetchAll();
+
+        return $materialAll;
     }
 
     public function lamResistor (Resistor $res) {

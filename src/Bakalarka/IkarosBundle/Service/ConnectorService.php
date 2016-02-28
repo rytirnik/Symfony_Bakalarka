@@ -49,7 +49,12 @@ class ConnectorService {
             ->prepare('SELECT *
                         FROM ConnectorSocType');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $conSocTypes = $stmt->fetchAll();
+
+        foreach($conSocTypes as $m) {
+            $conSocTypeChoices[$m['Description']] = $m['Description'];
+        }
+        return $conSocTypeChoices;
     }
 
     public function getConGenTypeAll() {
@@ -58,7 +63,12 @@ class ConnectorService {
             ->prepare('SELECT *
                         FROM ConnectorGenType');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $conGenTypes = $stmt->fetchAll();
+
+        foreach($conGenTypes as $m) {
+            $conGenTypeChoices[$m['Description']] = $m['Description'];
+        }
+        return $conGenTypeChoices;
     }
 
     public function lamConSoc (ConnectorSoc $conSoc) {

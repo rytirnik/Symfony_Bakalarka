@@ -162,4 +162,17 @@ class RotDevElaps extends Part{
         $this->TempMax = intval($obj->TempMax);
         $this->TempOperational = intval($obj->TempOperational);
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'TempMax' => $this->TempMax,
+            'DevType' => $this->DevType,
+            'TempOperational' => $this->TempOperational
+        ));
+    }
 }

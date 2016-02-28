@@ -135,4 +135,16 @@ class TubeWave extends Part{
         $this->Power = $obj->Power;
         $this->Frequency = $obj->Frequency;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'Power' => $this->Power,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Frequency' => $this->Frequency
+        ));
+    }
 }

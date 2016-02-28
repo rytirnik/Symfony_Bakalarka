@@ -34,7 +34,11 @@ class FilterService {
             ->prepare('SELECT *
                         FROM FilterType');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $filterTypeAll = $stmt->fetchAll();
+        foreach($filterTypeAll as $m) {
+            $filterTypeChoices[$m['Description']] = $m['Description'];
+        }
+        return $filterTypeChoices;
     }
 
     public function lamFilter (Filter $filter) {

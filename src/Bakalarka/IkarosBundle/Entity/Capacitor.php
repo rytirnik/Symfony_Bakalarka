@@ -555,4 +555,23 @@ class Capacitor extends Part{
         $this->Quality = floatval($obj->Quality);
         $this->Material = $obj->Material;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'Value' => $this->Value,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'VoltageMax' =>  $this->VoltageMax,
+            'VoltageAC' => $this->VoltageAC,
+            'VoltageDC' => $this->VoltageDC,
+            'VoltageOperational' => $this->VoltageOperational,
+            'SerialResistor' => $this->SerialResistor,
+            'PassiveTemp' => $this->PassiveTemp,
+            'Quality' => $this->Quality,
+            'Material' => $this->Material,
+        ));
+    }
 }

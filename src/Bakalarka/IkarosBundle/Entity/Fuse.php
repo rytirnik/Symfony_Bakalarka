@@ -319,4 +319,16 @@ class Fuse extends Part{
         $this->Value = intval($obj->Value);
         $this->Environment = $obj->Environment;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'Value' => $this->Value,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Temp' => $this->Temp
+        ));
+    }
 }

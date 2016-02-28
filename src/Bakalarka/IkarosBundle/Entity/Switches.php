@@ -251,4 +251,20 @@ class Switches extends Part{
         $this->RatedResistiveCurrent = floatval($obj->RatedResistiveCurrent);
 
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'SwitchType' => $this->SwitchType,
+            'LoadType' => $this->LoadType,
+            'ContactCnt' => $this->ContactCnt,
+            'OperatingCurrent' => $this->OperatingCurrent,
+            'RatedResistiveCurrent' => $this->RatedResistiveCurrent,
+            'Quality' => $this->Quality
+        ));
+    }
 }

@@ -34,7 +34,12 @@ class SwitchService {
             ->prepare('SELECT *
                         FROM SwitchType');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $swTypes = $stmt->fetchAll();
+
+        foreach($swTypes as $m) {
+            $swTypeChoices[$m['Description']] = $m['Description'];
+        }
+        return $swTypeChoices;
     }
 
 

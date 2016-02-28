@@ -321,4 +321,15 @@ class Connections extends Part{
         $this->Environment = $obj->Environment;
         $this->Type = $obj->Type;
     }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'ConnectionType' => $this->ConnectionType
+        ));
+    }
 }

@@ -48,7 +48,12 @@ class CapacitorService {
             ->prepare('SELECT *
                         FROM QualityCapacitor');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $capQualityAll = $stmt->fetchAll();
+
+        foreach($capQualityAll as $q) {
+            $QualityChoicesC[$q['Value']] = $q['Description'];
+        }
+        return $QualityChoicesC;
     }
 
     public function getCapMaterialAll() {
@@ -57,7 +62,22 @@ class CapacitorService {
             ->prepare('SELECT *
                         FROM MaterialCapacitor');
         $stmt->execute();
-        return $stmt->fetchAll();
+        $capMaterialAll = $stmt->fetchAll();
+        foreach($capMaterialAll as $m) {
+            $MatChoicesC[$m['CapShortcut']] = $m['CapShortcut'];
+        }
+        return $MatChoicesC;
+    }
+
+    public function getCapMaterialDescAll() {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM MaterialCapacitor');
+        $stmt->execute();
+        $capMaterialAll = $stmt->fetchAll();
+
+        return $capMaterialAll;
     }
 
     public function lamCapacitor (Capacitor $cap) {
