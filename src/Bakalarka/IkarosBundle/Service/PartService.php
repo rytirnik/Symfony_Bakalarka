@@ -23,16 +23,17 @@ class PartService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Part');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     //vraci entity
     public function getActiveParts($systemID) {
         $query = $this->doctrine->getManager()
@@ -42,6 +43,7 @@ class PartService {
         return $query->getResult();
     }
 
+//====================================================================================================================
     //vraci pole
     public function getActivePartsBySystemID ($systemID) {
         $stmt = $this->doctrine->getManager()
@@ -55,6 +57,7 @@ class PartService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getAllPartsBySystemID ($systemID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -66,11 +69,13 @@ class PartService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getActivePartsByPcbID ($pcbID) {
         $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:Part');
         return $RU->findBy(array('PCB_ID' => $pcbID, 'DeleteDate' => NULL));
     }
 
+//====================================================================================================================
     public function setDeleteDateToParts($parts) {
         $manager = $this->doctrine->getManager();
         foreach($parts as $part) {
@@ -85,6 +90,7 @@ class PartService {
         return "";
     }
 
+//====================================================================================================================
    public function setLams($lambda, Part $part, $pcbID = -1, $oldLam = 0) {
 
        if($pcbID == -1)
@@ -112,6 +118,7 @@ class PartService {
        return "";
    }
 
+//====================================================================================================================
     public function getType($id) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -124,6 +131,7 @@ class PartService {
         return $type[0]["entity_type"];
     }
 
+//====================================================================================================================
     public function subtractLam ($id) {
         $part = $this->getItem($id);
         $lam = $part->getLam();

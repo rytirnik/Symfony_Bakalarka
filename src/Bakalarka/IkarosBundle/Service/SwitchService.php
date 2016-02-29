@@ -9,7 +9,6 @@ use Bakalarka\IkarosBundle\Entity\Switches;
 class SwitchService {
 	
 	protected $doctrine;
-
 	
 	public function __construct(Registry $doctrine) {
 		$this->doctrine = $doctrine;
@@ -18,16 +17,17 @@ class SwitchService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Switches');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getSwitchTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -42,6 +42,7 @@ class SwitchService {
         return $swTypeChoices;
     }
 
+//====================================================================================================================
     public function getActiveSwitches($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -55,6 +56,7 @@ class SwitchService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamSwitch (Switches $switch) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -106,6 +108,4 @@ class SwitchService {
 
         return $lambda;
     }
-
-
 }

@@ -17,7 +17,8 @@ class RotDevElapsService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:RotDevElaps');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
@@ -26,6 +27,7 @@ class RotDevElapsService {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getActiveRotDevElaps($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -39,6 +41,7 @@ class RotDevElapsService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamRotElaps (RotDevElaps $rotElaps) {
         $sEnv = $rotElaps->getEnvironment();
         $stmt = $this->doctrine->getManager()
