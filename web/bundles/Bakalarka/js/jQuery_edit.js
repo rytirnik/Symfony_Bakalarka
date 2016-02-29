@@ -38,6 +38,8 @@ function savePCB(event) {
             data:       {formData: $data, mode: 1},
             success:    function(data){
                 //alert("ok");
+                if(data.url)
+                    window.document.location = data.url;
                 $(".submitMsg").remove();
                 $("#EditPcbForm").append('<span class="submitMsg"> Deska byla uložena. </span>');
 

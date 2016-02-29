@@ -124,7 +124,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -258,7 +258,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -350,7 +350,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -433,7 +433,7 @@ jQuery(document).ready(function($) {
                     });
 
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
 
                     $("#SysLam").text($sysL);
 
@@ -528,7 +528,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -645,7 +645,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -755,7 +755,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
                     $("#SysLam").text($sysL);
 
                     $(".submitMsg").remove();
@@ -843,7 +843,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
 
                     $("#SysLam").text($sysL);
 
@@ -946,7 +946,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
 
                     $("#SysLam").text($sysL);
 
@@ -1058,7 +1058,7 @@ jQuery(document).ready(function($) {
                         $(".tableLink").css("cursor", "pointer");
                     });
 
-                    $sysL = parseFloat($("#SysLam").text()) - parseFloat(data.Lam);
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
 
                     $("#SysLam").text($sysL);
 

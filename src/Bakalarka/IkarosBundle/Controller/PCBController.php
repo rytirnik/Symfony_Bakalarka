@@ -599,6 +599,22 @@ class PCBController extends Controller
 
                 $pcb->setEquipType($eq[0]['Description']);
                 $pcb->setSubstrateMaterial($m[0]['Description']);
+
+                //prepocet STM
+                $partsSmtToChange = $servicePCB->getActivePartsSmtByPcbID($id);
+                $CR = $eq[0]['Value'];
+                $alfaS = $m[0]['Value'];
+                $zivot = $pcb->getLifetime();
+                $oldSumLams = 0;
+                $newSumLams = 0;
+                foreach ($partsSmtToChange as $part) {
+                    $newLam = $servicePCB->lamPCBsmt($part, $CR, $alfaS, $zivot, $dt);
+                    $oldSumLams += $part->getLam();
+                    $newSumLams += $newLam;
+                    $part->setLam($newLam);
+                }
+                $pcb->setSumLam($pcb->getSumLam() - $oldSumLams + $newSumLams);
+                $system->setLam($system->getLam() - $oldSumLams + $newSumLams);
                 break;
             case 2:
                 $pcb->setQuality(intval($obj->Quality));
@@ -639,10 +655,14 @@ class PCBController extends Controller
 
         try {
             $em->persist($pcb);
-            if($mode == 3)
+            if($mode == 1) {
+                foreach ($partsSmtToChange as $part) {
+                    $em->persist($part);
+                }
+            }
+            else if($mode == 3)
                 $em->persist($smtP);
-            if($mode != 1)
-                $em->persist($system);
+            $em->persist($system);
         } catch (\Exception $e) {
             return new Response(
                 json_encode(array(
@@ -656,8 +676,20 @@ class PCBController extends Controller
         }
 
         $em->flush();
+        if($mode == 1) {
+            $url = $this->generateUrl('detailPCB', array('id' => $pcb->getIDPCB()));
 
-        if ($mode == 3) {
+            return new Response(
+                json_encode(array(
+                    'url' => $url
+                )),
+                200,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+        }
+        else if ($mode == 3) {
             return new Response(
                 json_encode(array(
                     'LeadConfig' => $smtP->getLeadConfig(intval($obj->LeadConfig)),
