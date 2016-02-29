@@ -67,6 +67,14 @@ class SystemService {
         return $stmt->fetchAll();
     }
 
+    public function getUserActiveSystems($userID) {
+        $query = $this->doctrine->getManager()
+            ->createQuery('SELECT s FROM BakalarkaIkarosBundle:System s
+                            WHERE s.UserID = :id AND s.DeleteDate IS NULL');
+        $query->setParameters(array('id' => $userID));
+        return $query->getResult();
+    }
+
     public function getActiveSystem($systemID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()

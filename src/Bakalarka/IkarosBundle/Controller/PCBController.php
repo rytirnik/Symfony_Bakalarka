@@ -18,52 +18,7 @@ use Bakalarka\IkarosBundle\Entity\PCB;
 class PCBController extends Controller
 {
 
-    public function lamPCBwire (PCB $pcb, $piE) {
-        $b = 0.000017;
-        $layers = $pcb->getLayers();
-        $piQ = $pcb->getQuality();
-        $pAuto = $pcb->getSolderingPointAuto();
-        $pHand = $pcb->getSolderingPointHand();
-
-        //$piE = 1; //DOSTAT ZE SYSTEMU
-        $piC = 1;
-        if($layers > 2)
-            $piC = 0.65 * pow($layers, 0.63);
-        $lambda = $b * (($pAuto * $piC) + ($pHand * ($piC + 13))) * $piQ * $piE * pow(10, -6);
-
-        return $lambda;
-    }
-
-    public function lamPCBsmt (PartSMT $smtP, $CR, $alfaS, $zivot, $dt) {
-        $piLC = $smtP->getLeadConfig();
-        $h = 5;
-        $delka = $smtP->getHeight();
-        $sirka = $smtP->getWidth();
-        $d = (sqrt(pow($delka,2) + pow($sirka,2))) / 2;   
-        
-        $alfaCC = $smtP->getTCEPackage();
-        $otepleni = $smtP->getTempDissipation();
-        $y = Abs(($alfaS * $dt) - ($alfaCC * ($dt + $otepleni))) * pow(10, -6);
-        $nf = $piLC * 3.5 * pow(($d / (0.65 * $h) * $y), -2.26);
-        $asmt = $nf / $CR;
-      
-        $x = ($zivot * 8760) / $asmt;
-
-        if ($x <= 0.1) $ecf = 0.13;
-        else if ($x > 0.1 && $x <= 0.2) $ecf = 0.15;
-        else if ($x > 0.2 && $x <= 0.3) $ecf = 0.23;
-        else if ($x > 0.3 && $x <= 0.4) $ecf = 0.31;
-        else if ($x > 0.4 && $x <= 0.5) $ecf = 0.41;
-        else if ($x > 0.5 && $x <= 0.6) $ecf = 0.51;
-        else if ($x > 0.6 && $x <= 0.7) $ecf = 0.61;
-        else if ($x > 0.7 && $x <= 0.8) $ecf = 0.68;
-        else if ($x > 0.8 && $x <= 0.9) $ecf = 0.76;
-        else $ecf = 1;
-
-        $LamSMT = $ecf / $asmt;
-        $LamSMT *= $smtP->getCnt();
-        return $LamSMT;
-    }
+//====================================================================================================================
 
     /**
      * @Route("/newPCB/{id}", name="newPCB")
@@ -76,10 +31,14 @@ class PCBController extends Controller
         //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
         //$systems = $RU->findAll(array('UserID' => $user->getIDUser()));
 
+        $servicePCB = $this->get('ikaros_pcbService');
+        $serviceSystem = $this->get('ikaros_systemService');
+
         if($id == -1) {
-            $query = $em->createQuery('SELECT s FROM BakalarkaIkarosBundle:System s WHERE s.UserID = :id AND s.DeleteDate IS NULL');
+            /*$query = $em->createQuery('SELECT s FROM BakalarkaIkarosBundle:System s WHERE s.UserID = :id AND s.DeleteDate IS NULL');
             $query->setParameters(array('id' => $user->getIDUser()));
-            $systems = $query->getResult();
+            $systems = $query->getResult();*/
+            $systems = $serviceSystem->getUserActiveSystems($user->getIDUser());
 
             if(!$systems) {
                 return $this->render('BakalarkaIkarosBundle:PCB:newPCB.html.twig', array(
@@ -92,27 +51,31 @@ class PCBController extends Controller
         }
 
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT *
                         FROM EquipmentType');
         $stmt->execute();
-        $eqs = $stmt->fetchAll();
+        $eqs = $stmt->fetchAll();*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        $EquipChoices = $servicePCB->getEquipmentTypes();
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT *
                         FROM SubstrateMaterial ORDER BY Description');
         $stmt->execute();
-        $mat = $stmt->fetchAll();
+        $mat = $stmt->fetchAll();*/
 
-        foreach($eqs as $eq) {
+        $MatChoices = $servicePCB->getMaterials();
+
+        /*foreach($eqs as $eq) {
            $EquipChoices[$eq['ID_EquipType']] = $eq['Description'];
         }
 
         foreach($mat as $m) {
             $MatChoices[$m['ID_SubstrateMat']] = $m['Description'];
-        }
+        }*/
 
         $pcb = new PCB();
 
@@ -187,13 +150,15 @@ class PCBController extends Controller
             if ($form->isValid()) {
                 $em = $this->get('doctrine')->getManager();
                 if($id == -1) {
-                    $s = $form['system']->getData();
-                    $system = $this->getDoctrine()->getRepository('BakalarkaIkarosBundle:System')->findOneBy(array('ID_System' => $s));
+                    $systemID = $form['system']->getData();
+                    //$system = $this->getDoctrine()->getRepository('BakalarkaIkarosBundle:System')->findOneBy(array('ID_System' => $s));
+                    $system = $serviceSystem->getItem($systemID);
                     $pcb->setSystemID($system);
                 }
                 else {
-                    $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-                    $system = $RU->findOneBy(array('ID_System' => $id));
+                    //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+                    //$system = $RU->findOneBy(array('ID_System' => $id));
+                    $system = $serviceSystem->getItem($id);
                     $pcb->setSystemID($system);
                 }
 
@@ -287,6 +252,7 @@ class PCBController extends Controller
             'form' => $form->createView(), 'idSend' => $id, 'form2' => $form2->createView(), 'form3' => $form3->createView()
         ));
     }
+//====================================================================================================================
 
     /**
      * @Route("/delDesk/{id}", name="delDesk")
@@ -294,25 +260,38 @@ class PCBController extends Controller
      */
     public function delDeskAction($id)
     {
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
 
-        $sys = $pcb->getSystemID();
-        $sys = $sys->getIDSystem();
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
+        //$pcb = $RU->findOneBy(array('ID_PCB' => $id));
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $sys));
+        $servicePCB = $this->get('ikaros_pcbService');
+        $pcb = $servicePCB->getItem($id);
+
+        $sysID = $pcb->getSystemID();
+        //$sysID = $sys->getIDSystem();
+
+
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        //$system = $RU->findOneBy(array('ID_System' => $sys));
+
+        $serviceSystem = $this->get('ikaros_systemService');
+        $system = $serviceSystem->getItem($sysID);
         $system->setLam($system->getLam() - $pcb->getSumLam() - $pcb->getSumPartsLam());
 
         //$pcb->setIsActive(0);
 
 
-        $RU = $em->getRepository('BakalarkaIkarosBundle:Part');
-        $parts = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:Part');
+        //$parts = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));
 
-        foreach($parts as $part) {
+        $servicePart = $this->get('ikaros_partService');
+        /*$parts = $servicePart->getActivePartsByPcbID($id);
+        $msg = $servicePart->setDeleteDateToParts($parts);
+
+        if($msg)    //soucastka neulozena
+            return $this->redirect($this->generateUrl('mySystems'));*/
+
+        /*foreach($parts as $part) {
             try {
                 //$part->setIsActive(0);
                 $part->setDeleteDate(new \DateTime());
@@ -321,12 +300,17 @@ class PCBController extends Controller
                 $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
                 return $this->redirect($this->generateUrl('mySystems'));
             }
-        }
+        }*/
 
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PartSMT');
-        $partsmt = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:PartSMT');
+        //$partsmt = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));
+        /*$partsmt = $servicePCB->getActivePartsSmtByPcbID($id);
+        $msg = $servicePart->setDeleteDateToParts($partsmt);
 
-        foreach($partsmt as $part) {
+        if($msg)    //soucastka neulozena
+            return $this->redirect($this->generateUrl('mySystems'));*/
+
+        /*foreach($partsmt as $part) {
             try {
                 //$part->setIsActive(0);
                 $part->setDeleteDate(new \DateTime());
@@ -335,24 +319,35 @@ class PCBController extends Controller
                 $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
                 return $this->redirect($this->generateUrl('mySystems'));
             }
-        }
+        }*/
 
-        $pcb->setDeleteDate(new \DateTime());
+        $parts = $servicePart->getActivePartsByPcbID($id);
+        $msgParts = $servicePart->setDeleteDateToParts($parts);
+
+        $partsmt = $servicePCB->getActivePartsSmtByPcbID($id);
+        $msgSmt = $servicePart->setDeleteDateToParts($partsmt);
+
+        $msgPcb = $servicePCB->setDeleteDateToPcb($pcb, $system);
+
+        if($msgParts || $msgSmt || $msgPcb)
+            return $this->redirect($this->generateUrl('mySystems'));
+
+        /*    $pcb->setDeleteDate(new \DateTime());
         try {
+            $em = $this->getDoctrine()->getManager();
             $em->persist($pcb);
             $em->persist($system);
         } catch (\Exception $e) {
             $error = "Desku " + $pcb->getLabel() + " se nepodařilo vymazat.";
             return $this->redirect($this->generateUrl('mySystems'));
-        }
+        }*/
 
-
-
+        $em = $this->getDoctrine()->getManager();
         $em->flush();
-
 
         return $this->redirect($this->generateUrl('mySystems'));
     }
+//====================================================================================================================
 
     /**
      * @Route("/delDesk", name="delDeskAjax")
@@ -364,18 +359,51 @@ class PCBController extends Controller
         $id = $post->get('id');
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
+        //$pcb = $RU->findOneBy(array('ID_PCB' => $id));
 
-        $sys = $pcb->getSystemID();
-        $sys = $sys->getIDSystem();
+        $servicePCB = $this->get('ikaros_pcbService');
+        $pcb = $servicePCB->getItem($id);
 
-        $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $sys));
+        $sysID = $pcb->getSystemID();
+        //$sys = $sys->getIDSystem();
+
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        //$system = $RU->findOneBy(array('ID_System' => $sys));
+
+        $serviceSystem = $this->get('ikaros_systemService');
+        $system = $serviceSystem->getItem($sysID);
+
         $system->setLam($system->getLam() - $pcb->getSumLam() - $pcb->getSumPartsLam());
 
-        try {
+        $servicePart = $this->get('ikaros_partService');
+        $parts = $servicePart->getActivePartsByPcbID($id);
+        $msgParts = $servicePart->setDeleteDateToParts($parts);
+
+        $partsmt = $servicePCB->getActivePartsSmtByPcbID($id);
+        $msgSmt = $servicePart->setDeleteDateToParts($partsmt);
+
+        $msgPcb = $servicePCB->setDeleteDateToPcb($pcb, $system);
+
+        if($msgParts || $msgSmt || $msgPcb) {   //chyba -> neulozeno
+            if($msgParts)
+                $msg = $msgParts;
+            else if($msgSmt)
+                $msg = $msgSmt;
+            else
+                $msg = $msgPcb;
+            return new Response(
+                json_encode(array(
+                    'e' => $msg
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+        }
+
+        /*try {
             //$pcb->setIsActive(0);
 
             $RU = $em->getRepository('BakalarkaIkarosBundle:Part');
@@ -409,17 +437,26 @@ class PCBController extends Controller
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
             );
-        }
+        }*/
 
+        /*$pcb->setDeleteDate(new \DateTime());
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($pcb);
+            $em->persist($system);
+        } catch (\Exception $e) {
+            $error = "Desku " + $pcb->getLabel() + " se nepodařilo vymazat.";
+            return $this->redirect($this->generateUrl('mySystems'));
+        }*/
+
+        $em =  $this->getDoctrine()->getManager();
         $em->flush();
         return new Response(
             json_encode(array(
-                'e' => "v pohode",
+                'e' => "OK",
                 'lamS' =>  $system->getLam()
             )),
-            //HTTP status
             200,
-            //headers
             array(
                 'Content-Type' => 'application/json; charset=utf-8'
             )
@@ -428,6 +465,7 @@ class PCBController extends Controller
         //return $this->redirect($this->generateUrl('mySystems'));
     }
 
+//====================================================================================================================
 
     /**
      * @Route("/newPCBA", name="newPCBAjax")
@@ -449,17 +487,25 @@ class PCBController extends Controller
         }
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $id));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        //$system = $RU->findOneBy(array('ID_System' => $id));
+
+        $serviceSystem = $this->get('ikaros_systemService');
+        $servicePCB = $this->get('ikaros_pcbService');
+
+        $system = $serviceSystem->getItem($id);
 
         $sEnv = $system->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 161 OR e.ID_Section = 162 ORDER BY e.ID_Section ASC');
         $stmt->execute();
-        $env = $stmt->fetchAll();
+        $env = $stmt->fetchAll();*/
+
+        $env = $servicePCB->getEnvironmentPcb();
+
         $piE = $env[0][$sEnv];
         $dt = $env[1][$sEnv];
 
@@ -467,22 +513,29 @@ class PCBController extends Controller
         $pcb->setLabel($obj->Label);
         $pcb->setLifetime(intval($obj->Lifetime));
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM EquipmentType e
                         WHERE e.ID_EquipType = :id');
         $stmt->execute(array(':id' => intval($obj->EquipType)));
-        $eq = $stmt->fetchAll();
+        $eq = $stmt->fetchAll();*/
+
+        $equipID = intval($obj->EquipType);
+        $eq = $servicePCB->getEquipmentTypeByID($equipID);
+
         $pcb->setEquipType($eq[0]['Description']);
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
                         FROM SubstrateMaterial m
                         WHERE m.ID_SubstrateMat = :id');
         $stmt->execute(array(':id' => intval($obj->SubstrateMaterial)));
-        $m = $stmt->fetchAll();
+        $m = $stmt->fetchAll();*/
+
+        $matID = intval($obj->SubstrateMaterial);
+        $m = $servicePCB->getMaterialByID($matID);
         $pcb->setSubstrateMaterial($m[0]['Description']);
 
         $CR = $eq[0]['Value'];
@@ -490,13 +543,16 @@ class PCBController extends Controller
         $lambda = 0;
         $LamSMT = 0;
 
+
+
         if($wire == "true") {
             $pcb->setQuality(intval($obj->Quality));
             $pcb->setLayers(intval($obj->Layers));
             $pcb->setSolderingPointAuto(intval($obj->SolderingPointAuto));
             $pcb->setSolderingPointHand(intval($obj->SolderingPointHand));
 
-            $lambda = $this->lamPCBwire($pcb, $piE);
+            //$lambda = $this->lamPCBwire($pcb, $piE);
+            $lambda = $servicePCB->lamPCBwire($pcb, $piE);
             $pcb->setLam($lambda);
         }
 
@@ -539,7 +595,8 @@ class PCBController extends Controller
             $LamSMT *= $smtP->getCnt();*/
 
             $zivot = $pcb->getLifetime();
-            $LamSMT = $this->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
+            //$LamSMT = $this->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
+            $LamSMT = $servicePCB->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
 
             $smtP->setLam($LamSMT);
             //$pcb->setSumLam($LamSMT);
@@ -570,9 +627,7 @@ class PCBController extends Controller
                 json_encode(array(
                     'e' => $e
                 )),
-                //HTTP status
                 400,
-                //headers
                 array(
                     'Content-Type' => 'application/json; charset=utf-8'
                 )
@@ -590,14 +645,13 @@ class PCBController extends Controller
                 //'sum' => $sumLam
                 'url' => $url
             )),
-            //HTTP status
             200,
-            //headers
             array(
                 'Content-Type' => 'application/json; charset=utf-8'
             )
         );
     }
+//====================================================================================================================
 
     /**
      * @Route("/detailPCB/{id}", name="detailPCB")
@@ -606,13 +660,18 @@ class PCBController extends Controller
     public function detailPCBAction($id) {
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
+        /*$RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
         $pcb = $RU->findOneBy(array('ID_PCB' => $id));
 
         $RU = $em->getRepository('BakalarkaIkarosBundle:PartSMT');
-        $smt = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));
+        $smt = $RU->findBy(array('PCB_ID' => $id, 'DeleteDate' => NULL));*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        $servicePCB = $this->get('ikaros_pcbService');
+        $pcb = $servicePCB->getItem($id);
+        $smt = $servicePCB->getActiveSmt($id);
+
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT *
                         FROM EquipmentType');
@@ -632,24 +691,31 @@ class PCBController extends Controller
 
         foreach($mat as $m) {
             $MatChoices[$m['ID_SubstrateMat']] = $m['Description'];
-        }
+        }*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        $EquipChoices = $servicePCB->getEquipmentTypes();
+        $MatChoices = $servicePCB->getMaterials();
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM EquipmentType e
                         WHERE e.Description = :d');
         $stmt->execute(array(':d' => $pcb->getEquipType()));
-        $eq = $stmt->fetchAll();
-        $eq = $eq[0]['ID_EquipType'];
+        $eq = $stmt->fetchAll();*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        $eqT = $servicePCB->getEquipmentTypeByDesc($pcb->getEquipType());
+        $eq = $eqT[0]['ID_EquipType'];
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
                         FROM SubstrateMaterial m
                         WHERE m.Description = :mat');
         $stmt->execute(array(':mat' => $pcb->getSubstrateMaterial()));
-        $m = $stmt->fetchAll();
+        $m = $stmt->fetchAll();*/
+
+        $m = $servicePCB->getMaterialByDesc($pcb->getSubstrateMaterial());
         $mat = $m[0]['ID_SubstrateMat'];
 
         $form = $this->createFormBuilder($pcb)
@@ -762,6 +828,7 @@ class PCBController extends Controller
             'smt' => $smt, 'pcb' => $pcb
         ));
     }
+//====================================================================================================================
 
     /**
      * @Route("/editPCB/{id}", name="editPCB")
@@ -776,45 +843,57 @@ class PCBController extends Controller
         $obj = $objF->form;
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
+        /*$RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
         $pcb = $RU->findOneBy(array('ID_PCB' => $id));
 
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
+        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));*/
+
+        $servicePCB = $this->get('ikaros_pcbService');
+        $serviceSystem = $this->get('ikaros_systemService');
+        $pcb = $servicePCB->getItem($id);
+        $system = $serviceSystem->getItem($pcb->getSystemID());
 
 
-
-        $sEnv = $system->getEnvironment();
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 161 OR e.ID_Section = 162 ORDER BY e.ID_Section ASC');
         $stmt->execute();
-        $env = $stmt->fetchAll();
+        $env = $stmt->fetchAll();*/
+
+        $sEnv = $system->getEnvironment();
+        $env = $servicePCB->getEnvironmentPcb();
         $piE = $env[0][$sEnv];
         $dt = $env[1][$sEnv];
 
+        $servicePCB = $this->get('ikaros_pcbService');
 
         switch ($mode) {
             case 1:
                 $pcb->setLabel($obj->Label);
                 $pcb->setLifetime(intval($obj->Lifetime));
-                $stmt = $this->getDoctrine()->getManager()
+                /*$stmt = $this->getDoctrine()->getManager()
                     ->getConnection()
                     ->prepare('SELECT e.*
                         FROM EquipmentType e
                         WHERE e.ID_EquipType = :id');
                 $stmt->execute(array(':id' => intval($obj->EquipType)));
-                $eq = $stmt->fetchAll();
+                $eq = $stmt->fetchAll();*/
 
-                $stmt = $this->getDoctrine()->getManager()
+                $eq = $servicePCB->getEquipmentTypeByID(intval($obj->EquipType));
+
+                /*$stmt = $this->getDoctrine()->getManager()
                     ->getConnection()
                     ->prepare('SELECT m.*
                         FROM SubstrateMaterial m
                         WHERE m.ID_SubstrateMat = :id');
                 $stmt->execute(array(':id' => intval($obj->SubstrateMaterial)));
-                $m = $stmt->fetchAll();
+                $m = $stmt->fetchAll();*/
+
+                $m = $servicePCB->getMaterialByID(intval($obj->SubstrateMaterial));
+
                 $pcb->setEquipType($eq[0]['Description']);
                 $pcb->setSubstrateMaterial($m[0]['Description']);
                 break;
@@ -823,8 +902,11 @@ class PCBController extends Controller
                 $pcb->setLayers(intval($obj->Layers));
                 $pcb->setSolderingPointAuto(intval($obj->SolderingPointAuto));
                 $pcb->setSolderingPointHand(intval($obj->SolderingPointHand));
-                $lambda = $this->lamPCBwire($pcb, $piE);
-                $system->setLam($system->getLam() - $pcb->getLam() + $lambda);
+                //$lambda = $this->lamPCBwire($pcb, $piE);
+                $lambda = $servicePCB->lamPCBwire($pcb, $piE);
+                $oldLam = $pcb->getLam();
+                $system->setLam($system->getLam() - $oldLam + $lambda);
+                $pcb->setSumLam($pcb->getSumLam() - $oldLam + $lambda);
                 $pcb->setLam($lambda);
                 break;
             case 3:
@@ -838,7 +920,7 @@ class PCBController extends Controller
                 $smtP->setPCBID($pcb);
 
 
-                $eqDes = $pcb->getEquipType();
+                /*$eqDes = $pcb->getEquipType();
                 $mDes = $pcb->getSubstrateMaterial();
                 $stmt = $this->getDoctrine()->getManager()
                     ->getConnection()
@@ -854,13 +936,18 @@ class PCBController extends Controller
                         FROM SubstrateMaterial m
                         WHERE m.Description = :md');
                 $stmt->execute(array(':md' => $mDes));
-                $m = $stmt->fetchAll();
+                $m = $stmt->fetchAll();*/
+
+                $eq = $servicePCB->getEquipmentTypeByDesc($pcb->getEquipType());
+                $m = $servicePCB->getMaterialByDesc($pcb->getSubstrateMaterial());
+
 
                 $CR = $eq[0]['Value'];
                 $alfaS = $m[0]['Value'];
 
                 $zivot = $pcb->getLifetime();
-                $LamSMT = $this->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
+                //$LamSMT = $this->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
+                $LamSMT = $servicePCB->lamPCBsmt($smtP, $CR, $alfaS, $zivot, $dt);
 
                 $smtP->setLam($LamSMT);
                 $pcb->setSumLam($pcb->getSumLam() + $LamSMT);
@@ -910,7 +997,8 @@ class PCBController extends Controller
 
         return new Response(
             json_encode(array(
-                'Lam' => $pcb->getLam()
+                'Lam' => $pcb->getLam(),
+                'SumLam' => $pcb->getSumLam()
             )),
             200,
             array(
@@ -919,6 +1007,7 @@ class PCBController extends Controller
         );
     }
 
+//====================================================================================================================
 
     /**
      * @Route("/delSMT", name="delSMT")
@@ -931,15 +1020,23 @@ class PCBController extends Controller
             $id = $post->get('id');
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PartSMT');
+        /*$RU = $em->getRepository('BakalarkaIkarosBundle:PartSMT');
         $smt = $RU->findOneBy(array('ID_Part_SMT' => $id));
-        $lambda = $smt->getLam();
+
 
         $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
         $pcb = $RU->findOneBy(array('ID_PCB' => $smt->getPCBID()));
 
         $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
+        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));*/
+
+        $servicePCB = $this->get('ikaros_pcbService');
+        $serviceSystem = $this->get('ikaros_systemService');
+        $smt = $servicePCB->getSmtByID($id);
+        $pcb = $servicePCB->getItem($smt->getPCBID());
+        $system = $serviceSystem->getItem($pcb->getSystemID());
+
+        $lambda = $smt->getLam();
 
         $smt->setDeleteDate(new \DateTime());
         $pcb->setSumLam($pcb->getSumLam() - $lambda);

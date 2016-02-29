@@ -66,6 +66,11 @@ class PartService {
         return $stmt->fetchAll();
     }
 
+    public function getActivePartsByPcbID ($pcbID) {
+        $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:Part');
+        return $RU->findBy(array('PCB_ID' => $pcbID, 'DeleteDate' => NULL));
+    }
+
     public function setDeleteDateToParts($parts) {
         $manager = $this->doctrine->getManager();
         foreach($parts as $part) {

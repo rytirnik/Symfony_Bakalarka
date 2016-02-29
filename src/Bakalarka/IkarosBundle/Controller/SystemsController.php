@@ -3,6 +3,7 @@
 namespace Bakalarka\IkarosBundle\Controller;
 
 use Bakalarka\IkarosBundle\Entity\PartSMT;
+use Bakalarka\IkarosBundle\Forms\SystemForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -43,6 +44,8 @@ class SystemsController extends Controller
 
         return array('systems' => $systems);
     }
+
+//====================================================================================================================
 
     /**
      * @Route("/mySystems", name="mySystems")
@@ -103,6 +106,8 @@ class SystemsController extends Controller
         return array('systems' => $systems, 'error' => $error);
     }
 
+//====================================================================================================================
+
     /**
      * @Route("/detail/{id}", name="detail")
      * @Template()
@@ -157,6 +162,8 @@ class SystemsController extends Controller
 
         return array('system' => $system, 'desk' => $pcb, 'parts' => $parts);
     }
+
+//====================================================================================================================
 
     /**
      * @Route("/detailA/{id}", name="detailAdmin")
@@ -215,6 +222,7 @@ class SystemsController extends Controller
             'system' => $system, 'desk' => $pcb, 'parts' => $parts
         ));
     }
+//====================================================================================================================
 
     /**
      * @Route("/newSystem", name="newSystem")
@@ -226,7 +234,7 @@ class SystemsController extends Controller
         $serviceSystem = $this->get('ikaros_systemService');
         $envChoices = $serviceSystem->getEnvChoices();
 
-        $system = new System();
+        /*$system = new System();
         $form = $this->createFormBuilder($system)
             ->add('Environment', 'choice', array(
                 'label' => 'Prostředí',
@@ -252,18 +260,21 @@ class SystemsController extends Controller
                 'max_length' => 500
             ))
 
-            ->getForm();
+            ->getForm();*/
 
+        $systemForm = $this->createForm(new SystemForm(), new System(), array('envChoices' => $envChoices ,
+            'mode' => "newSystem"));
 
         $request = $this->getRequest();
         if ($request->getMethod() == 'POST') {
-            $form->bind($request);
-            if ($form->isValid()) {
+            $systemForm->bind($request);
+            if ($systemForm->isValid()) {
                 $user = $this->get('security.context')->getToken()->getUser();
                 try {
                     $em = $this->get('doctrine')->getManager();
+                    $system = $systemForm->getData();
                     $system->setUserID($user);
-                    $system->setEnvironment($form['Environment']->getData());
+                    $system->setEnvironment($systemForm['Environment']->getData());
                     $em->persist($system);
                     $em->flush();
 
@@ -281,26 +292,27 @@ class SystemsController extends Controller
 
 
         return $this->render('BakalarkaIkarosBundle:Systems:newSystem.html.twig', array(
-            'form' => $form->createView(), 'error' => $error,
+            'form' => $systemForm->createView(), 'error' => $error,
         ));
     }
+//====================================================================================================================
 
     /**
      * @Route("/detailSystem/{id}", name="detailSystem")
      * @Template()
      */
      public function detailSystemAction($id) {
-        $error = "";
+        //$error = "";
         $serviceSystem = $this->get('ikaros_systemService');
         $envChoices = $serviceSystem->getEnvChoices();
 
-        $em =  $this->getDoctrine()->getManager();
+        //$em =  $this->getDoctrine()->getManager();
         //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
         //$system = $RU->findOneBy(array('ID_System' => $id));
 
         $system = $serviceSystem->getItem($id);
 
-         $form = $this->createFormBuilder($system)
+         /*$form = $this->createFormBuilder($system)
             ->add('Environment', 'choice', array(
                 'label' => 'Prostředí',
                 'choices' => $envChoices,
@@ -329,12 +341,18 @@ class SystemsController extends Controller
                 'data' => $system->getNote()
             ))
 
-            ->getForm();
+            ->getForm();*/
 
-         return array('form' => $form->createView(), 'idS' => $system->getIDSystem(),  'Title' => $system->getTitle());
+         $systemArray = $system->to_array();
+
+         $systemForm = $this->createForm(new SystemForm(), $system, array('envChoices' => $envChoices ,
+             'mode' => "editSystem", 'system' => $systemArray));
+
+         return array('form' => $systemForm->createView(), 'idS' => $system->getIDSystem(),  'Title' => $system->getTitle());
 
      }
 
+//====================================================================================================================
 
     /**
      * @Route("/editSystem/{id}", name="editSystem")
@@ -345,7 +363,7 @@ class SystemsController extends Controller
         $formData = $post->get('formData');
 
         $objF = json_decode($formData);
-        $obj = $objF->form;
+        $obj = $objF->sysForm;
 
         $em =  $this->getDoctrine()->getManager();
 
@@ -388,6 +406,7 @@ class SystemsController extends Controller
 
     }
 
+//====================================================================================================================
 
     /**
      * @Route("/delSystem/{id}", name="delSystem")

@@ -302,4 +302,16 @@ class System {
     {
         return $this->Environment;
     }
+
+    public function to_array() {
+        return (array(
+            'Title' => $this->Title,
+            'Temp' => $this->Temp,
+            'CreateDate' => $this->CreateDate,
+            'DeleteDate' => $this->DeleteDate,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Note' => $this->Note
+            ));
+    }
 }

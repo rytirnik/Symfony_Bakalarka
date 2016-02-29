@@ -97,8 +97,8 @@ function savePCB2(event) {
             data:       {formData: $data, mode: 2},
             success:    function(data){
                 //alert("ok");
-                $lam1 = parseFloat($("#PCBlam1").text()) + parseFloat(data.Lam);
-                $("#PCBlam1").text($lam1);
+                //$lam1 = parseFloat($("#PCBlam1").text()) + parseFloat(data.Lam);
+                $("#PCBlam1").text(data.SumLam);
                 $("#PCBlam2").text(data.Lam);
 
                 $("#EditPcbForm2 .submitMsg").remove();
@@ -133,13 +133,13 @@ function saveSystem(event) {
     var err = 0;
     if(save) {
         $data =  $("#systemFormE").serializeJSON();
-        var val = $('#systemFormE input[id="form_Title"]').val();
+        var val = $('#systemFormE input[id="sysForm_Title"]').val();
         if ( val == "" ) {
             $("#systemFormE .submitMsg").remove();
             $("#systemFormE").append('<span class="submitMsg"> Vyplňte název </span>');
             return;
         }
-        val = $('#systemFormE input[id="form_Temp"]').val();
+        val = $('#systemFormE input[id="sysForm_Temp"]').val();
         if ( val == "" && Math.floor(val) != val && !($.isNumeric(val))) {
             $("#systemFormE .submitMsg").remove();
             $("#systemFormE").append('<span class="submitMsg"> Vyplňte teplotu (celé číslo) </span>');
@@ -170,10 +170,10 @@ function saveSystem(event) {
 
     }
     if (err || !save) {
-        $('#systemFormE input[id="form_Title"]').val(oldSys['Title']);
-        $('#systemFormE input[id="form_Temp"]').val(oldSys['Temp']);
-        $('#systemFormE textarea[id="form_Note"]').val(oldSys['Note']);
-        $('#systemFormE select[id="form_Environment"]').val(oldSys['Environment']);
+        $('#systemFormE input[id="sysForm_Title"]').val(oldSys['Title']);
+        $('#systemFormE input[id="sysForm_Temp"]').val(oldSys['Temp']);
+        $('#systemFormE textarea[id="sysForm_Note"]').val(oldSys['Note']);
+        $('#systemFormE select[id="sysForm_Environment"]').val(oldSys['Environment']);
 
     }
     $("#systemFormE input:not(:submit), #systemFormE select, #systemFormE textarea").attr('disabled', 'disabled');
@@ -1450,10 +1450,10 @@ jQuery(document).ready(function($) {
         $("#systemFormE input:not(:submit), #systemFormE select, #systemFormE textarea").removeAttr('disabled');
         $this = $(this);
         $("#EditSys").hide();
-        oldSys['Title'] = $('#systemFormE input[id="form_Title"]').val();
-        oldSys['Temp'] = $('#systemFormE input[id="form_Temp"]').val();
-        oldSys['Note'] = $('#systemFormE textarea[id="form_Note"]').val();
-        oldSys['Environment'] = $('#systemFormE select[id="form_Environment"]').val();
+        oldSys['Title'] = $('#systemFormE input[id="sysForm_Title"]').val();
+        oldSys['Temp'] = $('#systemFormE input[id="sysForm_Temp"]').val();
+        oldSys['Note'] = $('#systemFormE textarea[id="sysForm_Note"]').val();
+        oldSys['Environment'] = $('#systemFormE select[id="sysForm_Environment"]').val();
 
         var save = document.createElement('input');
         var cancel = document.createElement('input');
