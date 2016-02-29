@@ -15,62 +15,62 @@ class ConnectorGenForm extends AbstractType
         $conGenTypeChoices = $options['conGenTypeChoices'];
 
         if($sysEnv)
-        $builder
-            ->add('Environment', 'choice', array(
-                'label' => 'Prostředí',
-                'choices' => $envChoices,
-                'required' => true,
-                'data' => $sysEnv
-            ))
-            ->add('ConnectorType', 'choice', array(
-                'required' => true,
-                'label' => 'Popis',
-                'choices' => $conGenTypeChoices
-            ))
-            ->add('Quality', 'choice', array(
-                'required' => true,
-                'label' => 'Kvalita',
-                'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
-            ))
-            ->add('Label', 'text', array(
-                'required' => true,
-                'label' => 'Název',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('Type', 'text', array(
-                'required' => false,
-                'label' => 'Typ',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('CasePart', 'text', array(
-                'required' => false,
-                'label' => 'Pouzdro',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('ContactCnt', 'integer', array(
-                'required' => true,
-                'label' => 'Počet kontaktů',
-                'error_bubbling' => true,
-                'attr' => array('min'=>0)
-            ))
-            ->add('CurrentContact', 'number', array(
-                'required' => true,
-                'label' => 'Proud na kontakt [A]',
-                'error_bubbling' => true
-            ))
-            ->add('MatingFactor', 'integer', array(
-                'required' => true,
-                'label' => 'Počet spoj/rozp za 1000h',
-                'error_bubbling' => true
-            ))
-            ->add('PassiveTemp', 'integer', array(
-                'required' => true,
-                'label' => 'Pasivní oteplení  [°C]',
-                'error_bubbling' => true
-            ));
+            $builder
+                ->add('Environment', 'choice', array(
+                    'label' => 'Prostředí',
+                    'choices' => $envChoices,
+                    'required' => true,
+                    'data' => $sysEnv
+                ))
+                ->add('ConnectorType', 'choice', array(
+                    'required' => true,
+                    'label' => 'Popis',
+                    'choices' => $conGenTypeChoices
+                ))
+                ->add('Quality', 'choice', array(
+                    'required' => true,
+                    'label' => 'Kvalita',
+                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
+                ))
+                ->add('Label', 'text', array(
+                    'required' => true,
+                    'label' => 'Název',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('Type', 'text', array(
+                    'required' => false,
+                    'label' => 'Typ',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('CasePart', 'text', array(
+                    'required' => false,
+                    'label' => 'Pouzdro',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('ContactCnt', 'integer', array(
+                    'required' => true,
+                    'label' => 'Počet kontaktů',
+                    'error_bubbling' => true,
+                    'attr' => array('min'=>0)
+                ))
+                ->add('CurrentContact', 'number', array(
+                    'required' => true,
+                    'label' => 'Proud na kontakt [A]',
+                    'error_bubbling' => true
+                ))
+                ->add('MatingFactor', 'integer', array(
+                    'required' => true,
+                    'label' => 'Počet spoj/rozp za 1000h',
+                    'error_bubbling' => true
+                ))
+                ->add('PassiveTemp', 'integer', array(
+                    'required' => true,
+                    'label' => 'Pasivní oteplení  [°C]',
+                    'error_bubbling' => true
+                ));
         else {
             $connectorGen = $options['connectorGen'];
             $builder

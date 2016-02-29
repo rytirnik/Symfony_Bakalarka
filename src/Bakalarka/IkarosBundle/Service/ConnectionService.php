@@ -17,7 +17,8 @@ class ConnectionService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Connections');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
@@ -26,6 +27,7 @@ class ConnectionService {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getConType($conType) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -37,6 +39,7 @@ class ConnectionService {
         return $conType[0]['Description'];
     }
 
+//====================================================================================================================
     public function getConTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -51,6 +54,7 @@ class ConnectionService {
         return $conTypeChoices;
     }
 
+//====================================================================================================================
     public function getActiveConnections($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -67,6 +71,7 @@ class ConnectionService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamConnection (Connections $con) {
         $sEnv = $con->getEnvironment();
         $stmt = $this->doctrine->getManager()

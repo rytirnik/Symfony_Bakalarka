@@ -46,14 +46,6 @@ class PartsController extends Controller {
         $envChoices = $serviceSystem->getEnvChoices();
         $sysEnv = $system->getEnvironment();
 
-        /*$em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcb = $RU->findOneBy(array('ID_PCB' => $id));
-
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $pcb->getSystemID()));
-        */
-
         $serviceResistor = $this->get('ikaros_resistorService');
         $serviceCapacitor = $this->get('ikaros_capacitorService');
         $serviceFuse  = $this->get('ikaros_fuseService');
@@ -682,6 +674,10 @@ class PartsController extends Controller {
         $serviceSystem = $this->get('ikaros_systemService');
         $envChoices = $serviceSystem->getEnvChoices();
 
+        $servicePCB = $this->get('ikaros_pcbService');
+        $part = $servicePart->getItem($id);
+        $systemID = $part->getPCBID()->getSystemID()->getIDSystem();
+
         switch($type) {
             case "rezistor":
                 $serviceRes = $this->get('ikaros_resistorService');
@@ -695,7 +691,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'qualityChoices' => $QualityChoices ,
                         'matChoices' => $MatChoices, 'resistor' => $resistorArray));
 
-                return array('type'=> $type, 'formResistor' => $formResistor->createView(),'IDPart' => $res->getIDPart(), 'Lam' => $res->getLam(), 'Label' => $res->getLabel());
+                return array('type'=> $type, 'formResistor' => $formResistor->createView(),'IDPart' => $res->getIDPart(),
+                    'Lam' => $res->getLam(), 'Label' => $res->getLabel(), 'systemID' => $systemID);
 
             case 'pojistka':
                 $serviceFuse = $this->get('ikaros_fuseService');
@@ -704,7 +701,8 @@ class PartsController extends Controller {
                 $fuseArray = $fuse->to_array();
                 $formFuse = $this->createForm(new FuseForm(), array(), array('envChoices' => $envChoices , 'sysEnv' => "", 'fuse' => $fuseArray));
 
-                return array('type'=> $type, 'formFuse' => $formFuse->createView(),'IDPart' => $fuse->getIDPart(), 'Label' => $fuse->getLabel(), 'Lam' => $fuse->getLam());
+                return array('type'=> $type, 'formFuse' => $formFuse->createView(),'IDPart' => $fuse->getIDPart(),
+                    'Label' => $fuse->getLabel(), 'Lam' => $fuse->getLam(),'systemID' => $systemID);
 
             case 'kondenzátor':
                 $serviceCap = $this->get('ikaros_capacitorService');
@@ -718,7 +716,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'qualityChoicesC' => $QualityChoicesC ,
                         'matChoicesC' => $MatChoicesC, 'capacitor' => $capacitorArray));
 
-                return array('type'=> $type, 'formCapacitor' => $formCapacitor->createView(),'IDPart' => $capacitor->getIDPart(), 'Label' => $capacitor->getLabel(), 'Lam' => $capacitor->getLam());
+                return array('type'=> $type, 'formCapacitor' => $formCapacitor->createView(),'IDPart' => $capacitor->getIDPart(),
+                    'Label' => $capacitor->getLabel(), 'Lam' => $capacitor->getLam(), 'systemID' => $systemID);
 
             case 'propojení':
                 $serviceConnection = $this->get('ikaros_connectionService');
@@ -731,7 +730,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'conTypeChoices' => $conTypeChoices,
                         'connection' => $conArray));
 
-                return array('type'=> $type, 'formConnection' => $formConnection->createView(),'IDPart' => $con->getIDPart(), 'Label' => $con->getLabel(), 'Lam' => $con->getLam());
+                return array('type'=> $type, 'formConnection' => $formConnection->createView(),'IDPart' => $con->getIDPart(),
+                    'Label' => $con->getLabel(), 'Lam' => $con->getLam(), 'systemID' => $systemID);
 
             case 'konektor, soket':
                 $serviceConSoc = $this->get('ikaros_connectorService');
@@ -744,7 +744,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'conSocTypeChoices' => $conSocTypeChoices, 'connectorSoc' => $connectorSocArray));
 
                 return array('type'=> $type, 'formConSoc' => $formConSoc->createView(),
-                    'IDPart' => $connectorSoc->getIDPart(), 'Label' => $connectorSoc->getLabel(), 'Lam' => $connectorSoc->getLam());
+                    'IDPart' => $connectorSoc->getIDPart(), 'Label' => $connectorSoc->getLabel(), 'Lam' => $connectorSoc->getLam(),
+                    'systemID' => $systemID);
 
             case 'konektor, obecný':
                 $serviceConGen = $this->get('ikaros_connectorService');
@@ -757,7 +758,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'conGenTypeChoices' => $conGenTypeChoices, 'connectorGen' => $connectorGenArray));
 
                 return array('type'=> $type, 'formConGen' => $formConGen->createView(),
-                    'IDPart' => $connectorGen->getIDPart(), 'Label' => $connectorGen->getLabel(), 'Lam' => $connectorGen->getLam());
+                    'IDPart' => $connectorGen->getIDPart(), 'Label' => $connectorGen->getLabel(), 'Lam' => $connectorGen->getLam(),
+                    'systemID' => $systemID);
 
             case 'spínač':
                 $serviceSwitch = $this->get('ikaros_switchService');
@@ -770,7 +772,7 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'swTypeChoices' => $swTypeChoices, 'switch' => $switchArray));
 
                 return array('type'=> $type, 'formSwitch' => $formSwitch->createView(),
-                    'IDPart' => $switch->getIDPart(), 'Label' => $switch->getLabel(), 'Lam' => $switch->getLam());
+                    'IDPart' => $switch->getIDPart(), 'Label' => $switch->getLabel(), 'Lam' => $switch->getLam(),'systemID' => $systemID);
 
             case 'filtr':
                 $serviceFilter = $this->get('ikaros_filterService');
@@ -783,7 +785,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'filterTypeChoices' => $filterTypeChoices, 'filter' => $filterArray));
 
                 return array('type'=> $type, 'formFilter' => $formFilter->createView(),
-                    'IDPart' => $filter->getIDPart(), 'Label' => $filter->getLabel(), 'Lam' => $filter->getLam());
+                    'IDPart' => $filter->getIDPart(), 'Label' => $filter->getLabel(), 'Lam' => $filter->getLam(),
+                    'systemID' => $systemID);
 
             case 'měřič motohodin':
                 $serviceRotElaps = $this->get('ikaros_rotDevElapsService');
@@ -794,7 +797,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'rotElaps' => $rotElapsArray));
 
                 return array('type'=> $type, 'formRotElaps' => $formRotElaps->createView(),
-                    'IDPart' => $rotElaps->getIDPart(), 'Label' => $rotElaps->getLabel(), 'Lam' => $rotElaps->getLam());
+                    'IDPart' => $rotElaps->getIDPart(), 'Label' => $rotElaps->getLabel(), 'Lam' => $rotElaps->getLam(),
+                    'systemID' => $systemID);
 
             case 'permaktron':
                 $serviceTubeWave = $this->get('ikaros_tubeWaveService');
@@ -805,7 +809,8 @@ class PartsController extends Controller {
                     array('envChoices' => $envChoices , 'sysEnv' => "", 'tubeWave' => $tubeWaveArray));
 
                 return array('type'=> $type, 'formTubeWave' => $formTubeWave->createView(),
-                    'IDPart' => $tubeWave->getIDPart(), 'Label' => $tubeWave->getLabel(), 'Lam' => $tubeWave->getLam());
+                    'IDPart' => $tubeWave->getIDPart(), 'Label' => $tubeWave->getLabel(), 'Lam' => $tubeWave->getLam(),
+                    'systemID' => $systemID);
         }
         return array('type' => $type);
     }

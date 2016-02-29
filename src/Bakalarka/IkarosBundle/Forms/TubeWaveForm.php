@@ -14,45 +14,45 @@ class TubeWaveForm extends AbstractType
         $sysEnv = $options['sysEnv'];
 
         if($sysEnv)
-        $builder
-            ->add('Environment', 'choice', array(
-                'label' => 'Prostředí',
-                'choices' => $envChoices,
-                'required' => true,
-                'data' => $sysEnv
-            ))
-            ->add('Label', 'text', array(
-                'required' => true,
-                'label' => 'Název',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('Type', 'text', array(
-                'required' => false,
-                'label' => 'Typ',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('CasePart', 'text', array(
-                'required' => false,
-                'label' => 'Pouzdro',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('Power', 'integer', array(
-                'required' => true,
-                'label' => 'Výkon (10-40000) [W]',
-                'error_bubbling' => true,
-                'max_length' => 64,
-                'attr' => array('min'=>10, 'max'=>40000)
-            ))
-            ->add('Frequency', 'number', array(
-                'required' => true,
-                'label' => 'Frekvence (0.1-18) [GHz]',
-                'error_bubbling' => true,
-                'max_length' => 64,
-                'attr' => array('min'=>0.1, 'max'=>18)
-            ));
+            $builder
+                ->add('Environment', 'choice', array(
+                    'label' => 'Prostředí',
+                    'choices' => $envChoices,
+                    'required' => true,
+                    'data' => $sysEnv
+                ))
+                ->add('Label', 'text', array(
+                    'required' => true,
+                    'label' => 'Název',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('Type', 'text', array(
+                    'required' => false,
+                    'label' => 'Typ',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('CasePart', 'text', array(
+                    'required' => false,
+                    'label' => 'Pouzdro',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('Power', 'integer', array(
+                    'required' => true,
+                    'label' => 'Výkon (10-40000) [W]',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                    'attr' => array('min'=>10, 'max'=>40000)
+                ))
+                ->add('Frequency', 'number', array(
+                    'required' => true,
+                    'label' => 'Frekvence (0.1-18) [GHz]',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                    'attr' => array('min'=>0.1, 'max'=>18)
+                ));
         else {
             $tubeWave = $options['tubeWave'];
             $builder

@@ -21,16 +21,17 @@ class ResistorService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Resistor');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getResQuality ($quality) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -42,6 +43,7 @@ class ResistorService {
         return $qualR[0]['Description'];
     }
 
+//====================================================================================================================
     public function getResQualityAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -56,6 +58,7 @@ class ResistorService {
         return $QualityChoices;
     }
 
+//====================================================================================================================
     public function getResMaterialAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -70,6 +73,7 @@ class ResistorService {
         return $MatChoices;
     }
 
+//====================================================================================================================
     public function getResMaterialDescAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -81,6 +85,7 @@ class ResistorService {
         return $materialAll;
     }
 
+//====================================================================================================================
     public function getActiveResistors($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -98,6 +103,7 @@ class ResistorService {
         return $resistors;
     }
 
+//====================================================================================================================
     public function lamResistor (Resistor $res) {
         $mat = $res->getMaterial();
         $stmt = $this->doctrine->getManager()
@@ -147,6 +153,7 @@ class ResistorService {
         return $lambda;
     }
 
+//====================================================================================================================
     public function setLams(Resistor $res, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());

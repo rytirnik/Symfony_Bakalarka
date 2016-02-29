@@ -17,9 +17,7 @@ use Bakalarka\IkarosBundle\Entity\PCB;
 
 class PCBController extends Controller
 {
-
-//====================================================================================================================
-
+    /**
     /**
      * @Route("/newPCB/{id}", name="newPCB")
      * @Template()
@@ -261,7 +259,7 @@ class PCBController extends Controller
         $post = $this->get('request')->request;
         $id = $post->get('id');
 
-       $servicePCB = $this->get('ikaros_pcbService');
+        $servicePCB = $this->get('ikaros_pcbService');
         $pcb = $servicePCB->getItem($id);
 
         $sysID = $pcb->getSystemID();
@@ -558,11 +556,9 @@ class PCBController extends Controller
 
             ->getForm();
 
-
-
         return $this->render('BakalarkaIkarosBundle:PCB:detailPCB.html.twig', array(
             'form' => $form->createView(), 'idSend' => $id, 'form2' => $form2->createView(), 'form3' => $form3->createView(),
-            'smt' => $smt, 'pcb' => $pcb
+            'smt' => $smt, 'pcb' => $pcb, 'systemID' => $pcb->getSystemID()->getIDSystem()
         ));
     }
 //====================================================================================================================

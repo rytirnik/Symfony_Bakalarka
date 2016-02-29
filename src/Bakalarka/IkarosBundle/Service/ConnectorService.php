@@ -25,7 +25,8 @@ class ConnectorService {
     protected function getRepositorySoc() {
         return $this->doctrine->getRepository('BakalarkaIkarosBundle:ConnectorSoc');
     }
-	
+
+//====================================================================================================================
 	public function getItemsGen() {
 		return $this->getRepositoryGen()->findAll();
 	}
@@ -33,7 +34,6 @@ class ConnectorService {
     public function getItemsSoc() {
         return $this->getRepositorySoc()->findAll();
     }
-
 	
 	public function getItemGen($id) {
 		return $this->getRepositoryGen()->find($id);
@@ -43,6 +43,7 @@ class ConnectorService {
         return $this->getRepositorySoc()->find($id);
     }
 
+//====================================================================================================================
     public function getConSocTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -57,6 +58,7 @@ class ConnectorService {
         return $conSocTypeChoices;
     }
 
+//====================================================================================================================
     public function getConGenTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -71,6 +73,7 @@ class ConnectorService {
         return $conGenTypeChoices;
     }
 
+//====================================================================================================================
     public function getActiveConnectorsSoc ($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -84,6 +87,7 @@ class ConnectorService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getActiveConnectorsGen($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -97,6 +101,7 @@ class ConnectorService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamConSoc (ConnectorSoc $conSoc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -132,6 +137,7 @@ class ConnectorService {
         return $lambda;
     }
 
+//====================================================================================================================
     public function lamConGen (ConnectorGen $conGen) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -209,6 +215,7 @@ class ConnectorService {
     }
 
 
+//====================================================================================================================
     public function setLamsConGen(ConnectorGen $conGen, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());

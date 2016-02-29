@@ -9,8 +9,6 @@ use Bakalarka\IkarosBundle\Entity\Fuse;
 class FuseService {
 	
 	protected $doctrine;
-
-
 	
 	public function __construct(Registry $doctrine) {
 		$this->doctrine = $doctrine;
@@ -20,16 +18,17 @@ class FuseService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Fuse');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getActiveFuses($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -45,6 +44,7 @@ class FuseService {
         return $fuses;
     }
 
+//====================================================================================================================
     public function lamFuse (Fuse $fuse) {
         $sEnv = $fuse->getEnvironment();
         $stmt = $this->doctrine->getManager()

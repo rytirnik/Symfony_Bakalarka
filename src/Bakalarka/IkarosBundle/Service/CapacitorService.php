@@ -21,7 +21,8 @@ class CapacitorService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Capacitor');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
@@ -31,6 +32,7 @@ class CapacitorService {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getCapQuality ($quality) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -41,7 +43,7 @@ class CapacitorService {
         $qualC = $stmt->fetchAll();
         return $qualC[0]['Description'];
     }
-
+//====================================================================================================================
     public function getCapQualityAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -56,6 +58,7 @@ class CapacitorService {
         return $QualityChoicesC;
     }
 
+//====================================================================================================================
     public function getCapMaterialAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -69,6 +72,7 @@ class CapacitorService {
         return $MatChoicesC;
     }
 
+//====================================================================================================================
     public function getCapMaterialDescAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -80,6 +84,7 @@ class CapacitorService {
         return $capMaterialAll;
     }
 
+//====================================================================================================================
     public function getActiveCapacitors($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -97,6 +102,7 @@ class CapacitorService {
         return $capacitors;
     }
 
+//====================================================================================================================
     public function lamCapacitor (Capacitor $cap) {
         $matC = $cap->getMaterial();
         $stmt = $this->doctrine->getManager()
@@ -173,6 +179,7 @@ class CapacitorService {
         return $lambda;
     }
 
+//====================================================================================================================
     public function setLams(Capacitor $cap, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());

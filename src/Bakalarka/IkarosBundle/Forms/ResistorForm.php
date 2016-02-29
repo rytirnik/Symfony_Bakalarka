@@ -97,12 +97,12 @@ class ResistorForm extends AbstractType
         else {
             $res = $options['resistor'];
             $builder
-            ->add('Environment', 'choice', array(
-                'label' => 'Prostředí',
-                'choices' => $envChoices,
-                'required' => true,
-                'data' => $res["Environment"]
-            ))
+                ->add('Environment', 'choice', array(
+                    'label' => 'Prostředí',
+                    'choices' => $envChoices,
+                    'required' => true,
+                    'data' => $res["Environment"]
+                ))
                 ->add('Label', 'text', array(
                     'required' => true,
                     'label' => 'Název',

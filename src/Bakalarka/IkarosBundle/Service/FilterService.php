@@ -18,16 +18,17 @@ class FilterService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Filter');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getFilterTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -41,6 +42,7 @@ class FilterService {
         return $filterTypeChoices;
     }
 
+//====================================================================================================================
     public function getActiveFilters($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -54,6 +56,7 @@ class FilterService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamFilter (Filter $filter) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -83,6 +86,4 @@ class FilterService {
         $lambda = $base * $piQ * $piE * pow(10, -6);
         return $lambda;
     }
-
-
 }

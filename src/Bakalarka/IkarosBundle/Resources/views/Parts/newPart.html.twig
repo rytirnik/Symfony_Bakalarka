@@ -44,8 +44,11 @@
     
        
   <div id = "content">
-    <h1> Přidat součástku </h1>
-      <hr />
+  <a class = "btn goBack" href = "{{ path('detail', {id:system.IDSystem}) }}"> Zpět na systém  </a>
+
+  <h1> Přidat součástku </h1>
+
+    <hr />
       <h3> <span class="bold"> Systém: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ system.Title }} </a> </h3>
         <p class="lam"> ∑(λ): <span id="SysLam" > {{ system.Lam }}</span> </p>
       <h3> <span class="bold"> Deska: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ pcb.Label }} </a> </h3>

@@ -17,16 +17,17 @@ class TubeWaveService {
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:TubeWave');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
 
-	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getActiveTubeWaves($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -40,6 +41,7 @@ class TubeWaveService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamTubeWave (TubeWave $tubeWave) {
         $sEnv = $tubeWave->getEnvironment();
         $stmt = $this->doctrine->getManager()

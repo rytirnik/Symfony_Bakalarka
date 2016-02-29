@@ -15,41 +15,41 @@ class FilterForm extends AbstractType
         $filterTypeChoices = $options['filterTypeChoices'];
 
         if($sysEnv)
-        $builder
-            ->add('Environment', 'choice', array(
-                'label' => 'Prostředí',
-                'choices' => $envChoices,
-                'required' => true,
-                'data' => $sysEnv
-            ))
-            ->add('FilterType', 'choice', array(
-                'required' => true,
-                'label' => 'Popis',
-                'choices' => $filterTypeChoices
-            ))
-            ->add('Quality', 'choice', array(
-                'required' => true,
-                'label' => 'Kvalita',
-                'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
-            ))
-            ->add('Label', 'text', array(
-                'required' => true,
-                'label' => 'Název',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('Type', 'text', array(
-                'required' => false,
-                'label' => 'Typ',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ))
-            ->add('CasePart', 'text', array(
-                'required' => false,
-                'label' => 'Pouzdro',
-                'error_bubbling' => true,
-                'max_length' => 64,
-            ));
+            $builder
+                ->add('Environment', 'choice', array(
+                    'label' => 'Prostředí',
+                    'choices' => $envChoices,
+                    'required' => true,
+                    'data' => $sysEnv
+                ))
+                ->add('FilterType', 'choice', array(
+                    'required' => true,
+                    'label' => 'Popis',
+                    'choices' => $filterTypeChoices
+                ))
+                ->add('Quality', 'choice', array(
+                    'required' => true,
+                    'label' => 'Kvalita',
+                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
+                ))
+                ->add('Label', 'text', array(
+                    'required' => true,
+                    'label' => 'Název',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('Type', 'text', array(
+                    'required' => false,
+                    'label' => 'Typ',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ))
+                ->add('CasePart', 'text', array(
+                    'required' => false,
+                    'label' => 'Pouzdro',
+                    'error_bubbling' => true,
+                    'max_length' => 64,
+                ));
         else {
             $filter = $options['filter'];
             $builder
@@ -93,7 +93,6 @@ class FilterForm extends AbstractType
                     'data' => $filter["CasePart"]
                 ));
         }
-
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver) {

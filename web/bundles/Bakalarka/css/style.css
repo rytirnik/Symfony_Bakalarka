@@ -653,3 +653,11 @@ textarea {
 #formConGen label {
     width: 45%;
 }
+
+.goBack {
+    width: 15%;
+    float: right;
+    margin-right: 2em;
+    margin-top: 2em;
+    font-weight: bold;
+}

@@ -47,7 +47,9 @@
     
        
   <div id = "content">
-    <h1> Detail desky </h1>
+      <a class = "btn goBack" href = "{{ path('detail', {id:systemID}) }}"> Zpět na systém  </a>
+
+      <h1> Detail desky </h1>
 
         <div class="formDiv">
           <form id = "EditPcbForm" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form) }}>

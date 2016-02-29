@@ -9,7 +9,6 @@ use Bakalarka\IkarosBundle\Entity\PCB;
 use Bakalarka\IkarosBundle\Entity\PartSMT;
 
 class PcbService {
-	
 	protected $doctrine;
     protected $systemService;
     protected $partService;
@@ -17,37 +16,40 @@ class PcbService {
 	public function __construct(Registry $doctrine, SystemService $systemService) {
 		$this->doctrine = $doctrine;
         $this->systemService = $systemService;
-
 	}
 	
 	protected function getRepository() {
 		return $this->doctrine->getRepository('BakalarkaIkarosBundle:PCB');
 	}
-	
+
+//====================================================================================================================
 	public function getItems() {
 		return $this->getRepository()->findAll();
 	}
-
 	
 	public function getItem($id) {
 		return $this->getRepository()->find($id);
 	}
 
+//====================================================================================================================
     public function getSmtByID ($smtID){
         $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:PartSMT');
         return $RU->findOneBy(array('ID_Part_SMT' => $smtID));
     }
 
+//====================================================================================================================
     public function getActiveSmt($pcbID) {
         $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:PartSMT');
         return $RU->findBy(array('PCB_ID' => $pcbID, 'DeleteDate' => NULL));
     }
 
+//====================================================================================================================
     public function getActivePcbBySystemID($systemID) {
         $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:PCB');
         return $RU->findBy(array('SystemID' => $systemID, 'DeleteDate' => NULL));
     }
 
+//====================================================================================================================
     public function getActivePcbBySystemID_extended($systemID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -64,6 +66,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     //TODO ???
     public function getAllPcbBySystemID($systemID) {
         $stmt = $this->doctrine->getManager()
@@ -81,6 +84,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getPartsSmtBySystemID ($systemID) {
         $query = $this->doctrine->getManager()
             ->createQuery('SELECT p FROM BakalarkaIkarosBundle:PartSMT p JOIN p.PCB_ID pcb
@@ -89,11 +93,13 @@ class PcbService {
         return $query->getResult();
     }
 
+//====================================================================================================================
     public function getActivePartsSmtByPcbID ($pcbID) {
         $RU = $this->doctrine->getManager()->getRepository('BakalarkaIkarosBundle:PartSMT');
         return $RU->findBy(array('PCB_ID' => $pcbID, 'DeleteDate' => NULL));
     }
 
+//====================================================================================================================
     public function setDeleteDateToPcbs($pcbs) {
         $manager = $this->doctrine->getManager();
         foreach($pcbs as $pcb) {
@@ -108,6 +114,7 @@ class PcbService {
         return "";
     }
 
+//====================================================================================================================
     public function setDeleteDateToPcb($pcb, $system) {
         $manager = $this->doctrine->getManager();
         try {
@@ -121,6 +128,7 @@ class PcbService {
         return "";
     }
 
+//====================================================================================================================
     public function getEnvironmentPcb () {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -131,6 +139,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getEquipmentTypes() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -145,6 +154,7 @@ class PcbService {
         return $EquipChoices;
     }
 
+//====================================================================================================================
     public function getMaterials() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -159,6 +169,7 @@ class PcbService {
         return $MatChoices;
     }
 
+//====================================================================================================================
     public function getEquipmentTypeByID ($equipID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -169,6 +180,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getEquipmentTypeByDesc ($desc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -179,6 +191,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getMaterialByID($matID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -189,6 +202,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function getMaterialByDesc($desc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -199,6 +213,7 @@ class PcbService {
         return $stmt->fetchAll();
     }
 
+//====================================================================================================================
     public function lamPCBwire (PCB $pcb, $piE) {
         $b = 0.000017;
         $layers = $pcb->getLayers();
@@ -206,7 +221,6 @@ class PcbService {
         $pAuto = $pcb->getSolderingPointAuto();
         $pHand = $pcb->getSolderingPointHand();
 
-        //$piE = 1; //DOSTAT ZE SYSTEMU
         $piC = 1;
         if($layers > 2)
             $piC = 0.65 * pow($layers, 0.63);
@@ -215,6 +229,7 @@ class PcbService {
         return $lambda;
     }
 
+//====================================================================================================================
     public function lamPCBsmt (PartSMT $smtP, $CR, $alfaS, $zivot, $dt) {
         $piLC = $smtP->getLeadConfig();
         $h = 5;
