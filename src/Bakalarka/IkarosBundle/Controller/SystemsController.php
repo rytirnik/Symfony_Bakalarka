@@ -26,8 +26,10 @@ class SystemsController extends Controller
         $query = $em->createQuery('SELECT s,u FROM BakalarkaIkarosBundle:System s JOIN s.UserID u');
         $systems = $query->getResult();*/
 
+        $serviceSystem = $this->get('ikaros_systemService');
+        $systems = $serviceSystem->getAllSystems();
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT s.*, u.Username,(SELECT count(p.SystemID)
                                 FROM PCB p
@@ -37,9 +39,9 @@ class SystemsController extends Controller
                             WHERE p.SystemID = s.ID_System AND part.PCB_ID = p.ID_PCB AND part.DeleteDate IS NULL) AS PartsCnt
                         FROM System s JOIN User u ON(s.UserID = u.ID_User)');
         $stmt->execute();
-        $s = $stmt->fetchAll();
+        $s = $stmt->fetchAll();*/
 
-        return array('systems' => $s);
+        return array('systems' => $systems);
     }
 
     /**
@@ -51,6 +53,9 @@ class SystemsController extends Controller
         $error = $err;
 
         $user = $this->get('security.context')->getToken()->getUser();
+        $userID = $user->getIDUser();
+        $serviceSystem = $this->get('ikaros_systemService');
+        $systems = $serviceSystem->getUserSystems($userID);
 
         //$em = $this->get('doctrine')->getManager();
         //$RU = $em->getRepository('System');
@@ -59,7 +64,7 @@ class SystemsController extends Controller
         //$systems = $repository->findBy(array('UserID' => $user->getIDUser()));
 
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT s.*, u.Username,(SELECT count(p.SystemID)
                                 FROM PCB p
@@ -71,7 +76,7 @@ class SystemsController extends Controller
                         WHERE UserID = :UserID AND s.DeleteDate IS NULL');
 
         $stmt->execute(array(':UserID' => $user->getIDUser()));
-        $systems = $stmt->fetchAll();
+        $systems = $stmt->fetchAll();*/
 
         /*try {
             $em = $this->get('doctrine')->getManager();
@@ -104,8 +109,15 @@ class SystemsController extends Controller
      */
     public function detailAction($id)
     {
+        $serviceSystem = $this->get('ikaros_systemService');
+        $servicePCB = $this->get('ikaros_pcbService');
+        $servicePart = $this->get('ikaros_partService');
 
-        $stmt = $this->getDoctrine()->getManager()
+        $system = $serviceSystem->getActiveSystem($id);
+        $pcb = $servicePCB->getActivePcbBySystemID_extended($id);
+        $parts = $servicePart->getActivePartsBySystemID($id);
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT s.*, u.Username, (SELECT count(p.SystemID)
                                 FROM PCB p
@@ -116,9 +128,9 @@ class SystemsController extends Controller
                         FROM System s LEFT JOIN User u ON (u.ID_User = s.UserID)
                         WHERE s.ID_System = :sysID AND s.DeleteDate IS NULL');
         $stmt->execute(array(':sysID' => $id));
-        $system = $stmt->fetch();
+        $system = $stmt->fetch();*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
         ->getConnection()
             ->prepare('SELECT *
                         FROM PCB pcb
@@ -130,10 +142,10 @@ class SystemsController extends Controller
                             GROUP BY part.PCB_ID) AS neco ON ( neco.id = pcb.ID_PCB )
                         WHERE pcb.SystemID = :sysID AND pcb.DeleteDate IS NULL');
         $stmt->execute(array(':sysID' => $id));
-        $desk = $stmt->fetchAll();
+        $desk = $stmt->fetchAll();*/
 
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT p.*
                         FROM Part p JOIN PCB pcb ON (p.PCB_ID = pcb.ID_PCB)
@@ -141,9 +153,9 @@ class SystemsController extends Controller
                         ORDER BY p.entity_type');
 
         $stmt->execute(array(':sysID' => $id));
-        $parts = $stmt->fetchAll();
+        $parts = $stmt->fetchAll();*/
 
-        return array('system' => $system, 'desk' => $desk, 'parts' => $parts);
+        return array('system' => $system, 'desk' => $pcb, 'parts' => $parts);
     }
 
     /**
@@ -152,8 +164,16 @@ class SystemsController extends Controller
      */
     public function detailAdminAction($id)
     {
+        $serviceSystem = $this->get('ikaros_systemService');
+        $servicePCB = $this->get('ikaros_pcbService');
+        $servicePart = $this->get('ikaros_partService');
 
-        $stmt = $this->getDoctrine()->getManager()
+        $system = $serviceSystem->getSystem($id);
+        $pcb = $servicePCB->getAllPcbBySystemID($id);
+        $parts = $servicePart->getAllPartsBySystemID($id);
+
+
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT s.*, u.Username, (SELECT count(p.SystemID)
                                 FROM PCB p
@@ -164,9 +184,9 @@ class SystemsController extends Controller
                         FROM System s LEFT JOIN User u ON (u.ID_User = s.UserID)
                         WHERE s.ID_System = :sysID');
         $stmt->execute(array(':sysID' => $id));
-        $system = $stmt->fetch();
+        $system = $stmt->fetch();*/
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT *
                         FROM PCB pcb
@@ -178,21 +198,21 @@ class SystemsController extends Controller
                             GROUP BY part.PCB_ID) AS neco ON ( neco.id = pcb.ID_PCB )
                         WHERE pcb.SystemID = :sysID AND pcb.DeleteDate IS NULL');
         $stmt->execute(array(':sysID' => $id));
-        $desk = $stmt->fetchAll();
+        $desk = $stmt->fetchAll();*/
 
 
-        $stmt = $this->getDoctrine()->getManager()
+        /*$stmt = $this->getDoctrine()->getManager()
             ->getConnection()
             ->prepare('SELECT p.*
                         FROM Part p JOIN PCB pcb ON (p.PCB_ID = pcb.ID_PCB)
                         WHERE pcb.SystemID = :sysID
                         ORDER BY p.entity_type');
         $stmt->execute(array(':sysID' => $id));
-        $parts = $stmt->fetchAll();
+        $parts = $stmt->fetchAll();*/
 
         //return array('system' => $system, 'desk' => $desk, 'parts' => $parts);
         return $this->render('BakalarkaIkarosBundle:Systems:detail.html.twig', array(
-            'system' => $system, 'desk' => $desk, 'parts' => $parts
+            'system' => $system, 'desk' => $pcb, 'parts' => $parts
         ));
     }
 
@@ -275,8 +295,10 @@ class SystemsController extends Controller
         $envChoices = $serviceSystem->getEnvChoices();
 
         $em =  $this->getDoctrine()->getManager();
-        $RU = $em->getRepository('BakalarkaIkarosBundle:System');
-        $system = $RU->findOneBy(array('ID_System' => $id));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:System');
+        //$system = $RU->findOneBy(array('ID_System' => $id));
+
+        $system = $serviceSystem->getItem($id);
 
          $form = $this->createFormBuilder($system)
             ->add('Environment', 'choice', array(
@@ -382,7 +404,11 @@ class SystemsController extends Controller
         $serviceSystem = $this->get('ikaros_systemService');
         $system = $serviceSystem->getItem($id);
 
-        $system->setDeleteDate(new \DateTime());
+        $status = $serviceSystem->setDeleteDate($system);
+        if($status)
+            return $this->redirect($this->generateUrl('mySystems'));
+
+        /*$system->setDeleteDate(new \DateTime());
         try {
             $em->persist($system);
             $error = "System " + $system->getTitle() + " byl vymazán.";
@@ -390,18 +416,23 @@ class SystemsController extends Controller
         } catch (\Exception $e) {
             $error = "System " + $system->getTitle() + " se nepodařilo vymazat.";
             return $this->redirect($this->generateUrl('mySystems'));
-        }
+        }*/
 
-        $RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
-        $pcbs = $RU->findBy(array('SystemID' => $id, 'DeleteDate' => NULL));
+        //$RU = $em->getRepository('BakalarkaIkarosBundle:PCB');
+        //$pcbs = $RU->findBy(array('SystemID' => $id, 'DeleteDate' => NULL));
 
+        $servicePCB = $this->get('ikaros_pcbService');
+        $pcbs = $servicePCB->getActivePcbBySystemID($id);
 
-        $query = $em->createQuery('SELECT p FROM BakalarkaIkarosBundle:Part p JOIN p.PCB_ID pcb
+        $servicePart = $this->get('ikaros_partService');
+        $parts = $servicePart->getActiveParts($id);
+
+        /*$query = $em->createQuery('SELECT p FROM BakalarkaIkarosBundle:Part p JOIN p.PCB_ID pcb
                                     WHERE pcb.SystemID = :id AND pcb.DeleteDate IS NULL AND p.DeleteDate IS NULL');
         $query->setParameters(array('id' => $id));
-        $parts = $query->getResult();
+        $parts = $query->getResult();*/
 
-        foreach($parts as $part) {
+        /*foreach($parts as $part) {
             try {
                 //$part->setIsActive(0);
                 $part->setDeleteDate(new \DateTime());
@@ -410,14 +441,23 @@ class SystemsController extends Controller
                 $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
                 return $this->redirect($this->generateUrl('mySystems'));
             }
-        }
+        }*/
 
-        $query = $em->createQuery('SELECT p FROM BakalarkaIkarosBundle:PartSMT p JOIN p.PCB_ID pcb
+        $status = $servicePart->setDeleteDateToParts($parts);
+        if($status)
+            return $this->redirect($this->generateUrl('mySystems'));
+
+        /*$query = $em->createQuery('SELECT p FROM BakalarkaIkarosBundle:PartSMT p JOIN p.PCB_ID pcb
                                     WHERE pcb.SystemID = :id AND pcb.DeleteDate IS NULL AND p.DeleteDate IS NULL');
         $query->setParameters(array('id' => $id));
-        $partsmt = $query->getResult();
+        $partsmt = $query->getResult();*/
 
-        foreach($partsmt as $part) {
+        $partsmt = $servicePCB->getPartsSmtBySystemID($id);
+        $status = $servicePart->setDeleteDateToParts($partsmt);
+        if($status)
+            return $this->redirect($this->generateUrl('mySystems'));
+
+        /*foreach($partsmt as $part) {
             try {
                 //$part->setIsActive(0);
                 $part->setDeleteDate(new \DateTime());
@@ -426,9 +466,9 @@ class SystemsController extends Controller
                 $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
                 return $this->redirect($this->generateUrl('mySystems'));
             }
-        }
+        }*/
 
-        foreach($pcbs as $pcb) {
+        /*foreach($pcbs as $pcb) {
             try {
                 //$pcb->setIsActive(0);
                 $pcb->setDeleteDate(new \DateTime());
@@ -437,12 +477,15 @@ class SystemsController extends Controller
                 $error = "Desku " + $pcb->getLabel() + " se nepodařilo vymazat.";
                 return $this->redirect($this->generateUrl('mySystems'));
             }
-        }
+        }*/
+
+        $status = $servicePCB->setDeleteDateToPcbs($pcbs);
+        if($status)
+            return $this->redirect($this->generateUrl('mySystems'));
 
         $em->flush();
 
-
-       return $this->redirect($this->generateUrl('mySystems'));
+        return $this->redirect($this->generateUrl('mySystems'));
     }
 }
 

@@ -33,6 +33,52 @@ class PartService {
 		return $this->getRepository()->find($id);
 	}
 
+    //vraci entity
+    public function getActiveParts($systemID) {
+        $query = $this->doctrine->getManager()
+            ->createQuery('SELECT p FROM BakalarkaIkarosBundle:Part p JOIN p.PCB_ID pcb
+                                    WHERE pcb.SystemID = :id AND pcb.DeleteDate IS NULL AND p.DeleteDate IS NULL');
+        $query->setParameters(array('id' => $systemID));
+        return $query->getResult();
+    }
+
+    //vraci pole
+    public function getActivePartsBySystemID ($systemID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*
+                        FROM Part p JOIN PCB pcb ON (p.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.SystemID = :sysID AND p.DeleteDate IS NULL AND pcb.DeleteDate IS NULL
+                        ORDER BY p.entity_type');
+
+        $stmt->execute(array(':sysID' => $systemID));
+        return $stmt->fetchAll();
+    }
+
+    public function getAllPartsBySystemID ($systemID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT p.*
+                        FROM Part p JOIN PCB pcb ON (p.PCB_ID = pcb.ID_PCB)
+                        WHERE pcb.SystemID = :sysID
+                        ORDER BY p.entity_type');
+        $stmt->execute(array(':sysID' => $systemID));
+        return $stmt->fetchAll();
+    }
+
+    public function setDeleteDateToParts($parts) {
+        $manager = $this->doctrine->getManager();
+        foreach($parts as $part) {
+            try {
+                $part->setDeleteDate(new \DateTime());
+                $manager->persist($part);
+            } catch (\Exception $e) {
+                $error = "Součástku " + $part->getLabel() + " se nepodařilo vymazat.";
+                return $error;
+            }
+        }
+        return "";
+    }
 
    public function setLams($lambda, Part $part, $pcbID = -1, $oldLam = 0) {
 
