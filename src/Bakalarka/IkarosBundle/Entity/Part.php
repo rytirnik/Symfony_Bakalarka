@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  *                        "propojení" = "Connections", "konektor, soket" = "ConnectorSoc",
  *                        "konektor, obecný" = "ConnectorGen" , "spínač" = "Switches",
  *                        "filtr" = "Filter", "měřič motohodin" = "RotDevElaps",
- *                        "permaktron" = "TubeWave"  })
+ *                        "permaktron" = "TubeWave", "dioda, nízkofrekvenční" = "DiodeLF" })
  */
 class Part {
     /**

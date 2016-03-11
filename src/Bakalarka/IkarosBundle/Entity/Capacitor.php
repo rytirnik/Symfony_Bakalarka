@@ -533,7 +533,7 @@ class Capacitor extends Part{
     /**
      * Get Quality
      *
-     * @return floa
+     * @return float
      */
     public function getQuality()
     {

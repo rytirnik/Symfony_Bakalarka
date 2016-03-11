@@ -2,77 +2,98 @@
 /**
  * Created by PhpStorm.
  * User: Nikey
- * Date: 26.3.14
- * Time: 17:56
+ * Date: 7.3.16
+ * Time: 19:36
  */
 
 namespace Bakalarka\IkarosBundle\Entity;
 
+
 use Doctrine\ORM\Mapping as ORM;
-use Bakalarka\IkarosBundle\Entity\Part;
+
 
 /**
  * @ORM\Entity
  */
-class Connections extends Part{
+class DiodeLF extends Part{
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(length=30)
      */
-    protected $ConnectionType;
-
+    protected $typ;
 
     /**
-     * @var integer $ID_Part
+     * @var integer
      */
     protected $ID_Part;
 
     /**
-     * @var string $Label
+     * @var string
      */
     protected $Label;
 
     /**
-     * @var float $Lam
+     * @var float
      */
     protected $Lam;
 
     /**
-     * @var string $Type
+     * @var string
      */
     protected $Type;
 
     /**
-     * @var string $CasePart
+     * @var string
      */
     protected $CasePart;
 
     /**
-     * @var integer $Temp
+     * @var integer
      */
     protected $Temp;
 
     /**
-     * @var string $Environment
+     * @var string
      */
     protected $Environment;
 
     /**
-     * @var \DateTime $CreateDate
+     * @var \DateTime
      */
     protected $CreateDate;
 
     /**
-     * @var \DateTime $DeleteDate
+     * @var \DateTime
      */
     protected $DeleteDate;
 
     /**
-     * @var Bakalarka\IkarosBundle\Entity\PCB
+     * @var \Bakalarka\IkarosBundle\Entity\PCB
      */
     protected $PCB_ID;
 
 
+    /**
+     * Set typ
+     *
+     * @param string $typ
+     * @return neco
+     */
+    public function setTyp($typ)
+    {
+        $this->typ = $typ;
 
+        return $this;
+    }
+
+    /**
+     * Get typ
+     *
+     * @return string 
+     */
+    public function getTyp()
+    {
+        return $this->typ;
+    }
 
     /**
      * Get ID_Part
@@ -88,12 +109,12 @@ class Connections extends Part{
      * Set Label
      *
      * @param string $label
-     * @return Fuse
+     * @return neco
      */
     public function setLabel($label)
     {
         $this->Label = $label;
-    
+
         return $this;
     }
 
@@ -111,12 +132,12 @@ class Connections extends Part{
      * Set Lam
      *
      * @param float $lam
-     * @return Fuse
+     * @return neco
      */
     public function setLam($lam)
     {
         $this->Lam = $lam;
-    
+
         return $this;
     }
 
@@ -134,12 +155,12 @@ class Connections extends Part{
      * Set Type
      *
      * @param string $type
-     * @return Fuse
+     * @return neco
      */
     public function setType($type)
     {
         $this->Type = $type;
-    
+
         return $this;
     }
 
@@ -157,12 +178,12 @@ class Connections extends Part{
      * Set CasePart
      *
      * @param string $casePart
-     * @return Fuse
+     * @return neco
      */
     public function setCasePart($casePart)
     {
         $this->CasePart = $casePart;
-    
+
         return $this;
     }
 
@@ -180,12 +201,12 @@ class Connections extends Part{
      * Set Temp
      *
      * @param integer $temp
-     * @return Fuse
+     * @return neco
      */
     public function setTemp($temp)
     {
         $this->Temp = $temp;
-    
+
         return $this;
     }
 
@@ -203,12 +224,12 @@ class Connections extends Part{
      * Set Environment
      *
      * @param string $environment
-     * @return Fuse
+     * @return neco
      */
     public function setEnvironment($environment)
     {
         $this->Environment = $environment;
-    
+
         return $this;
     }
 
@@ -226,12 +247,12 @@ class Connections extends Part{
      * Set CreateDate
      *
      * @param \DateTime $createDate
-     * @return Fuse
+     * @return neco
      */
     public function setCreateDate($createDate)
     {
         $this->CreateDate = $createDate;
-    
+
         return $this;
     }
 
@@ -249,12 +270,12 @@ class Connections extends Part{
      * Set DeleteDate
      *
      * @param \DateTime $deleteDate
-     * @return Fuse
+     * @return neco
      */
     public function setDeleteDate($deleteDate)
     {
         $this->DeleteDate = $deleteDate;
-    
+
         return $this;
     }
 
@@ -271,65 +292,23 @@ class Connections extends Part{
     /**
      * Set PCB_ID
      *
-     * @param Bakalarka\IkarosBundle\Entity\PCB $pCBID
-     * @return Fuse
+     * @param \Bakalarka\IkarosBundle\Entity\PCB $pCBID
+     * @return neco
      */
     public function setPCBID(\Bakalarka\IkarosBundle\Entity\PCB $pCBID = null)
     {
         $this->PCB_ID = $pCBID;
-    
+
         return $this;
     }
 
     /**
      * Get PCB_ID
      *
-     * @return Bakalarka\IkarosBundle\Entity\PCB 
+     * @return \Bakalarka\IkarosBundle\Entity\PCB 
      */
     public function getPCBID()
     {
         return $this->PCB_ID;
-    }
-
-    /**
-     * Set ConnectionType
-     *
-     * @param float $connectionType
-     * @return Connection
-     */
-    public function setConnectionType($connectionType)
-    {
-        $this->ConnectionType = $connectionType;
-    
-        return $this;
-    }
-
-    /**
-     * Get ConnectionType
-     *
-     * @return float 
-     */
-    public function getConnectionType()
-    {
-        return $this->ConnectionType;
-    }
-
-    public function setParams($obj) {
-        $this->Label = $obj->Label;
-        $this->ConnectionType = $obj->ConnectionType;
-        $this->CasePart = $obj->CasePart;
-        $this->Environment = $obj->Environment;
-        $this->Type = $obj->Type;
-    }
-
-    public function to_array() {
-        return (array(
-            'Label' => $this->Label,
-            'CasePart' => $this->CasePart,
-            'Type' => $this->Type,
-            'Lam' => $this->Lam,
-            'Environment' => $this->Environment,
-            'ConnectionType' => $this->ConnectionType
-        ));
     }
 }
