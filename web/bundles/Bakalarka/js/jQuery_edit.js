@@ -15,6 +15,7 @@ var oldSwitch = [];
 var oldFilter = [];
 var oldRotElaps = [];
 var oldTubeWave = [];
+var oldDiodeLF = [];
 
 function savePCB(event) {
     var save = $(event.target).attr('id') == 'SavePCB1';
@@ -844,6 +845,80 @@ function saveTubeWave(event) {
     $("#EditTubeWave").show();
 }
 
+function saveDiodeLF(event) {
+    var save = $(event.target).attr('id') == 'SaveDiodeLF';
+    var err = 0;
+    if(save) {
+        $data =  $("#formDiodeLFE").serializeJSON();
+        var val = $('#formDiodeLFE input[id="diodeLFForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formDiodeLFE .submitMsg").remove();
+            $("#formDiodeLFE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formDiodeLFE input[id="diodeLFForm_VoltageRated"]').val();
+        if ( val == "" || !($.isNumeric(val))) {
+            $("#formDiodeLFE .submitMsg").remove();
+            $("#formDiodeLFE").append('<span class="submitMsg"> Vyplňte max. napětí (desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formDiodeLFE input[id="diodeLFForm_VoltageApplied"]').val();
+        if ( val == "" || !($.isNumeric(val))) {
+            $("#formDiodeLFE .submitMsg").remove();
+            $("#formDiodeLFE").append('<span class="submitMsg"> Vyplňte provozní napětí (desetinné číslo) </span>');
+            return;
+        }
+
+
+
+        $url = $("#formDiodeLFE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "diodeLF"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formDiodeLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formDiodeLFE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formDiodeLFE input[id="diodeLFForm_Label"]').val(oldDiodeLF['Label']);
+        $('#formDiodeLFE input[id="diodeLFForm_Type"]').val(oldDiodeLF['Type']);
+        $('#formDiodeLFE select[id="diodeLFForm_Application"]').val(oldDiodeLF['Application']);
+        $('#formDiodeLFE select[id="diodeLFForm_Quality"]').val(oldDiodeLF['Quality']);
+        $('#formDiodeLFE select[id="diodeLFForm_Environment"]').val(oldDiodeLF['Environment']);
+        $('#formDiodeLFE input[id="diodeLFForm_CasePart"]').val(oldDiodeLF['CasePart']);
+        $('#formDiodeLFE input[id="diodeLFForm_VoltageRated"]').val(oldDiodeLF['VoltageRated']);
+        $('#formDiodeLFE input[id="diodeLFForm_VoltageApplied"]').val(oldDiodeLF['VoltageApplied']);
+        $('#formDiodeLFE select[id="diodeLFForm_ContactConstruction"]').val(oldDiodeLF['ContactConstruction']);
+        $('#formDiodeLFE input[id="diodeLFForm_DPTemp"]').val(oldDiodeLF['DPTemp']);
+        $('#formDiodeLFE input[id="diodeLFForm_PassiveTemp"]').val(oldDiodeLF['PassiveTemp']);
+    }
+    $("#formDiodeLFE input:not(:submit), #formDiodeLFE select").attr('disabled', 'disabled');
+    $('#SaveDiodeLF').remove();
+    $('#CancelDiodeLF').next('div').remove();
+    $('#CancelDiodeLF').remove();
+    $("#EditDiodeLF").show();
+}
+
+
+
+
 function deleteSTM(event) {
     event.preventDefault();
     var $this = $(event.target);
@@ -1401,6 +1476,48 @@ jQuery(document).ready(function($) {
         $("#formTubeWaveE .submitHandle").append(cancel);
 
         $("#formTubeWaveE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+
+    $("#EditDiodeLF").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formDiodeLFE input:not(:submit), #formDiodeLFE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditDiodeLF").hide();
+        oldDiodeLF['Label'] = $('#formDiodeLFE input[id="diodeLFForm_Label"]').val();
+        oldDiodeLF['Type'] = $('#formDiodeLFE input[id="diodeLFForm_Type"]').val();
+        oldDiodeLF['Quality'] = $('#formDiodeLFE select[id="diodeLFForm_Quality"]').val();
+        oldDiodeLF['Application'] = $('#formDiodeLFE select[id="diodeLFForm_Application"]').val();
+        oldDiodeLF['Environment'] = ($('#formDiodeLFE select[id="diodeLFForm_Environment"]').val());
+        oldDiodeLF['CasePart'] = $('#formDiodeLFE input[id="diodeLFForm_CasePart"]').val();
+        oldDiodeLF['VoltageRated'] = $('#formDiodeLFE input[id="diodeLFForm_VoltageRated"]').val();
+        oldDiodeLF['VoltageApplied'] = $('#formDiodeLFE input[id="diodeLFForm_VoltageApplied"]').val();
+        oldDiodeLF['ContactConstruction'] = $('#formDiodeLFE select[id="diodeLFForm_ContactConstruction"]').val();
+        oldDiodeLF['DPTemp'] = $('#formDiodeLFE input[id="diodeLFForm_DPTemp"]').val();
+        oldDiodeLF['PassiveTemp'] = $('#formDiodeLFE input[id="diodeLFForm_PassiveTemp"]').val();
+
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveDiodeLF')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveDiodeLF)
+        ;
+        $("#formDiodeLFE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelDiodeLF')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveDiodeLF)
+        ;
+        $("#formDiodeLFE .submitHandle").append(cancel);
+
+        $("#formDiodeLFE .submitHandle").append('<div class="cleaner"></div>');
 
     });
 

@@ -116,6 +116,14 @@
                </div>
                <p class="pRed"> * povinné pole </p>
            </form>
+      {% elseif type == "dioda, nízkofrekvenční" %}
+           <form id="formDiodeLFE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formDiodeLF) }}>
+               {{ form_widget(formDiodeLF) }}
+               <div class = "submitHandle">
+                   <input id="EditDiodeLF" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
 
       {% endif %}
 

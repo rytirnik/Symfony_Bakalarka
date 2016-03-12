@@ -646,9 +646,14 @@ textarea {
     width: 48%;
 }
 
-.short label{
+.short label, .long label{
     width: 40%;
 }
+
+.long {
+    width: 65%;
+}
+
 
 #formConGen label {
     width: 45%;

@@ -8,6 +8,7 @@ use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
 use Bakalarka\IkarosBundle\Entity\TubeWave;
 
+use Bakalarka\IkarosBundle\Forms\DiodeLFForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -19,6 +20,7 @@ use Bakalarka\IkarosBundle\Entity\Capacitor;
 use Bakalarka\IkarosBundle\Entity\Fuse;
 use Bakalarka\IkarosBundle\Entity\Connections;
 use Bakalarka\IkarosBundle\Entity\ConnectorSoc;
+use Bakalarka\IkarosBundle\Entity\DiodeLF;
 
 use Bakalarka\IkarosBundle\Forms\FuseForm;
 use Bakalarka\IkarosBundle\Forms\ConnectionForm;
@@ -30,6 +32,7 @@ use Bakalarka\IkarosBundle\Forms\ResistorForm;
 use Bakalarka\IkarosBundle\Forms\RotDevElapsForm;
 use Bakalarka\IkarosBundle\Forms\SwitchForm;
 use Bakalarka\IkarosBundle\Forms\TubeWaveForm;
+
 
 class PartsController extends Controller {
 
@@ -55,6 +58,7 @@ class PartsController extends Controller {
         $serviceFilter = $this->get('ikaros_filterService');
         $serviceRotDevElaps = $this->get('ikaros_rotDevElapsService');
         $serviceTubeWave = $this->get('ikaros_tubeWaveService');
+        $serviceDiode = $this->get('ikaros_diodeService');
 
         $resistors = $serviceResistor->getActiveResistors($id);
         $capacitors = $serviceCapacitor->getActiveCapacitors($id);
@@ -66,6 +70,8 @@ class PartsController extends Controller {
         $filters = $serviceFilter->getActiveFilters($id);
         $rotElaps = $serviceRotDevElaps->getActiveRotDevElaps($id);
         $tubeWaves = $serviceTubeWave->getActiveTubeWaves($id);
+        $diodesLF = $serviceDiode->getActiveDiodesLF($id);
+
 
 //---Resistor form---------------------------------------------------------------------------
 
@@ -131,6 +137,16 @@ class PartsController extends Controller {
 
         $formTubeWave = $this->createForm(new TubeWaveForm(), array(),array('envChoices' => $envChoices , 'sysEnv' => $sysEnv));
 
+//---DiodesLF form---------------------------------------------------------------------------
+
+        $DiodeQualityChoices = $serviceDiode->getDiodeLFQualityChoices();
+        $DiodeAppChoices = $serviceDiode->getDiodeLFAppChoices();
+        $DiodeCCChoices = $serviceDiode->getContactConstructionChoices();
+
+        $formDiodeLF = $this->createForm(new DiodeLFForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'qualityChoices' => $DiodeQualityChoices , 'appChoices' => $DiodeAppChoices,
+            'contactChoices' => $DiodeCCChoices));
+
 //---render template--------------------------------------------------------------------------
 
         $resistorMatDescAll = $serviceResistor->getResMaterialDescAll();
@@ -147,6 +163,7 @@ class PartsController extends Controller {
             'formFilter' => $formFilter->createView(), 'filters' => $filters,
             'formRotElaps' => $formRotElaps->createView(), 'rotElaps' => $rotElaps,
             'formTubeWave' => $formTubeWave->createView(), 'tubeWaves' => $tubeWaves,
+            'formDiodeLF' => $formDiodeLF->createView(), 'diodesLF' => $diodesLF,
         ));
 
     }
@@ -660,7 +677,61 @@ class PartsController extends Controller {
         );
 
     }
+//====================================================================================================================
 
+
+    /**
+     * @Route("/newDiodeLF", name="newDiodeLF")
+     * @Template()
+     */
+    public function newDiodeLFAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->diodeLFForm;
+
+        $diode = new DiodeLF();
+        $diode->setParams($obj);
+
+        $serviceDiode = $this->get('ikaros_diodeService');
+        $lambda = $serviceDiode->lamDiodeLF($diode, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $diode, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $diode->getLabel(),
+                'Lam' => $diode->getLam(),
+                'VoltageRated' => $diode->getVoltageRated(),
+                'VoltageApplied' => $diode->getVoltageApplied(),
+                'DPTemp' => $diode->getDPTemp(),
+                'PassiveTemp' => $diode->getPassiveTemp(),
+                'Application' => $diode->getApplication(),
+                'ContactConstruction' => $serviceDiode->getContactConstructionDesc($diode->getContactConstruction()),
+                'Quality' => $diode->getQuality(),
+                'Environment' => $diode->getEnvironment(),
+                'idP' => $diode->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
 //====================================================================================================================
     /**
      * @Route("/detailPart/{id}", name="detailPart")
@@ -810,6 +881,22 @@ class PartsController extends Controller {
 
                 return array('type'=> $type, 'formTubeWave' => $formTubeWave->createView(),
                     'IDPart' => $tubeWave->getIDPart(), 'Label' => $tubeWave->getLabel(), 'Lam' => $tubeWave->getLam(),
+                    'systemID' => $systemID);
+
+            case 'dioda, nízkofrekvenční':
+                $serviceDiode = $this->get('ikaros_diodeService');
+                $diodeLF = $serviceDiode->getItem($id);
+                $diodeArray = $diodeLF->to_array();
+                $DiodeQualityChoices = $serviceDiode->getDiodeLFQualityChoices();
+                $DiodeAppChoices = $serviceDiode->getDiodeLFAppChoices();
+                $DiodeCCChoices = $serviceDiode->getContactConstructionChoices();
+
+                $formDiodeLF = $this->createForm(new DiodeLFForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'qualityChoices' => $DiodeQualityChoices , 'appChoices' => $DiodeAppChoices,
+                    'contactChoices' => $DiodeCCChoices, 'diodeLF' => $diodeArray));
+
+                return array('type'=> $type, 'formDiodeLF' => $formDiodeLF->createView(),
+                    'IDPart' => $diodeLF->getIDPart(), 'Label' => $diodeLF->getLabel(), 'Lam' => $diodeLF->getLam(),
                     'systemID' => $systemID);
         }
         return array('type' => $type);
@@ -1128,6 +1215,28 @@ class PartsController extends Controller {
                         json_encode(array(
                             'Label' => $tubeWave->getLabel(),
                             'Lam' => $tubeWave->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'diodeLF':
+                $obj = $objF->diodeLFForm;
+                $serviceDiode = $this->get('ikaros_diodeService');
+                $diodeLF = $serviceDiode->getItem($id);
+                $diodeLF->setParams($obj);
+
+                $oldLam = $diodeLF->getLam();
+                $lambda = $serviceDiode->lamDiodeLF($diodeLF, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $diodeLF, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $diodeLF->getLabel(),
+                            'Lam' => $diodeLF->getLam()
                         )),
                         200,
                         array(

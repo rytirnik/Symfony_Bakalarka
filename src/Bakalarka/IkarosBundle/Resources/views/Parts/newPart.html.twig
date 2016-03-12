@@ -13,6 +13,7 @@
         var newFilterURL = "{{ path('newFilter') }}";
         var newRotElapsURL = "{{ path('newRotElaps') }}";
         var newTubeWaveURL = "{{ path('newTubeWave') }}";
+        var newDiodeLFURL = "{{ path('newDiodeLF') }}";
         var idPCB = {{pcb.IDPCB}};
 
         var detailURL = "{{ path('detailPart', {id:-1}) }}";
@@ -93,6 +94,9 @@
             </li>
             <li>
                 <a href = "#tab_10"> Permaktron </a>
+            </li>
+            <li>
+                <a href = "#tab_11"> Diody, nízkofrekvenční </a>
             </li>
 
 
@@ -672,6 +676,66 @@
                         </tbody>
                     </table>
                 {% endif %}
+            </div>
+
+            <div id = "tab_11" class = "tab_content">
+                <h2> Přidat diodu, nízkofrekvenční </h2>
+
+                <form id="formDiodeLF" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formDiodeLF) }}>
+
+                    {{ form_widget(formDiodeLF) }}
+                    <div id = "submitHandle">
+                        <input id="saveDiodeLF" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if diodesLF %}
+                    <h2> Uložené diody, nízkofrekvenční </h2>
+                    <table id="DiodeLFTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Aplikace </td>
+                            <td> Kvalita </td>
+                            <td> Konstrukce kontaktu </td>
+                            <td> Maximální napětí </td>
+                            <td> Provozní napětí </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for diode in diodesLF %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Quality }}</td>
+                                {% if diode.ContactConstruction == 1 %}
+                                    <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> Metal. Bonded </td>
+                                {% else %}
+                                    <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> Non-Metal. Bonded </td>
+                                {% endif %}
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.VoltageRated }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.VoltageApplied }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.DPTemp }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.PassiveTemp }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
             </div>
 
 

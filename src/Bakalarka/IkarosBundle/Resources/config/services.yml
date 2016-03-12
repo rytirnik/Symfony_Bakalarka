@@ -26,14 +26,17 @@ services:
   ikaros_tubeWaveService:
         class: 'Bakalarka\IkarosBundle\Service\TubeWaveService'
         arguments: ['@doctrine']
+  ikaros_diodeService:
+        class: 'Bakalarka\IkarosBundle\Service\DiodeService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
 
 
   ikaros_systemService:
         class: 'Bakalarka\IkarosBundle\Service\SystemService'
         arguments: ['@doctrine']
   ikaros_partService:
-          class: 'Bakalarka\IkarosBundle\Service\PartService'
-          arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+        class: 'Bakalarka\IkarosBundle\Service\PartService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_pcbService:
-            class: 'Bakalarka\IkarosBundle\Service\PcbService'
-            arguments: ['@doctrine', '@ikaros_systemService']
+        class: 'Bakalarka\IkarosBundle\Service\PcbService'
+        arguments: ['@doctrine', '@ikaros_systemService']

@@ -17,9 +17,33 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DiodeLF extends Part{
     /**
-     * @ORM\Column(length=30)
+     * @ORM\Column(length=60)
      */
-    protected $typ;
+    protected $Application;
+    /**
+     * @ORM\Column(length=10)
+     */
+    protected $Quality;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $ContactConstruction;
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $VoltageRated;
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $VoltageApplied;
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $DPTemp;
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $PassiveTemp;
 
     /**
      * @var integer
@@ -71,29 +95,6 @@ class DiodeLF extends Part{
      */
     protected $PCB_ID;
 
-
-    /**
-     * Set typ
-     *
-     * @param string $typ
-     * @return neco
-     */
-    public function setTyp($typ)
-    {
-        $this->typ = $typ;
-
-        return $this;
-    }
-
-    /**
-     * Get typ
-     *
-     * @return string 
-     */
-    public function getTyp()
-    {
-        return $this->typ;
-    }
 
     /**
      * Get ID_Part
@@ -310,5 +311,198 @@ class DiodeLF extends Part{
     public function getPCBID()
     {
         return $this->PCB_ID;
+    }
+
+    /**
+     * Set Application
+     *
+     * @param string $application
+     * @return DiodeLF
+     */
+    public function setApplication($application)
+    {
+        $this->Application = $application;
+
+        return $this;
+    }
+
+    /**
+     * Get Application
+     *
+     * @return string 
+     */
+    public function getApplication()
+    {
+        return $this->Application;
+    }
+
+    /**
+     * Set Quality
+     *
+     * @param string $quality
+     * @return DiodeLF
+     */
+    public function setQuality($quality)
+    {
+        $this->Quality = $quality;
+
+        return $this;
+    }
+
+    /**
+     * Get Quality
+     *
+     * @return string 
+     */
+    public function getQuality()
+    {
+        return $this->Quality;
+    }
+
+    /**
+     * Set ContactConstruction
+     *
+     * @param integer $contactConstruction
+     * @return DiodeLF
+     */
+    public function setContactConstruction($contactConstruction)
+    {
+        $this->ContactConstruction = $contactConstruction;
+
+        return $this;
+    }
+
+    /**
+     * Get ContactConstruction
+     *
+     * @return integer 
+     */
+    public function getContactConstruction()
+    {
+        return $this->ContactConstruction;
+    }
+
+    /**
+     * Set VoltageRated
+     *
+     * @param float $voltageRated
+     * @return DiodeLF
+     */
+    public function setVoltageRated($voltageRated)
+    {
+        $this->VoltageRated = $voltageRated;
+
+        return $this;
+    }
+
+    /**
+     * Get VoltageRated
+     *
+     * @return float 
+     */
+    public function getVoltageRated()
+    {
+        return $this->VoltageRated;
+    }
+
+    /**
+     * Set VoltageApplied
+     *
+     * @param float $voltageApplied
+     * @return DiodeLF
+     */
+    public function setVoltageApplied($voltageApplied)
+    {
+        $this->VoltageApplied = $voltageApplied;
+
+        return $this;
+    }
+
+    /**
+     * Get VoltageApplied
+     *
+     * @return float 
+     */
+    public function getVoltageApplied()
+    {
+        return $this->VoltageApplied;
+    }
+
+    /**
+     * Set DPTemp
+     *
+     * @param float $dPTemp
+     * @return DiodeLF
+     */
+    public function setDPTemp($dPTemp)
+    {
+        $this->DPTemp = $dPTemp;
+
+        return $this;
+    }
+
+    /**
+     * Get DPTemp
+     *
+     * @return float 
+     */
+    public function getDPTemp()
+    {
+        return $this->DPTemp;
+    }
+
+    /**
+     * Set PassiveTemp
+     *
+     * @param float $passiveTemp
+     * @return DiodeLF
+     */
+    public function setPassiveTemp($passiveTemp)
+    {
+        $this->PassiveTemp = $passiveTemp;
+
+        return $this;
+    }
+
+    /**
+     * Get PassiveTemp
+     *
+     * @return float 
+     */
+    public function getPassiveTemp()
+    {
+        return $this->PassiveTemp;
+    }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality;
+        $this->Application = $obj->Application;
+        $this->ContactConstruction = intval($obj->ContactConstruction);
+        $this->DPTemp = floatval($obj->DPTemp);
+        $this->PassiveTemp = floatval($obj->PassiveTemp);
+        $this->VoltageApplied = floatval($obj->VoltageApplied);
+        $this->VoltageRated = floatval($obj->VoltageRated);
+
+    }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Application' => $this->Application,
+            'Quality' => $this->Quality,
+            'ContactConstruction' => $this->ContactConstruction,
+            'DPTemp' => $this->DPTemp,
+            'PassiveTemp' => $this->PassiveTemp,
+            'VoltageApplied' => $this->VoltageApplied,
+            'VoltageRated' => $this->VoltageRated
+        ));
     }
 }
