@@ -198,14 +198,26 @@ class SystemsController extends Controller
         $serviceSystem = $this->get('ikaros_systemService');
         $system = $serviceSystem->getItem($id);
 
+        $tempChanged = 0;
+        if($system->getTemp() != floatval($obj->Temp))
+            $tempChanged = 1;
+
         $system->setTitle($obj->Title);
         $system->setTemp($obj->Temp);
         $system->setNote($obj->Note);
         $system->setEnvironment($obj->Environment);
 
         try {
-            $em->persist($system);
-            $em->flush();
+            if($tempChanged) {
+                //prepocet soucastek zavislych na teplote systemu
+                $servicePart = $this->get('ikaros_partService');
+                $partsToUpdate = $servicePart->getPartsAddictedOnSysTemp($id);
+                foreach($partsToUpdate as $part)
+                    $this->recalculate($part['ID_Part'],$part['entity_type']);
+            }
+            else {
+                $em->persist($system);
+            }
 
         } catch (\Exception $e) {
             return new Response(
@@ -218,7 +230,7 @@ class SystemsController extends Controller
                 )
             );
         }
-
+        $em->flush();
         return new Response(
             json_encode(array(
                 'Title' => $system->getTitle()
@@ -273,5 +285,43 @@ class SystemsController extends Controller
 
         return $this->redirect($this->generateUrl('mySystems'));
     }
+
+
+    public function recalculate ($idPart, $entityType) {
+        $servicePart = $this->get('ikaros_partService');
+
+        $lambda = -1;
+
+        switch ($entityType) {
+            case 'rezistor':
+                $service = $this->get('ikaros_resistorService');
+                break;
+            case 'kondenzátor':
+                $service = $this->get('ikaros_capacitorService');
+                break;
+            case 'konektor, obecný':
+                $service = $this->get('ikaros_connectorService');
+                $part = $service->getItemGen($idPart);
+                $oldlam = $part->getLam();
+                $lambda = $service->lamConGen($part, $part->getPCBID());
+                break;
+
+            case 'dioda, nízkofrekvenční':
+                $service = $this->get('ikaros_diodeService');
+                break;
+            default:
+                return "";
+        }
+
+        if($lambda == -1) {
+            $part = $service->getItem($idPart);
+            $oldlam = $part->getLam();
+            $lambda = $service->calculateLam($part, $part->getPCBID());
+        }
+
+        $msg = $servicePart->setLams($lambda, $part, -1, $oldlam);
+        return $msg;
+    }
+
 }
 

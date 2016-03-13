@@ -57,7 +57,7 @@ class SwitchService {
     }
 
 //====================================================================================================================
-    public function lamSwitch (Switches $switch) {
+    public function calculateLam (Switches $switch, $pcbID = -1) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *

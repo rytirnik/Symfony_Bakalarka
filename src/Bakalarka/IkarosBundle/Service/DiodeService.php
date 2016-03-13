@@ -113,7 +113,7 @@ class DiodeService {
     }
 
 //====================================================================================================================
-    public function lamDiodeLF (DiodeLF $diode, $pcbID) {
+    public function calculateLam (DiodeLF $diode, $pcbID) {
         $sEnv = $diode->getEnvironment();
         $stmt = $this->doctrine->getManager()
             ->getConnection()

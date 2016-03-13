@@ -103,7 +103,14 @@ class CapacitorService {
     }
 
 //====================================================================================================================
-    public function lamCapacitor (Capacitor $cap) {
+    public function calculateLam ($cap, $pcbID) {
+        //$cap = $this->getItem($partID);
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $sysTemp = $system->getTemp();
+        $cap->setTemp($sysTemp + $cap->getPassiveTemp());
+
         $matC = $cap->getMaterial();
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -179,8 +186,10 @@ class CapacitorService {
         return $lambda;
     }
 
+
+
 //====================================================================================================================
-    public function setLams(Capacitor $cap, $pcbID) {
+    /*public function setLams(Capacitor $cap, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());
 
@@ -206,6 +215,6 @@ class CapacitorService {
             return $e;
         }
         return "";
-    }
+    }*/
 
 }

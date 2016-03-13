@@ -42,7 +42,7 @@ class TubeWaveService {
     }
 
 //====================================================================================================================
-    public function lamTubeWave (TubeWave $tubeWave) {
+    public function calculateLam (TubeWave $tubeWave, $pcbID = -1) {
         $sEnv = $tubeWave->getEnvironment();
         $stmt = $this->doctrine->getManager()
             ->getConnection()

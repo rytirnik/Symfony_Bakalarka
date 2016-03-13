@@ -104,7 +104,13 @@ class ResistorService {
     }
 
 //====================================================================================================================
-    public function lamResistor (Resistor $res) {
+    public function calculateLam (Resistor $res, $pcbID) {
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $sysTemp = $system->getTemp();
+        $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
+
         $mat = $res->getMaterial();
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -154,12 +160,12 @@ class ResistorService {
     }
 
 //====================================================================================================================
-    public function setLams(Resistor $res, $pcbID) {
+    /*public function setLams(Resistor $res, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());
 
-        $sysTemp = $system->getTemp();
-        $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
+        //$sysTemp = $system->getTemp();
+        //$res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
 
         $lambda = $this->lamResistor($res);
 
@@ -180,7 +186,7 @@ class ResistorService {
             return $e;
         }
         return "";
-    }
+    }*/
 
 
 }

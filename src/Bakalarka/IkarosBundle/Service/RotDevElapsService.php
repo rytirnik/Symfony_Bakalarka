@@ -42,7 +42,7 @@ class RotDevElapsService {
     }
 
 //====================================================================================================================
-    public function lamRotElaps (RotDevElaps $rotElaps) {
+    public function calculateLam (RotDevElaps $rotElaps, $pcbID = -1) {
         $sEnv = $rotElaps->getEnvironment();
         $stmt = $this->doctrine->getManager()
             ->getConnection()

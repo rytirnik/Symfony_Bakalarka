@@ -76,6 +76,21 @@ class PartService {
     }
 
 //====================================================================================================================
+    public function getPartsAddictedOnSysTemp ($systemID) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT part.ID_Part, part.entity_type
+                        FROM Part part JOIN
+                        (SELECT pcb.ID_PCB
+                        FROM System system JOIN PCB pcb ON (system.ID_System = pcb.SystemID)
+                        WHERE system.ID_System = :sysID) AS desky
+                        ON (desky.ID_PCB = part.PCB_ID)
+                        WHERE part.DeleteDate IS NULL AND Temp IS NOT NULL');
+        $stmt->execute(array(':sysID' => $systemID));
+        return $stmt->fetchAll();
+    }
+
+//====================================================================================================================
     public function setDeleteDateToParts($parts) {
         $manager = $this->doctrine->getManager();
         foreach($parts as $part) {
@@ -156,4 +171,7 @@ class PartService {
         }
         return "lam_".$lam;
     }
+
+
+
 }

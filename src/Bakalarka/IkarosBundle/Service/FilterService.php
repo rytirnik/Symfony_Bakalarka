@@ -57,7 +57,7 @@ class FilterService {
     }
 
 //====================================================================================================================
-    public function lamFilter (Filter $filter) {
+    public function calculateLam (Filter $filter, $pcbID = -1) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *

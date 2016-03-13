@@ -45,7 +45,7 @@ class FuseService {
     }
 
 //====================================================================================================================
-    public function lamFuse (Fuse $fuse) {
+    public function calculateLam (Fuse $fuse, $pcbID = -1) {
         $sEnv = $fuse->getEnvironment();
         $stmt = $this->doctrine->getManager()
             ->getConnection()

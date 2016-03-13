@@ -46,7 +46,7 @@ class Part {
     protected $CasePart;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     protected $Temp;
 

@@ -43,7 +43,7 @@ class System {
     protected $Lam;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     protected $Temp;
     /**

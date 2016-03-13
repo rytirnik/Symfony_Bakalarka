@@ -184,9 +184,14 @@ class PartsController extends Controller {
         $res = new Resistor();
         $res->setParams($obj);
 
-        $service = $this->get('ikaros_resistorService');
-        $e = $service->setLams($res, $id);
-        $qualR = $service->getResQuality($res->getQuality());
+        $serviceResistor = $this->get('ikaros_resistorService');
+        $servicePart = $this->get('ikaros_partService');
+        //$e = $service->setLams($res, $id);
+
+        $lambda = $serviceResistor->calculateLam($res, $id);
+        $e = $servicePart->setLams($lambda, $res, $id);
+
+        $qualR = $serviceResistor->getResQuality($res->getQuality());
 
         if($e != "")
             return new Response(
@@ -236,9 +241,15 @@ class PartsController extends Controller {
         $cap = new Capacitor();
         $cap->setParams($obj);
 
-        $service = $this->get('ikaros_capacitorService');
-        $e = $service->setLams($cap, $id);
-        $qualC = $service->getCapQuality($cap->getQuality());
+        $serviceCapacitor = $this->get('ikaros_capacitorService');
+        $servicePart = $this->get('ikaros_partService');
+
+        //$lambda = $serviceCapacitor->lamCapacitor($cap, $id);
+        $lambda = $serviceCapacitor->calculateLam($cap, $id);
+        $e = $servicePart->setLams($lambda, $cap, $id);
+
+        //$e = $service->setLams($cap, $id);
+        $qualC = $serviceCapacitor->getCapQuality($cap->getQuality());
 
         if($e != "")
             return new Response(
@@ -288,7 +299,7 @@ class PartsController extends Controller {
         $fuse->setParams($obj);
 
         $service = $this->get('ikaros_fuseService');
-        $lambda = $service->lamFuse($fuse);
+        $lambda = $service->calculateLam($fuse);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $fuse, $id);
@@ -337,7 +348,7 @@ class PartsController extends Controller {
         $con->setParams($obj);
 
         $service = $this->get('ikaros_connectionService');
-        $lambda = $service->lamConnection($con);
+        $lambda = $service->calculateLam($con);
         $conType = $service->getConType($con->getConnectionType());
 
         $serviceParts = $this->get('ikaros_partService');
@@ -438,7 +449,13 @@ class PartsController extends Controller {
         $conGen->setParams($obj);
 
         $service = $this->get('ikaros_connectorService');
-        $e = $service->setLamsConGen($conGen, $id);
+        $lambda = $service->lamConGen($conGen, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $conGen, $id);
+
+        //$service = $this->get('ikaros_connectorService');
+        //$e = $service->setLamsConGen($conGen, $id);
         if($e != "")
                 return new Response(
                 json_encode(array(
@@ -488,7 +505,7 @@ class PartsController extends Controller {
         $switch->setParams($obj);
 
         $service = $this->get('ikaros_switchService');
-        $lambda = $service->lamSwitch($switch);
+        $lambda = $service->calculateLam($switch);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $switch, $id);
@@ -539,7 +556,7 @@ class PartsController extends Controller {
         $filter->setParams($obj);
 
         $service = $this->get('ikaros_filterService');
-        $lambda = $service->lamFilter($filter);
+        $lambda = $service->calculateLam($filter);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $filter, $id);
@@ -592,7 +609,7 @@ class PartsController extends Controller {
         $rotElaps->setParams($obj);
 
         $service = $this->get('ikaros_rotDevElapsService');
-        $lambda = $service->lamRotElaps($rotElaps);
+        $lambda = $service->calculateLam($rotElaps);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $rotElaps, $id);
@@ -644,7 +661,7 @@ class PartsController extends Controller {
         $tubeWave->setParams($obj);
 
         $service = $this->get('ikaros_tubeWaveService');
-        $lambda = $service->lamTubeWave($tubeWave);
+        $lambda = $service->calculateLam($tubeWave);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $tubeWave, $id);
@@ -696,7 +713,7 @@ class PartsController extends Controller {
         $diode->setParams($obj);
 
         $serviceDiode = $this->get('ikaros_diodeService');
-        $lambda = $serviceDiode->lamDiodeLF($diode, $id);
+        $lambda = $serviceDiode->calculateLam($diode, $id);
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $diode, $id);
@@ -983,12 +1000,12 @@ class PartsController extends Controller {
                 $res = $serviceResistor->getItem($id);
                 $res->setParams($obj);
 
-                $sysTemp = $system->getTemp();
-                $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
+                //$sysTemp = $system->getTemp();
+                //$res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
 
                 $oldLam = $res->getLam();
 
-                $lambda = $serviceResistor->lamResistor($res);
+                $lambda = $serviceResistor->calculateLam($res, $pcb->getIDPCB());
                 $e = $servicePart->setLams($lambda, $res, -1, $oldLam);
 
                 if($e == "")
@@ -1011,7 +1028,7 @@ class PartsController extends Controller {
                 $fuse->setParams($obj);
 
                 $oldLam = $fuse->getLam();
-                $lambda = $serviceFuse->lamFuse($fuse);
+                $lambda = $serviceFuse->calculateLam($fuse);
 
                 $e = $servicePart->setLams($lambda, $fuse, -1, $oldLam);
 
@@ -1033,12 +1050,12 @@ class PartsController extends Controller {
                 $cap = $serviceCapacitor->getItem($id);
                 $cap->setParams($obj);
 
-                $sysTemp = $system->getTemp();
-                $cap->setTemp($sysTemp + $cap->getPassiveTemp());
+                //$sysTemp = $system->getTemp();
+                //$cap->setTemp($sysTemp + $cap->getPassiveTemp());
 
                 $oldLam = $cap->getLam();
-                $lambda = $serviceCapacitor->lamCapacitor($cap);
-
+                //$lambda = $serviceCapacitor->lamCapacitor($cap, $pcb->getIDPCB());
+                $lambda = $serviceCapacitor->calculateLam($cap, $pcb->getIDPCB());
                 $e = $servicePart->setLams($lambda, $cap, -1, $oldLam);
 
                 if($e == "")
@@ -1061,7 +1078,7 @@ class PartsController extends Controller {
                 $con->setParams($obj);
 
                 $oldLam = $con->getLam();
-                $lambda = $serviceConnection->lamConnection($con);
+                $lambda = $serviceConnection->calculateLam($con);
 
                 $e = $servicePart->setLams($lambda, $con, -1, $oldLam);
 
@@ -1110,7 +1127,7 @@ class PartsController extends Controller {
                 $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
                 $oldLam = $conGen->getLam();
-                $lambda = $serviceConGen->lamConGen($conGen);
+                $lambda = $serviceConGen->lamConGen($conGen, $pcb->getIDPCB());
 
                 $e = $servicePart->setLams($lambda, $conGen, -1, $oldLam);
 
@@ -1134,7 +1151,7 @@ class PartsController extends Controller {
                 $switch->setParams($obj);
 
                 $oldLam = $switch->getLam();
-                $lambda = $serviceSwitch->lamSwitch($switch);
+                $lambda = $serviceSwitch->calculateLam($switch);
 
                 $e = $servicePart->setLams($lambda, $switch, -1, $oldLam);
 
@@ -1158,7 +1175,7 @@ class PartsController extends Controller {
                 $filter->setParams($obj);
 
                 $oldLam = $filter->getLam();
-                $lambda = $serviceFilter->lamFilter($filter);
+                $lambda = $serviceFilter->calculateLam($filter);
 
                 $e = $servicePart->setLams($lambda, $filter, -1, $oldLam);
 
@@ -1182,7 +1199,7 @@ class PartsController extends Controller {
                 $rotElaps->setParams($obj);
 
                 $oldLam = $rotElaps->getLam();
-                $lambda = $serviceRotDevElaps->lamRotElaps($rotElaps);
+                $lambda = $serviceRotDevElaps->calculateLam($rotElaps);
 
                 $e = $servicePart->setLams($lambda, $rotElaps, -1, $oldLam);
 
@@ -1206,7 +1223,7 @@ class PartsController extends Controller {
                 $tubeWave->setParams($obj);
 
                 $oldLam = $tubeWave->getLam();
-                $lambda = $serviceTubeWave->lamTubeWave($tubeWave);
+                $lambda = $serviceTubeWave->calculateLam($tubeWave);
 
                 $e = $servicePart->setLams($lambda, $tubeWave, -1, $oldLam);
 
@@ -1228,7 +1245,7 @@ class PartsController extends Controller {
                 $diodeLF->setParams($obj);
 
                 $oldLam = $diodeLF->getLam();
-                $lambda = $serviceDiode->lamDiodeLF($diodeLF, $pcb->getIDPCB());
+                $lambda = $serviceDiode->calculateLam($diodeLF, $pcb->getIDPCB());
 
                 $e = $servicePart->setLams($lambda, $diodeLF, -1, $oldLam);
 

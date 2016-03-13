@@ -138,7 +138,12 @@ class ConnectorService {
     }
 
 //====================================================================================================================
-    public function lamConGen (ConnectorGen $conGen) {
+    public function lamConGen (ConnectorGen $conGen, $pcbID) {
+        $pcb = $this->pcbService->getItem($pcbID);
+        $system = $this->systemService->getItem($pcb->getSystemID());
+
+        $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
+
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
@@ -216,11 +221,11 @@ class ConnectorService {
 
 
 //====================================================================================================================
-    public function setLamsConGen(ConnectorGen $conGen, $pcbID) {
+    /*public function setLamsConGen(ConnectorGen $conGen, $pcbID) {
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());
 
-        $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
+        //$conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
         $lambda = $this->lamConGen($conGen);
 
@@ -240,5 +245,5 @@ class ConnectorService {
             return $e;
         }
         return "";
-    }
+    }*/
 }

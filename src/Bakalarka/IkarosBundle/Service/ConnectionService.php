@@ -72,7 +72,7 @@ class ConnectionService {
     }
 
 //====================================================================================================================
-    public function lamConnection (Connections $con) {
+    public function calculateLam (Connections $con, $pcbID = -1) {
         $sEnv = $con->getEnvironment();
         $stmt = $this->doctrine->getManager()
             ->getConnection()
