@@ -74,14 +74,15 @@ class ConnectionService {
 //====================================================================================================================
     public function calculateLam (Connections $con, $pcbID = -1) {
         $sEnv = $con->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 171');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(171, $sEnv);
 
         $base = $con->getConnectionType();
         $lambda = $base * $piE * pow(10, -6);

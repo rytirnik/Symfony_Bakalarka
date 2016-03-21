@@ -4,11 +4,13 @@ namespace Bakalarka\IkarosBundle\Controller;
 
 use Bakalarka\IkarosBundle\Entity\ConnectorGen;
 use Bakalarka\IkarosBundle\Entity\Filter;
+use Bakalarka\IkarosBundle\Entity\Optoelectronics;
 use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
 use Bakalarka\IkarosBundle\Entity\TubeWave;
 
 use Bakalarka\IkarosBundle\Forms\DiodeLFForm;
+use Bakalarka\IkarosBundle\Forms\OptoForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -59,6 +61,7 @@ class PartsController extends Controller {
         $serviceRotDevElaps = $this->get('ikaros_rotDevElapsService');
         $serviceTubeWave = $this->get('ikaros_tubeWaveService');
         $serviceDiode = $this->get('ikaros_diodeService');
+        $serviceOpto = $this->get('ikaros_optoService');
 
         $resistors = $serviceResistor->getActiveResistors($id);
         $capacitors = $serviceCapacitor->getActiveCapacitors($id);
@@ -71,6 +74,7 @@ class PartsController extends Controller {
         $rotElaps = $serviceRotDevElaps->getActiveRotDevElaps($id);
         $tubeWaves = $serviceTubeWave->getActiveTubeWaves($id);
         $diodesLF = $serviceDiode->getActiveDiodesLF($id);
+        $optos = $serviceOpto->getActiveOptos($id);
 
 
 //---Resistor form---------------------------------------------------------------------------
@@ -147,6 +151,15 @@ class PartsController extends Controller {
             'sysEnv' => $sysEnv, 'qualityChoices' => $DiodeQualityChoices , 'appChoices' => $DiodeAppChoices,
             'contactChoices' => $DiodeCCChoices));
 
+//---Optoelectronics form---------------------------------------------------------------------------
+
+        $optoQualChoices = $serviceOpto->getOptoQualityChoices();
+        $optoAppChoices = $serviceOpto->getOptoAppChoices();
+
+        $formOpto = $this->createForm(new OptoForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'qualityChoices' => $optoQualChoices , 'appChoices' => $optoAppChoices));
+
+
 //---render template--------------------------------------------------------------------------
 
         $resistorMatDescAll = $serviceResistor->getResMaterialDescAll();
@@ -164,6 +177,7 @@ class PartsController extends Controller {
             'formRotElaps' => $formRotElaps->createView(), 'rotElaps' => $rotElaps,
             'formTubeWave' => $formTubeWave->createView(), 'tubeWaves' => $tubeWaves,
             'formDiodeLF' => $formDiodeLF->createView(), 'diodesLF' => $diodesLF,
+            'formOpto' => $formOpto->createView(), 'optos' => $optos,
         ));
 
     }
@@ -749,6 +763,58 @@ class PartsController extends Controller {
             )
         );
     }
+
+//====================================================================================================================
+    /**
+     * @Route("/newOpto", name="newOpto")
+     * @Template()
+     */
+    public function newOptoAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->optoForm;
+
+        $opto = new Optoelectronics();
+        $opto->setParams($obj);
+
+        $serviceOpto = $this->get('ikaros_optoService');
+        $lambda = $serviceOpto->calculateLam($opto, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $opto, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $opto->getLabel(),
+                'Lam' => $opto->getLam(),
+                'DPTemp' => $opto->getDPTemp(),
+                'PassiveTemp' => $opto->getPassiveTemp(),
+                'Application' => $opto->getApplication(),
+                'Quality' => $opto->getQuality(),
+                'Environment' => $opto->getEnvironment(),
+                'idP' => $opto->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+
 //====================================================================================================================
     /**
      * @Route("/detailPart/{id}", name="detailPart")
@@ -914,6 +980,20 @@ class PartsController extends Controller {
 
                 return array('type'=> $type, 'formDiodeLF' => $formDiodeLF->createView(),
                     'IDPart' => $diodeLF->getIDPart(), 'Label' => $diodeLF->getLabel(), 'Lam' => $diodeLF->getLam(),
+                    'systemID' => $systemID);
+            case 'optoelektronika':
+                $serviceOpto = $this->get('ikaros_optoService');
+                $opto = $serviceOpto->getItem($id);
+                $optoArray = $opto->to_array();
+
+                $optoQualChoices = $serviceOpto->getOptoQualityChoices();
+                $optoAppChoices = $serviceOpto->getOptoAppChoices();
+
+                $formOpto = $this->createForm(new OptoForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'qualityChoices' => $optoQualChoices , 'appChoices' => $optoAppChoices, 'opto' => $optoArray));
+
+                return array('type'=> $type, 'formOpto' => $formOpto->createView(),
+                    'IDPart' => $opto->getIDPart(), 'Label' => $opto->getLabel(), 'Lam' => $opto->getLam(),
                     'systemID' => $systemID);
         }
         return array('type' => $type);
@@ -1254,6 +1334,28 @@ class PartsController extends Controller {
                         json_encode(array(
                             'Label' => $diodeLF->getLabel(),
                             'Lam' => $diodeLF->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'optoelectronics':
+                $obj = $objF->optoForm;
+                $serviceOpto = $this->get('ikaros_optoService');
+                $opto = $serviceOpto->getItem($id);
+                $opto->setParams($obj);
+
+                $oldLam = $opto->getLam();
+                $lambda = $serviceOpto->calculateLam($opto, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $opto, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $opto->getLabel(),
+                            'Lam' => $opto->getLam()
                         )),
                         200,
                         array(

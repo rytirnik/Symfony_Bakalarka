@@ -309,6 +309,8 @@ class SystemsController extends Controller
             case 'dioda, nízkofrekvenční':
                 $service = $this->get('ikaros_diodeService');
                 break;
+            case 'optoelektronika':
+                $service = $this->get('ikaros_optoService');
             default:
                 return "";
         }

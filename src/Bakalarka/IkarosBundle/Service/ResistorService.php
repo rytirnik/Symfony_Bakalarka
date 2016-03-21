@@ -145,14 +145,15 @@ class ResistorService {
         $piQ = $res->getQuality();
 
         $sEnv = $res->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                        FROM Environment e
                        WHERE e.ID_Section = 91');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(91, $sEnv);
 
         $lambda = $base * $piT * $piP * $piS * $piQ * $piE * pow(10, -6);
 

@@ -14,6 +14,7 @@
         var newRotElapsURL = "{{ path('newRotElaps') }}";
         var newTubeWaveURL = "{{ path('newTubeWave') }}";
         var newDiodeLFURL = "{{ path('newDiodeLF') }}";
+        var newOptoURL = "{{ path('newOpto') }}";
         var idPCB = {{pcb.IDPCB}};
 
         var detailURL = "{{ path('detailPart', {id:-1}) }}";
@@ -97,6 +98,9 @@
             </li>
             <li>
                 <a href = "#tab_11"> Diody, nízkofrekvenční </a>
+            </li>
+            <li>
+                <a href = "#tab_12"> Optoelektronika </a>
             </li>
 
 
@@ -738,6 +742,55 @@
 
             </div>
 
+            <div id = "tab_12" class = "tab_content">
+                <h2> Přidat optoelektroniku (detektory, izolátory, emitory) </h2>
+
+                <form id="formOpto" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formOpto) }}>
+
+                    {{ form_widget(formOpto) }}
+                    <div id = "submitHandle">
+                        <input id="saveOpto" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if optos %}
+                    <h2> Uložené optoelektroniky </h2>
+                    <table id="OptoTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Aplikace </td>
+                            <td> Kvalita </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for opto in optos %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Quality }}</td>
+                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.DPTemp }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.PassiveTemp }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
 
         </div>
     </div>

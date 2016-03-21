@@ -1308,6 +1308,101 @@ jQuery(document).ready(function($) {
         }
     });
 
+    var validatorOpto = $("#formOpto").validate( {
+        errorPlacement: function(error, element) {
+            if(element.parent().children().length == 2)
+                element.parent().append('<p class="validErr">' + error.text() + '</p>' );
+            else {
+                element.parent().children('p').text(error.text());
+            }
+            $(".submitMsg").remove();
+        },
+        rules: {
+            "form[Label]": {
+                maxlength: 64
+            },
+            "form[Type]": {
+                maxlength: 64
+            },
+            "form[DPTemp]": {
+                number: true
+            },
+            "form[PassiveTemp]": {
+                number: true
+            },
+        },
+        messages: {
+            "form[Label]": {
+                required: "Povinné pole 'Název'"
+            },
+            "form[DPTemp]": {
+                required: "Povinné pole 'Oteplení ZV' (desetinné číslo)",
+                number: "Neplatné desetinné číslo"
+            },
+            "form[PassiveTemp]": {
+                required: "Povinné pole 'Pasivní oteplení' (desetinné číslo)",
+                number: "Neplatné desetinné číslo"
+            },
+        },
+        submitHandler: function(form) {
+            $data =  $("#formOpto").serializeJSON();
+            jQuery.ajax({
+                url:        newOptoURL,
+                data:       {formData: $data, id: idPCB },
+                success:    function(data){
+                    //alert("ok");
+                    if($("#OptoTable").length == 0) {
+                        $("#tab_12").append('<h2> Uložené optoelektroniky </h2>'+
+                            '<table id="OptoTable" class = "systems part newPart systemsHover">' +
+                            '<thead> <tr> '+
+                            '<td> Označeni </td> '+
+                            '<td> Lambda </td>'+
+                            '<td> Prostředí </td>'+
+                            '<td> Aplikace </td>'+
+                            '<td> Kvalita </td>'+
+                            '<td> Oteplení ZV </td>'+
+                            '<td> Pasivní oteplení </td>'+
+                            '</tr> </thead> <tbody> </tbody> </table>');
+                    }
 
+                    $detURl = detailURL.substring(0, detailURL.lastIndexOf("-1"));
+                    $detURl = $detURl.concat(data.idP);
+
+                    $("#OptoTable").children('tbody').append("<tr>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.DPTemp + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PassiveTemp + "</td> </tr>");
+
+                    $(".tableLink").click(function() {
+                        window.document.location = $(this).attr("href");
+                    });
+
+                    $(".tableLink").hover(function() {
+                        $(".tableLink").css("cursor", "pointer");
+                    });
+
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
+                    $("#SysLam").text($sysL);
+
+                    $(".submitMsg").remove();
+                    $("#formDiodeLF").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                },
+                error: function(data) {
+                    //alert("Error");
+                    $(".submitMsg").remove();
+                    $("#formOpto").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+                },
+                dataType:   'json',
+                type:       'POST'
+            });
+            $(".validErr").remove();
+            validatorOpto.resetForm();
+        }
+    });
 
 });

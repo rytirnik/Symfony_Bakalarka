@@ -10,8 +10,9 @@ class RotDevElapsService {
 	
 	protected $doctrine;
 	
-	public function __construct(Registry $doctrine) {
+	public function __construct(Registry $doctrine, $systemService) {
 		$this->doctrine = $doctrine;
+        $this->systemService = $systemService;
 	}
 	
 	protected function getRepository() {
@@ -44,14 +45,15 @@ class RotDevElapsService {
 //====================================================================================================================
     public function calculateLam (RotDevElaps $rotElaps, $pcbID = -1) {
         $sEnv = $rotElaps->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                        FROM Environment e
                        WHERE e.ID_Section = 123');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(123, $sEnv);
 
         $type = $rotElaps->getDevType();
         if($type == "A.C.")

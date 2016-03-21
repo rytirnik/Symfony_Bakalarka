@@ -16,6 +16,7 @@ var oldFilter = [];
 var oldRotElaps = [];
 var oldTubeWave = [];
 var oldDiodeLF = [];
+var oldOpto = [];
 
 function savePCB(event) {
     var save = $(event.target).attr('id') == 'SavePCB1';
@@ -43,7 +44,6 @@ function savePCB(event) {
                     window.document.location = data.url;
                 $(".submitMsg").remove();
                 $("#EditPcbForm").append('<span class="submitMsg"> Deska byla uložena. </span>');
-
             },
             error: function(data) {
                 //alert("Error");
@@ -68,6 +68,7 @@ function savePCB(event) {
     $('#CancelPCB1').remove();
     $("#EditPCB1").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function savePCB2(event) {
     event.preventDefault();
@@ -106,7 +107,6 @@ function savePCB2(event) {
 
                 $("#EditPcbForm2 .submitMsg").remove();
                 $("#EditPcbForm2").append('<span class="submitMsg"> Deska byla uložena. </span>');
-
             },
             error: function(data) {
                 //alert("Error");
@@ -130,6 +130,7 @@ function savePCB2(event) {
     $('#CancelPCB2').remove();
     $("#EditPCB2").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveSystem(event) {
     var save = $(event.target).attr('id') == 'SaveSystem';
@@ -157,9 +158,7 @@ function saveSystem(event) {
                 //alert("ok");
                 $(".submitMsg").remove();
                 $("#systemFormE").append('<span class="submitMsg"> Systém byl uložen. </span>');
-
                 $("#labelPart").text(data.Title);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -170,7 +169,6 @@ function saveSystem(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#systemFormE input[id="sysForm_Title"]').val(oldSys['Title']);
@@ -185,6 +183,7 @@ function saveSystem(event) {
     $('#CancelSystem').remove();
     $("#EditSys").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveRes(event) {
     var save = $(event.target).attr('id') == 'SaveRes';
@@ -227,7 +226,6 @@ function saveRes(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -238,7 +236,6 @@ function saveRes(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formResE input[id="resistorForm_Label"]').val(oldRes['Label']);
@@ -262,6 +259,7 @@ function saveRes(event) {
     $('#CancelRes').remove();
     $("#EditRes").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveCap(event) {
     var save = $(event.target).attr('id') == 'SaveCap';
@@ -310,7 +308,6 @@ function saveCap(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -321,7 +318,6 @@ function saveCap(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formCapE input[id="capacitorForm_Label"]').val(oldCap['Label']);
@@ -344,6 +340,7 @@ function saveCap(event) {
     $('#CancelCap').remove();
     $("#EditCap").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveFuse(event) {
     var save = $(event.target).attr('id') == 'SaveFuse';
@@ -368,7 +365,6 @@ function saveFuse(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -379,7 +375,6 @@ function saveFuse(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formFuseE input[id="fuseForm_Label"]').val(oldFuse['Label']);
@@ -394,6 +389,7 @@ function saveFuse(event) {
     $('#CancelFuse').remove();
     $("#EditFuse").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveConnection(event) {
     var save = $(event.target).attr('id') == 'SaveConnection';
@@ -418,7 +414,6 @@ function saveConnection(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -429,7 +424,6 @@ function saveConnection(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formConnectionE input[id="connectionForm_Label"]').val(oldConnection['Label']);
@@ -444,6 +438,7 @@ function saveConnection(event) {
     $('#CancelConnection').remove();
     $("#EditConnection").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveConSoc(event) {
     var save = $(event.target).attr('id') == 'SaveConSoc';
@@ -474,7 +469,6 @@ function saveConSoc(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -485,7 +479,6 @@ function saveConSoc(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formConSocE input[id="connectorSocForm_Label"]').val(oldConSoc['Label']);
@@ -502,6 +495,7 @@ function saveConSoc(event) {
     $('#CancelConSoc').remove();
     $("#EditConSoc").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveConGen(event) {
     var save = $(event.target).attr('id') == 'SaveConGen';
@@ -550,7 +544,6 @@ function saveConGen(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -561,7 +554,6 @@ function saveConGen(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formConGenE input[id="connectorGenForm_Label"]').val(oldConGen['Label']);
@@ -581,6 +573,7 @@ function saveConGen(event) {
     $('#CancelConGen').remove();
     $("#EditConGen").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveSwitch(event) {
     var save = $(event.target).attr('id') == 'SaveSwitch';
@@ -623,7 +616,6 @@ function saveSwitch(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -654,6 +646,7 @@ function saveSwitch(event) {
     $('#CancelSwitch').remove();
     $("#EditSwitch").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveFilter(event) {
     var save = $(event.target).attr('id') == 'SaveFilter';
@@ -678,7 +671,6 @@ function saveFilter(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -689,7 +681,6 @@ function saveFilter(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $('#formFilterE input[id="filterForm_Label"]').val(oldFilter['Label']);
@@ -705,6 +696,7 @@ function saveFilter(event) {
     $('#CancelFilter').remove();
     $("#EditFilter").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveRotElaps(event) {
     var save = $(event.target).attr('id') == 'SaveRotElaps';
@@ -741,7 +733,6 @@ function saveRotElaps(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -752,7 +743,6 @@ function saveRotElaps(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $(".submitMsg").remove();
@@ -770,6 +760,7 @@ function saveRotElaps(event) {
     $('#CancelRotElaps').remove();
     $("#EditRotElaps").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 function saveTubeWave(event) {
     var save = $(event.target).attr('id') == 'SaveTubeWave';
@@ -816,7 +807,6 @@ function saveTubeWave(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -827,7 +817,6 @@ function saveTubeWave(event) {
             dataType:   'json',
             type:       'POST'
         });
-
     }
     if (err || !save) {
         $(".submitMsg").remove();
@@ -845,6 +834,7 @@ function saveTubeWave(event) {
     $("#EditTubeWave").show();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 function saveDiodeLF(event) {
     var save = $(event.target).attr('id') == 'SaveDiodeLF';
     var err = 0;
@@ -869,8 +859,6 @@ function saveDiodeLF(event) {
             return;
         }
 
-
-
         $url = $("#formDiodeLFE").attr('action');
         jQuery.ajax({
             url:        $url,
@@ -882,7 +870,6 @@ function saveDiodeLF(event) {
 
                 $("#lamPart").text(data.Lam);
                 $("#labelPart").text(data.Label);
-
             },
             error: function(data) {
                 //alert("Error");
@@ -916,8 +903,74 @@ function saveDiodeLF(event) {
     $("#EditDiodeLF").show();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
+function saveOpto(event) {
+    var save = $(event.target).attr('id') == 'SaveOpto';
+    var err = 0;
+    if(save) {
+        $data =  $("#formOptoE").serializeJSON();
+        var val = $('#formOptoE input[id="optoForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formOptoE .submitMsg").remove();
+            $("#formOptoE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formOptoE input[id="optoForm_DPTemp"]').val();
+        if ( val == "" || !($.isNumeric(val))) {
+            $("#formOptoE .submitMsg").remove();
+            $("#formOptoE").append('<span class="submitMsg"> Vyplňte oteplení ztrátovým výkonem (desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formOptoE input[id="optoForm_PassiveTemp"]').val();
+        if ( val == "" || !($.isNumeric(val))) {
+            $("#formOptoE .submitMsg").remove();
+            $("#formOptoE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (desetinné číslo) </span>');
+            return;
+        }
 
+        $url = $("#formOptoE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "optoelectronics"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formOptoE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formOptoE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formOptoE input[id="optoForm_Label"]').val(oldOpto['Label']);
+        $('#formOptoE input[id="optoForm_Type"]').val(oldOpto['Type']);
+        $('#formOptoE select[id="optoForm_Application"]').val(oldOpto['Application']);
+        $('#formOptoE select[id="optoForm_Quality"]').val(oldOpto['Quality']);
+        $('#formOptoE select[id="optoForm_Environment"]').val(oldOpto['Environment']);
+        $('#formOptoE input[id="optoForm_CasePart"]').val(oldOpto['CasePart']);
+        $('#formOptoE input[id="optoForm_DPTemp"]').val(oldOpto['DPTemp']);
+        $('#formOptoE input[id="optoForm_PassiveTemp"]').val(oldOpto['PassiveTemp']);
+    }
+    $("#formOptoE input:not(:submit), #formOptoE select").attr('disabled', 'disabled');
+    $('#SaveOpto').remove();
+    $('#CancelOpto').next('div').remove();
+    $('#CancelOpto').remove();
+    $("#EditOpto").show();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 function deleteSTM(event) {
     event.preventDefault();
@@ -955,7 +1008,7 @@ function deleteSTM(event) {
 
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 jQuery(document).ready(function($) {
     $("#EditPcbForm input:not(:submit), #EditPcbForm select").attr('disabled', 'disabled');
     $("#EditPcbForm2 input:not(:submit), #EditPcbForm2 select").attr('disabled', 'disabled');
@@ -970,6 +1023,8 @@ jQuery(document).ready(function($) {
     $("#formFilterE input:not(:submit), #formFilterE select").attr('disabled', 'disabled');
     $("#formRotElapsE input:not(:submit), #formRotElapsE select").attr('disabled', 'disabled');
     $("#formTubeWaveE input:not(:submit), #formTubeWaveE select").attr('disabled', 'disabled');
+    $("#formDiodeLFE input:not(:submit), #formDiodeLFE select").attr('disabled', 'disabled');
+    $("#formOptoE input:not(:submit), #formOptoE select").attr('disabled', 'disabled');
 
     $("#EditPCB1").click(function(e) {
         e.preventDefault();
@@ -1136,6 +1191,7 @@ jQuery(document).ready(function($) {
         });
     });
 
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditRes").click(function(e) {
         e.preventDefault();
@@ -1180,6 +1236,7 @@ jQuery(document).ready(function($) {
         $("#formResE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditFuse").click(function(e) {
         e.preventDefault();
@@ -1215,6 +1272,7 @@ jQuery(document).ready(function($) {
         $("#formFuseE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditConnection").click(function(e) {
         e.preventDefault();
@@ -1250,6 +1308,7 @@ jQuery(document).ready(function($) {
         $("#formConnectionE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditConSoc").click(function(e) {
         e.preventDefault();
@@ -1287,6 +1346,7 @@ jQuery(document).ready(function($) {
         $("#formConSocE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditConGen").click(function(e) {
         e.preventDefault();
@@ -1327,6 +1387,7 @@ jQuery(document).ready(function($) {
         $("#formConGenE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditSwitch").click(function(e) {
         e.preventDefault();
@@ -1367,7 +1428,7 @@ jQuery(document).ready(function($) {
         $("#formSwitchE .submitHandle").append('<div class="cleaner"></div>');
 
     });
-
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditFilter").click(function(e) {
         e.preventDefault();
@@ -1405,6 +1466,7 @@ jQuery(document).ready(function($) {
 
     });
 
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditRotElaps").click(function(e) {
         e.preventDefault();
@@ -1442,6 +1504,7 @@ jQuery(document).ready(function($) {
         $("#formRotElapsE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditTubeWave").click(function(e) {
         e.preventDefault();
@@ -1478,6 +1541,7 @@ jQuery(document).ready(function($) {
         $("#formTubeWaveE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditDiodeLF").click(function(e) {
         e.preventDefault();
@@ -1520,6 +1584,7 @@ jQuery(document).ready(function($) {
         $("#formDiodeLFE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditCap").click(function(e) {
         e.preventDefault();
@@ -1562,7 +1627,47 @@ jQuery(document).ready(function($) {
         $("#formCapE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+//----------------------------------------------------------------------------------------------------------------------
 
+    $("#EditOpto").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formOptoE input:not(:submit), #formOptoE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditOpto").hide();
+        oldOpto['Label'] = $('#formOptoE input[id="optoForm_Label"]').val();
+        oldOpto['Type'] = $('#formOptoE input[id="optoForm_Type"]').val();
+        oldOpto['Quality'] = $('#formOptoE select[id="optoForm_Quality"]').val();
+        oldOpto['Application'] = $('#formOptoE select[id="optoForm_Application"]').val();
+        oldOpto['Environment'] = ($('#formOptoE select[id="optoForm_Environment"]').val());
+        oldOpto['CasePart'] = $('#formOptoE input[id="optoForm_CasePart"]').val();
+        oldOpto['DPTemp'] = $('#formOptoE input[id="optoForm_DPTemp"]').val();
+        oldOpto['PassiveTemp'] = $('#formOptoE input[id="optoForm_PassiveTemp"]').val();
+
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveOpto')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveOpto)
+        ;
+        $("#formOptoE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelOpto')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveOpto)
+        ;
+        $("#formOptoE .submitHandle").append(cancel);
+
+        $("#formOptoE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditSys").click(function(e) {
         e.preventDefault();

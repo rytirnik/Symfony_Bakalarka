@@ -206,14 +206,15 @@ class ConnectorService {
             $piQ = 2;
 
         $sEnv = $conGen->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 151');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(151, $sEnv);
 
         $lambda = $base * $piT * $piK * $piQ * $piE * pow(10, -6);
         return $lambda;

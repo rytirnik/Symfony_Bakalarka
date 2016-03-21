@@ -172,14 +172,15 @@ class CapacitorService {
         }
 
         $sEnv = $cap->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 101');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(101, $sEnv);
 
         $lambda = $base * $piT * $piC * $piV * $pi_sr * $piQ * $piE * pow(10, -6);
 

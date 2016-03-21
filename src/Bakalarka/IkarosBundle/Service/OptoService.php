@@ -2,11 +2,12 @@
 
 namespace Bakalarka\IkarosBundle\Service;
 
+use Bakalarka\IkarosBundle\Entity\Optoelectronics;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Bakalarka\IkarosBundle\Entity\DiodeLF;
 
 
-class DiodeService {
+class OptoService {
 	
 	protected $doctrine;
 	
@@ -17,7 +18,7 @@ class DiodeService {
 	}
 
 	protected function getRepository() {
-		return $this->doctrine->getRepository('BakalarkaIkarosBundle:DiodeLF');
+		return $this->doctrine->getRepository('BakalarkaIkarosBundle:Optoelectronics');
 	}
 
 //====================================================================================================================
@@ -30,15 +31,15 @@ class DiodeService {
 	}
 //====================================================================================================================
 
-    public function getDiodeLFQualityChoices() {
+    public function getOptoQualityChoices() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
                         FROM QualityDiodeopto');
         $stmt->execute();
-        $diodeQualityAll = $stmt->fetchAll();
+        $QualityAll = $stmt->fetchAll();
 
-        foreach($diodeQualityAll as $q) {
+        foreach($QualityAll as $q) {
             $QualityChoices[$q['Description']] = $q['Description'];
         }
         return $QualityChoices;
@@ -46,11 +47,11 @@ class DiodeService {
 
 //====================================================================================================================
 
-    public function getDiodeLFAppChoices() {
+    public function getOptoAppChoices() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM DiodeLFApplication');
+                        FROM optoApplication');
         $stmt->execute();
         $diodeAppAll = $stmt->fetchAll();
 
@@ -61,106 +62,71 @@ class DiodeService {
     }
 
 //====================================================================================================================
-    public function getActiveDiodesLF ($pcbID) {
+    public function getActiveOptos ($pcbID) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
-            ->prepare('SELECT neco.*, diode.*
-                        FROM DiodeLF diode JOIN (SELECT part.*
+            ->prepare('SELECT neco.*, opto.*
+                        FROM Optoelectronics opto JOIN (SELECT part.*
                         FROM Part part LEFT JOIN PCB pcb ON pcb.ID_PCB=part.PCB_ID
                         WHERE pcb.ID_PCB = :id AND pcb.DeleteDate IS NULL AND part.DeleteDate IS NULL) AS neco
-                        ON diode.ID_Part = neco.ID_Part');
+                        ON opto.ID_Part = neco.ID_Part');
         $stmt->execute(array(':id' => $pcbID));
         return $stmt->fetchAll();
     }
-//====================================================================================================================
-    public function getContactConstructionChoices() {
-        $ccChoices[1] = 'Metallurgically Bonded';
-        $ccChoices[2] = 'Non-Metal. Bonded and Spring Loaded Contacts';
-        return $ccChoices;
-    }
-//====================================================================================================================
-    public function getContactConstructionDesc($ccValue) {
-        if($ccValue == 1)
-            return 'Metal. Bonded';
-        else
-            return 'Non-Metal. Bonded';
-    }
 
 
 //====================================================================================================================
-    public function getApplication ($appDesc) {
+    public function getApplicationValue ($appDesc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
-            ->prepare('SELECT *
-                        FROM DiodeLFApplication app
+            ->prepare('SELECT app.Value
+                        FROM optoApplication app
                         WHERE app.Description = :desc');
         $stmt->execute(array(':desc' => $appDesc));
-        $diodeApp = $stmt->fetchAll();
+        $app = $stmt->fetch();
 
-        return $diodeApp[0];
+        return $app['Value'];
     }
 
 //====================================================================================================================
-    public function getQuallity ($qualityDesc) {
+    public function getQualityValue ($qualityDesc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
-            ->prepare('SELECT *
+            ->prepare('SELECT qual.Value
                         FROM QualityDiodeopto qual
                         WHERE qual.Description = :desc');
         $stmt->execute(array(':desc' => $qualityDesc));
-        $diodeApp = $stmt->fetchAll();
-        return $diodeApp[0];
+        $quality = $stmt->fetch();
+        return $quality['Value'];
     }
 
 //====================================================================================================================
-    public function calculateLam (DiodeLF $diode, $pcbID) {
-        $sEnv = $diode->getEnvironment();
+    public function calculateLam (Optoelectronics $opto, $pcbID) {
+        $sEnv = $opto->getEnvironment();
         /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                        FROM Environment e
-                       WHERE e.ID_Section = 61');
-        $stmt->execute();s
+                       WHERE e.ID_Section = 611');
+        $stmt->execute();
         $env = $stmt->fetchAll();
         $piE = $env[0][$sEnv];*/
 
-        $piE = $this->systemService->getPiE(61, $sEnv);
+        $piE = $this->systemService->getPiE(611, $sEnv);
 
         $pcb = $this->pcbService->getItem($pcbID);
         $system = $this->systemService->getItem($pcb->getSystemID());
 
-        $temp = $diode->getPassiveTemp() + $diode->getDPTemp() + $system->getTemp();
-        $diode->setTemp($temp);
-        $app = $this->getApplication($diode->getApplication());
+        $temp = $opto->getPassiveTemp() + $opto->getDPTemp() + $system->getTemp();
+        $opto->setTemp($temp);
 
-        $base = $app['Value'];
-        if($app['Description'] == "Power Rectifier with High Voltage Stacks")
-            $base /= $temp;
+        $piT = exp(-2790 * (1 / ($temp + 273) - 1 / 298));
+        $base = $this->getApplicationValue($opto->getApplication());
+        $piQ = $this->getQualityValue($opto->getQuality());
 
-        $tempCategory = $app['tempCategory'];
-        $stressCategory = $app['stressCategory'];
 
-        if($tempCategory == 1)
-            $piT = exp(-3091 * (1 / ($temp + 273) - 1 / 298));
-        else
-            $piT = exp(-1925 * (1 / ($temp + 273) - 1 / 298));
+        $lambda = $base * $piT * $piQ * $piE * pow(10,-6);
 
-        $stressRatio = $diode->getVoltageApplied() / $diode->getVoltageRated();
-        if($stressCategory == 2) {
-            if($stressRatio <= 0.3)
-                $piS = 0.054;
-            else
-                $piS = pow($stressRatio, 0.43);
-        }
-        else
-            $piS = 1.0;
-
-        $piC = $diode->getContactConstruction();
-
-        $quality = $this->getQuallity($diode->getQuality());
-        $piQ = $quality['Value'];
-
-        $lambda = $base * $piT * $piS * $piC * $piQ * $piE * pow(10,-6);
         return $lambda;
     }
 

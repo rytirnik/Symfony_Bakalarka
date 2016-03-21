@@ -4,30 +4,33 @@ services:
       arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_connectionService:
         class: 'Bakalarka\IkarosBundle\Service\ConnectionService'
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_connectorService:
         class: 'Bakalarka\IkarosBundle\Service\ConnectorService'
         arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_filterService:
         class: 'Bakalarka\IkarosBundle\Service\FilterService'
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_fuseService:
       class: 'Bakalarka\IkarosBundle\Service\FuseService'
-      arguments: ['@doctrine']
+      arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_resistorService:
       class: 'Bakalarka\IkarosBundle\Service\ResistorService'
       arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
   ikaros_rotDevElapsService:
         class: 'Bakalarka\IkarosBundle\Service\RotDevElapsService'
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_switchService:
       class: 'Bakalarka\IkarosBundle\Service\SwitchService'
-      arguments: ['@doctrine']
+      arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_tubeWaveService:
         class: 'Bakalarka\IkarosBundle\Service\TubeWaveService'
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@ikaros_systemService']
   ikaros_diodeService:
         class: 'Bakalarka\IkarosBundle\Service\DiodeService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_optoService:
+        class: 'Bakalarka\IkarosBundle\Service\OptoService'
         arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
 
 

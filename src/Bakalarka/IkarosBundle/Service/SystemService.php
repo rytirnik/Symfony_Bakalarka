@@ -121,4 +121,18 @@ class SystemService {
         }
         return "";
     }
+
+//====================================================================================================================
+
+    public function getPiE ($sectionID, $sysEnv) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT e.*
+                       FROM Environment e
+                       WHERE e.ID_Section = :id');
+        $stmt->execute(array(':id' => $sectionID));
+        $env = $stmt->fetch();
+        return $env[$sysEnv];
+    }
+
 }
