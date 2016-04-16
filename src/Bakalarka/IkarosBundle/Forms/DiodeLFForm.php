@@ -46,16 +46,19 @@ class DiodeLFForm extends AbstractType
                     'required' => true,
                     'label' => 'Aplikace',
                     'choices' => $appChoices,
+                    'data' => 'Worst case'
                 ))
                 ->add('Quality', 'choice', array(
                     'required' => true,
                     'label' => 'Kvalita',
                     'choices' => $qualityChoices,
+                    'data' => 'Worst case'
                 ))
                 ->add('ContactConstruction', 'choice', array(
                     'required' => true,
                     'label' => 'Konstrukce kontaktu',
                     'choices' => $contactChoices,
+                    'data' => 'Worstcase',
                 ))
                 ->add('VoltageRated', 'number', array(
                     'required' => true,

@@ -9,9 +9,11 @@ use Bakalarka\IkarosBundle\Entity\Connections;
 class ConnectionService {
 	
 	protected $doctrine;
-	
-	public function __construct(Registry $doctrine) {
+	protected $systemService;
+
+	public function __construct(Registry $doctrine, $systemService) {
 		$this->doctrine = $doctrine;
+        $this->systemService = $systemService;
 	}
 	
 	protected function getRepository() {
@@ -40,16 +42,29 @@ class ConnectionService {
     }
 
 //====================================================================================================================
+    public function getConTypeValue($conType) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectionType c
+                        WHERE c.Description = :desc');
+        $stmt->execute(array('desc' => $conType));
+        $conType = $stmt->fetch();
+        return $conType['Lamb'];
+    }
+
+//====================================================================================================================
     public function getConTypeAll() {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectionType');
+                        FROM ConnectionType
+                        ORDER BY Description');
         $stmt->execute();
         $conTypes = $stmt->fetchAll();
 
         foreach($conTypes as $m) {
-            $conTypeChoices[$m['Lamb']] = $m['Description'];
+            $conTypeChoices[$m['Description']] = $m['Description'];
         }
         return $conTypeChoices;
     }
@@ -84,7 +99,7 @@ class ConnectionService {
         $piE = $env[0][$sEnv];*/
         $piE = $this->systemService->getPiE(171, $sEnv);
 
-        $base = $con->getConnectionType();
+        $base = $this->getConTypeValue($con->getConnectionType());
         $lambda = $base * $piE * pow(10, -6);
 
         return $lambda;

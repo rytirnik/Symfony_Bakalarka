@@ -25,12 +25,14 @@ class FilterForm extends AbstractType
                 ->add('FilterType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => $filterTypeChoices
+                    'choices' => $filterTypeChoices,
+                    'data' => 'Worst case'
                 ))
                 ->add('Quality', 'choice', array(
                     'required' => true,
                     'label' => 'Kvalita',
-                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
+                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower"),
+                    'data' => 'Lower'
                 ))
                 ->add('Label', 'text', array(
                     'required' => true,

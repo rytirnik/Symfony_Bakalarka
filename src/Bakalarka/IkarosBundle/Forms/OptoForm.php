@@ -45,11 +45,13 @@ class OptoForm extends AbstractType
                     'required' => true,
                     'label' => 'Aplikace',
                     'choices' => $appChoices,
+                    'data' => 'Worst case'
                 ))
                 ->add('Quality', 'choice', array(
                     'required' => true,
                     'label' => 'Kvalita',
                     'choices' => $qualityChoices,
+                    'data' => 'Worst case'
                 ))
                 ->add('DPTemp', 'number', array(
                     'required' => true,

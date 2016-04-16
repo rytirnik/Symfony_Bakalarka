@@ -25,12 +25,14 @@ class ConnectorSocForm extends AbstractType
                 ->add('ConnectorType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => $conSocTypeChoices
+                    'choices' => $conSocTypeChoices,
+                    'data' => 'Worst case (Relay)'
                 ))
                 ->add('Quality', 'choice', array(
                     'required' => true,
                     'label' => 'Kvalita',
-                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
+                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower"),
+                    'data' => 'Lower'
                 ))
                 ->add('Label', 'text', array(
                     'required' => true,

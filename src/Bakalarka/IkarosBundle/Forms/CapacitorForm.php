@@ -33,6 +33,7 @@ class CapacitorForm extends AbstractType
                     'label' => 'Kvalita',
                     'choices' => $QualityChoicesC,
                     'required' => true,
+                    'data' => '10'
                 ))
                 ->add('Material', 'choice', array(
                     'label' => 'Materiál',

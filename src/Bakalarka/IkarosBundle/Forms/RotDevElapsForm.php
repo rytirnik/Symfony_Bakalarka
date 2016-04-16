@@ -24,7 +24,9 @@ class RotDevElapsForm extends AbstractType
                 ->add('DevType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => array("A.C." => "A.C.", "Inverter Driven" => "Inverter Driven", "Commutator D.C." => "Commutator D.C.")
+                    'choices' => array("A.C." => "A.C.", "Inverter Driven" => "Inverter Driven",
+                        "Commutator D.C." => "Commutator D.C.", "Worstcase" => "Worst case"),
+                    'data' => 'Worstcase',
                 ))
                 ->add('Label', 'text', array(
                     'required' => true,
@@ -69,7 +71,8 @@ class RotDevElapsForm extends AbstractType
                 ->add('DevType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => array("A.C." => "A.C.", "Inverter Driven" => "Inverter Driven", "Commutator D.C." => "Commutator D.C."),
+                    'choices' => array("A.C." => "A.C.", "Inverter Driven" => "Inverter Driven",
+                        "Commutator D.C." => "Commutator D.C.", "Worstcase" => "Worst case"),
                     'data' => $rotElaps["DevType"]
                 ))
                 ->add('Label', 'text', array(

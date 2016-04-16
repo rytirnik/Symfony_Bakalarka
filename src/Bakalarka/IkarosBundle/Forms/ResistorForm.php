@@ -33,11 +33,13 @@ class ResistorForm extends AbstractType
                     'label' => 'Kvalita',
                     'choices' => $QualityChoices,
                     'required' => true,
+                    'data' => '10'
                 ))
                 ->add('Material', 'choice', array(
                     'label' => 'Materiál',
                     'choices' => $MatChoices,
                     'required' => true,
+                    'data' => 'Worst case',
                 ))
                 ->add('Type', 'text', array(
                     'required' => false,

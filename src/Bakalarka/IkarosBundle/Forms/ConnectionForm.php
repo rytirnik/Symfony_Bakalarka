@@ -25,7 +25,8 @@ class ConnectionForm extends AbstractType
                 ->add('ConnectionType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => $conTypeChoices
+                    'choices' => $conTypeChoices,
+                    'data' => 'Worst case (Spring Contact)'
                 ))
                 ->add('Label', 'text', array(
                     'required' => true,

@@ -363,7 +363,7 @@ class PartsController extends Controller {
 
         $service = $this->get('ikaros_connectionService');
         $lambda = $service->calculateLam($con);
-        $conType = $service->getConType($con->getConnectionType());
+        $conType = $con->getConnectionType();
 
         $serviceParts = $this->get('ikaros_partService');
         $e = $serviceParts->setLams($lambda, $con, $id);

@@ -65,18 +65,11 @@ class SwitchService {
                         FROM SwitchType s
                         WHERE s.Description = :d');
         $stmt->execute(array('d' => $switch->getSwitchType()));
-        $switchType = $stmt->fetchAll();
-        $base = floatval($switchType[0]['Lamb']);
+        $switchType = $stmt->fetch();
+        $base = floatval($switchType['Lamb']);
 
         $sEnv = $switch->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 141');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
+
         $piE = $this->systemService->getPiE(141, $sEnv);
 
         $stress = $switch->getOperatingCurrent() / $switch->getRatedResistiveCurrent();
@@ -92,7 +85,11 @@ class SwitchService {
             case 'Lamp':
                 $piL = exp(pow(($stress / 0.2), 2));
                 break;
+            case 'Worstcase':
+                $piL = exp(pow(($stress / 0.2), 2));
+                break;
         }
+
 
         $typeS = $switch->getSwitchType();
         if($typeS == 'Pushbutton' || $typeS == 'Toggle')

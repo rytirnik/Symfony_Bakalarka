@@ -20,6 +20,19 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
+        /*$user = new User;
+        $factory = $this->get('security.encoder_factory');
+        $encoder = $factory->getEncoder($user);
+        $password = $encoder->encodePassword('admin', $user->getSalt());
+        $user->setPassword($password);
+        $user->setMail("admin@admin.cz");
+        $user->setUsername("admin");
+
+        $em = $this->get('doctrine')->getManager();
+        $em->persist($user);
+        $em->flush();*/
+
+
         return array();
     }
 

@@ -25,7 +25,7 @@ class DiodeLF extends Part{
      */
     protected $Quality;
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(length=50)
      */
     protected $ContactConstruction;
     /**
@@ -362,7 +362,7 @@ class DiodeLF extends Part{
     /**
      * Set ContactConstruction
      *
-     * @param integer $contactConstruction
+     * @param string $contactConstruction
      * @return DiodeLF
      */
     public function setContactConstruction($contactConstruction)
@@ -375,7 +375,7 @@ class DiodeLF extends Part{
     /**
      * Get ContactConstruction
      *
-     * @return integer 
+     * @return string
      */
     public function getContactConstruction()
     {
@@ -481,7 +481,7 @@ class DiodeLF extends Part{
         $this->CasePart = $obj->CasePart;
         $this->Quality = $obj->Quality;
         $this->Application = $obj->Application;
-        $this->ContactConstruction = intval($obj->ContactConstruction);
+        $this->ContactConstruction = $obj->ContactConstruction;
         $this->DPTemp = floatval($obj->DPTemp);
         $this->PassiveTemp = floatval($obj->PassiveTemp);
         $this->VoltageApplied = floatval($obj->VoltageApplied);

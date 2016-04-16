@@ -74,18 +74,28 @@ class DiodeService {
     }
 //====================================================================================================================
     public function getContactConstructionChoices() {
-        $ccChoices[1] = 'Metallurgically Bonded';
-        $ccChoices[2] = 'Non-Metal. Bonded and Spring Loaded Contacts';
+        $ccChoices['Metallurgically Bonded'] = 'Metallurgically Bonded';
+        $ccChoices['Non-Metal. Bonded and Spring Loaded Contacts'] = 'Non-Metal. Bonded and Spring Loaded Contacts';
+        $ccChoices['Worstcase'] = 'Worst case';
         return $ccChoices;
     }
 //====================================================================================================================
-    public function getContactConstructionDesc($ccValue) {
-        if($ccValue == 1)
+    public function getContactConstructionDesc($cc) {
+        if($cc == 'Metallurgically Bonded')
             return 'Metal. Bonded';
-        else
+        else if ($cc == 'Non-Metal. Bonded and Spring Loaded Contacts')
             return 'Non-Metal. Bonded';
+        else
+            return 'Worst case';
     }
 
+//====================================================================================================================
+    public function getContactConstructionValue($cc) {
+        if($cc == 'Metallurgically Bonded')
+            return 1;
+        else
+            return 2;
+    }
 
 //====================================================================================================================
     public function getApplication ($appDesc) {
@@ -155,7 +165,7 @@ class DiodeService {
         else
             $piS = 1.0;
 
-        $piC = $diode->getContactConstruction();
+        $piC = $this->getContactConstructionValue($diode->getContactConstruction());
 
         $quality = $this->getQuallity($diode->getQuality());
         $piQ = $quality['Value'];

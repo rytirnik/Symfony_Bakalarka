@@ -16,7 +16,7 @@ use Bakalarka\IkarosBundle\Entity\Part;
  */
 class Connections extends Part{
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(length=30)
      */
     protected $ConnectionType;
 

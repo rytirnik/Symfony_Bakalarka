@@ -43,18 +43,21 @@ class SwitchForm extends AbstractType
                 ->add('SwitchType', 'choice', array(
                     'required' => true,
                     'label' => 'Popis',
-                    'choices' => $swTypeChoices
+                    'choices' => $swTypeChoices,
+                    'data' => 'Worst case (Limit)'
                 ))
                 ->add('Quality', 'choice', array(
                     'required' => true,
                     'label' => 'Kvalita',
-                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower")
+                    'choices' => array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower"),
+                    'data' => 'Lower'
                 ))
                 ->add('LoadType', 'choice', array(
                     'required' => true,
                     'label' => 'Typ zátěže',
                     'error_bubbling' => true,
-                    'choices' => array("Resistive" => "Resistive", "Inductive" => "Inductive", "Lamp" => "Lamp")
+                    'choices' => array("Resistive" => "Resistive", "Inductive" => "Inductive", "Lamp" => "Lamp", "Worstcase" => "Worst case"),
+                    'data' => "Worstcase",
                 ))
                 ->add('ContactCnt', 'integer', array(
                     'required' => true,
@@ -118,7 +121,7 @@ class SwitchForm extends AbstractType
                     'required' => true,
                     'label' => 'Typ zátěže',
                     'error_bubbling' => true,
-                    'choices' => array("Resistive" => "Resistive", "Inductive" => "Inductive", "Lamp" => "Lamp"),
+                    'choices' => array("Resistive" => "Resistive", "Inductive" => "Inductive", "Lamp" => "Lamp", "Worstcase" => "Worst case"),
                     'data' => $switch["LoadType"]
                 ))
                 ->add('ContactCnt', 'integer', array(
