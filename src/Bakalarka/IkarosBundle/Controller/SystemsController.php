@@ -311,6 +311,13 @@ class SystemsController extends Controller
                 break;
             case 'optoelektronika':
                 $service = $this->get('ikaros_optoService');
+                break;
+            case 'tranzistor, bipolární LF':
+                $service = $this->get('ikaros_transistorBiLFService');
+                break;
+            case 'tranzistor, FET LF':
+                $service = $this->get('ikaros_transistorFetLFService');
+                break;
             default:
                 return "";
         }

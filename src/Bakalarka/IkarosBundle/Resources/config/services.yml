@@ -32,7 +32,18 @@ services:
   ikaros_optoService:
         class: 'Bakalarka\IkarosBundle\Service\OptoService'
         arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
-
+  ikaros_crystalService:
+        class: 'Bakalarka\IkarosBundle\Service\CrystalService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_transistorBiLFService:
+        class: 'Bakalarka\IkarosBundle\Service\TransistorBiLFService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_transistorFetLFService:
+        class: 'Bakalarka\IkarosBundle\Service\TransistorFetLFService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_inductiveService:
+        class: 'Bakalarka\IkarosBundle\Service\InductiveService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
 
   ikaros_systemService:
         class: 'Bakalarka\IkarosBundle\Service\SystemService'

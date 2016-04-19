@@ -23,12 +23,12 @@ class PartSMT {
     protected $ID_Part_SMT;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(length=15)
      */
     protected $LeadConfig;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(length=10)
      */
     protected $TCEPackage;
 
@@ -98,7 +98,7 @@ class PartSMT {
     /**
      * Set LeadConfig
      *
-     * @param integer $leadConfig
+     * @param string $leadConfig
      * @return PartSMT
      */
     public function setLeadConfig($leadConfig)
@@ -111,7 +111,7 @@ class PartSMT {
     /**
      * Get LeadConfig
      *
-     * @return integer 
+     * @return string
      */
     public function getLeadConfig()
     {
@@ -121,7 +121,7 @@ class PartSMT {
     /**
      * Set TCEPackage
      *
-     * @param integer $tCEPackage
+     * @param string $tCEPackage
      * @return PartSMT
      */
     public function setTCEPackage($tCEPackage)
@@ -134,7 +134,7 @@ class PartSMT {
     /**
      * Get TCEPackage
      *
-     * @return integer 
+     * @return string
      */
     public function getTCEPackage()
     {

@@ -17,6 +17,9 @@ var oldRotElaps = [];
 var oldTubeWave = [];
 var oldDiodeLF = [];
 var oldOpto = [];
+var oldCrystal = [];
+var oldTransistorBiLF = [];
+var oldTransistorFetLF = [];
 
 function savePCB(event) {
     var save = $(event.target).attr('id') == 'SavePCB1';
@@ -972,6 +975,228 @@ function saveOpto(event) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+function saveCrystal(event) {
+    var save = $(event.target).attr('id') == 'SaveCrystal';
+    var err = 0;
+    if(save) {
+        $data =  $("#formCrystalE").serializeJSON();
+        var val = $('#formCrystalE input[id="crystalForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formCrystalE .submitMsg").remove();
+            $("#formCrystalE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formCrystalE input[id="crystalForm_Frequency"]').val();
+        if ( val == "" || !($.isNumeric(val))) {
+            $("#formCrystalE .submitMsg").remove();
+            $("#formCrystalE").append('<span class="submitMsg"> Vyplňte frekvenci (kladné desetinné číslo) </span>');
+            return;
+        }
+
+        $url = $("#formCrystalE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "crystal"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formCrystalE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formCrystalE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formCrystalE input[id="crystalForm_Label"]').val(oldCrystal['Label']);
+        $('#formCrystalE input[id="crystalForm_Type"]').val(oldCrystal['Type']);
+        $('#formCrystalE input[id="crystalForm_Frequency"]').val(oldCrystal['Frequency']);
+        $('#formCrystalE select[id="crystalForm_Quality"]').val(oldCrystal['Quality']);
+        $('#formCrystalE select[id="crystalForm_Environment"]').val(oldCrystal['Environment']);
+        $('#formCrystalE input[id="crystalForm_CasePart"]').val(oldCrystal['CasePart']);
+    }
+    $("#formCrystalE input:not(:submit), #formCrystalE select").attr('disabled', 'disabled');
+    $('#SaveCrystal').remove();
+    $('#CancelCrystal').next('div').remove();
+    $('#CancelCrystal').remove();
+    $("#EditCrystal").show();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function saveTransistorBiLF(event) {
+    var save = $(event.target).attr('id') == 'SaveTransistorBiLF';
+    var err = 0;
+    if(save) {
+        $data =  $("#formTransistorBiLFE").serializeJSON();
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_TempDissipation"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte oteplení ztrátovým výkonem (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_TempPassive"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_PowerRated"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte jmenovitý výkon (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCE"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte napětí CE (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCEO"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorBiLFE .submitMsg").remove();
+            $("#formTransistorBiLFE").append('<span class="submitMsg"> Vyplňte napětí CEO (kladné desetinné číslo) </span>');
+            return;
+        }
+
+        $url = $("#formTransistorBiLFE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "transistorBiLF"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formTransistorBiLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formTransistorBiLFE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_Label"]').val(oldTransistorBiLF['Label']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_Type"]').val(oldTransistorBiLF['Type']);
+        $('#formTransistorBiLFE select[id="transistorBiLFForm_Application"]').val(oldTransistorBiLF['Application']);
+        $('#formTransistorBiLFE select[id="transistorBiLFForm_Quality"]').val(oldTransistorBiLF['Quality']);
+        $('#formTransistorBiLFE select[id="transistorBiLFForm_Environment"]').val(oldTransistorBiLF['Environment']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_CasePart"]').val(oldTransistorBiLF['CasePart']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_TempDissipation"]').val(oldTransistorBiLF['TempDissipation']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_TempPassive"]').val(oldTransistorBiLF['TempPassive']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_PowerRated"]').val(oldTransistorBiLF['PowerRated']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCE"]').val(oldTransistorBiLF['VoltageCE']);
+        $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCEO"]').val(oldTransistorBiLF['VoltageCEO']);
+    }
+    $("#formTransistorBiLFE input:not(:submit), #formTransistorBiLFE select").attr('disabled', 'disabled');
+    $('#SaveTransistorBiLF').remove();
+    $('#CancelTransistorBiLF').next('div').remove();
+    $('#CancelTransistorBiLF').remove();
+    $("#EditTransistorBiLF").show();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function saveTransistorFetLF(event) {
+    var save = $(event.target).attr('id') == 'SaveTransistorFetLF';
+    var err = 0;
+    if(save) {
+        $data =  $("#formTransistorFetLFE").serializeJSON();
+        var val = $('#formTransistorFetLFE input[id="transistorFetLFForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formTransistorFetLFE .submitMsg").remove();
+            $("#formTransistorFetLFE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formTransistorFetLFE input[id="transistorFetLFForm_TempDissipation"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorFetLFE .submitMsg").remove();
+            $("#formTransistorFetLFE").append('<span class="submitMsg"> Vyplňte oteplení ztrátovým výkonem (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorFetLFE input[id="transistorFetLFForm_TempPassive"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorFetLFE .submitMsg").remove();
+            $("#formTransistorFetLFE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formTransistorFetLFE input[id="transistorFetLFForm_PowerRated"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formTransistorFetLFE .submitMsg").remove();
+            $("#formTransistorFetLFE").append('<span class="submitMsg"> Vyplňte jmenovitý výkon (kladné desetinné číslo) </span>');
+            return;
+        }
+
+        $url = $("#formTransistorFetLFE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "transistorFetLF"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formTransistorFetLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formTransistorFetLFE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_Label"]').val(oldTransistorFetLF['Label']);
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_Type"]').val(oldTransistorFetLF['Type']);
+        $('#formTransistorFetLFE select[id="transistorFetLFForm_Technology"]').val(oldTransistorFetLF['Technology']);
+        $('#formTransistorFetLFE select[id="transistorFetLFForm_Application"]').val(oldTransistorFetLF['Application']);
+        $('#formTransistorFetLFE select[id="transistorFetLFForm_Quality"]').val(oldTransistorFetLF['Quality']);
+        $('#formTransistorFetLFE select[id="transistorFetLFForm_Environment"]').val(oldTransistorFetLF['Environment']);
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_CasePart"]').val(oldTransistorFetLF['CasePart']);
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_TempDissipation"]').val(oldTransistorFetLF['TempDissipation']);
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_TempPassive"]').val(oldTransistorFetLF['TempPassive']);
+        $('#formTransistorFetLFE input[id="transistorFetLFForm_PowerRated"]').val(oldTransistorFetLF['PowerRated']);
+    }
+    $("#formTransistorFetLFE input:not(:submit), #formTransistorFetLFE select").attr('disabled', 'disabled');
+    $('#SaveTransistorFetLF').remove();
+    $('#CancelTransistorFetLF').next('div').remove();
+    $('#CancelTransistorFetLF').remove();
+    $("#EditTransistorFetLF").show();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function deleteSTM(event) {
     event.preventDefault();
     var $this = $(event.target);
@@ -1025,6 +1250,9 @@ jQuery(document).ready(function($) {
     $("#formTubeWaveE input:not(:submit), #formTubeWaveE select").attr('disabled', 'disabled');
     $("#formDiodeLFE input:not(:submit), #formDiodeLFE select").attr('disabled', 'disabled');
     $("#formOptoE input:not(:submit), #formOptoE select").attr('disabled', 'disabled');
+    $("#formCrystalE input:not(:submit), #formCrystalE select").attr('disabled', 'disabled');
+    $("#formTransistorBiLFE input:not(:submit), #formTransistorBiLFE select").attr('disabled', 'disabled');
+    $("#formTransistorFetLFE input:not(:submit), #formTransistorFetLFE select").attr('disabled', 'disabled');
 
     $("#EditPCB1").click(function(e) {
         e.preventDefault();
@@ -1667,6 +1895,129 @@ jQuery(document).ready(function($) {
         $("#formOptoE .submitHandle").append('<div class="cleaner"></div>');
 
     });
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    $("#EditCrystal").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formCrystalE input:not(:submit), #formCrystalE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditCrystal").hide();
+        oldCrystal['Label'] = $('#formCrystalE input[id="crystalForm_Label"]').val();
+        oldCrystal['Type'] = $('#formCrystalE input[id="crystalForm_Type"]').val();
+        oldCrystal['Quality'] = $('#formCrystalE select[id="crystalForm_Quality"]').val();
+        oldCrystal['Frequency'] = $('#formCrystalE input[id="crystalForm_Frequency"]').val();
+        oldCrystal['Environment'] = ($('#formCrystalE select[id="crystalForm_Environment"]').val());
+        oldCrystal['CasePart'] = $('#formCrystalE input[id="crystalForm_CasePart"]').val();
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveCrystal')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveCrystal)
+        ;
+        $("#formCrystalE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelCrystal')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveCrystal)
+        ;
+        $("#formCrystalE .submitHandle").append(cancel);
+
+        $("#formCrystalE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+//----------------------------------------------------------------------------------------------------------------------
+
+    $("#EditTransistorBiLF").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formTransistorBiLFE input:not(:submit), #formTransistorBiLFE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditTransistorBiLF").hide();
+        oldTransistorBiLF['Label'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_Label"]').val();
+        oldTransistorBiLF['Type'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_Type"]').val();
+        oldTransistorBiLF['Quality'] = $('#formTransistorBiLFE select[id="transistorBiLFForm_Quality"]').val();
+        oldTransistorBiLF['Application'] = $('#formTransistorBiLFE select[id="transistorBiLFForm_Application"]').val();
+        oldTransistorBiLF['Environment'] = ($('#formTransistorBiLFE select[id="transistorBiLFForm_Environment"]').val());
+        oldTransistorBiLF['CasePart'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_CasePart"]').val();
+        oldTransistorBiLF['TempDissipation'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_TempDissipation"]').val();
+        oldTransistorBiLF['TempPassive'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_TempPassive"]').val();
+        oldTransistorBiLF['PowerRated'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_PowerRated"]').val();
+        oldTransistorBiLF['VoltageCE'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCE"]').val();
+        oldTransistorBiLF['VoltageCEO'] = $('#formTransistorBiLFE input[id="transistorBiLFForm_VoltageCEO"]').val();
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveTransistorBiLF')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveTransistorBiLF)
+        ;
+        $("#formTransistorBiLFE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelTransistorBiLF')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveTransistorBiLF)
+        ;
+        $("#formTransistorBiLFE .submitHandle").append(cancel);
+
+        $("#formTransistorBiLFE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    $("#EditTransistorFetLF").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formTransistorFetLFE input:not(:submit), #formTransistorFetLFE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditTransistorFetLF").hide();
+        oldTransistorFetLF['Label'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_Label"]').val();
+        oldTransistorFetLF['Type'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_Type"]').val();
+        oldTransistorFetLF['Technology'] = $('#formTransistorFetLFE select[id="transistorFetLFForm_Technology"]').val();
+        oldTransistorFetLF['Quality'] = $('#formTransistorFetLFE select[id="transistorFetLFForm_Quality"]').val();
+        oldTransistorFetLF['Application'] = $('#formTransistorFetLFE select[id="transistorFetLFForm_Application"]').val();
+        oldTransistorFetLF['Environment'] = ($('#formTransistorFetLFE select[id="transistorFetLFForm_Environment"]').val());
+        oldTransistorFetLF['CasePart'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_CasePart"]').val();
+        oldTransistorFetLF['TempDissipation'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_TempDissipation"]').val();
+        oldTransistorFetLF['TempPassive'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_TempPassive"]').val();
+        oldTransistorFetLF['PowerRated'] = $('#formTransistorFetLFE input[id="transistorFetLFForm_PowerRated"]').val();
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveTransistorFetLF')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveTransistorFetLF)
+        ;
+        $("#formTransistorFetLFE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelTransistorFetLF')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveTransistorFetLF)
+        ;
+        $("#formTransistorFetLFE .submitHandle").append(cancel);
+
+        $("#formTransistorFetLFE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+
 //----------------------------------------------------------------------------------------------------------------------
 
     $("#EditSys").click(function(e) {

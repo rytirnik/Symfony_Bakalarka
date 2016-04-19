@@ -72,6 +72,7 @@ class PCBController extends Controller
                     'label' => 'Aplikace v odvětví',
                     'choices' => $EquipChoices,
                     'required' => true,
+                    'data' => "Worst case (Automotive)"
                 ))
                 ->add('SubstrateMaterial', 'choice', array(
                     'label' => 'Materiál',
@@ -101,6 +102,7 @@ class PCBController extends Controller
                     'label' => 'Aplikace v odvětví',
                     'choices' => $EquipChoices,
                     'required' => true,
+                    'data' => "Worst case (Automotive)"
                 ))
                 ->add('SubstrateMaterial', 'choice', array(
                     'label' => 'Materiál',
@@ -142,9 +144,10 @@ class PCBController extends Controller
         $form2 = $this->createFormBuilder($pcb)
             ->add('Quality', 'choice', array(
                 'mapped' => false,
-                'label' => 'Systém',
+                'label' => 'Kvalita',
                 'choices' => array(1=>"MIL-SPEC", 2=>"Lower"),
                 'required' => true,
+                'data' => 2,
             ))
             ->add('Layers', 'integer', array(
                     'required' => false,
@@ -172,14 +175,16 @@ class PCBController extends Controller
             ->add('LeadConfig', 'choice', array(
                 'mapped' => false,
                 'label' => 'Typy vývodů',
-                'choices' => array(1=>"Leadless", 150=>"J/S Lead", 5000=>"Gull Wing"),
+                'choices' => array("Leadless"=>"Leadless", "J/S Lead"=>"J/S Lead", "Gull Wing"=>"Gull Wing", "Worstcase" => "Worst case"),
                 'required' => true,
+                'data' => "Worstcase"
             ))
             ->add('TCEPackage', 'choice', array(
                 'mapped' => false,
                 'label' => 'Materiál pouzdra',
-                'choices' => array(7=>"Plastic", 6=>"Ceramic"),
+                'choices' => array("Plastic"=>"Plastic", "Ceramic"=>"Ceramic", "Worstcase" => "Worst case"),
                 'required' => true,
+                'data' => "Worstcase"
             ))
             ->add('Height', 'integer', array(
                 'required' => false,
@@ -348,16 +353,17 @@ class PCBController extends Controller
         $pcb->setLabel($obj->Label);
         $pcb->setLifetime(intval($obj->Lifetime));
 
-        $equipID = intval($obj->EquipType);
-        $eq = $servicePCB->getEquipmentTypeByID($equipID);
+        //$equipID = intval($obj->EquipType);
+        //$eq = $servicePCB->getEquipmentTypeByID($equipID);
 
-        $pcb->setEquipType($eq[0]['Description']);
+        $pcb->setEquipType($obj->EquipType);
+        //$pcb->setEquipType($eq[0]['Description']);
 
         $matID = intval($obj->SubstrateMaterial);
         $m = $servicePCB->getMaterialByID($matID);
         $pcb->setSubstrateMaterial($m[0]['Description']);
 
-        $CR = $eq[0]['Value'];
+        $CR = $servicePCB->getEquipmentTypeByDesc($pcb->getEquipType())['Value'];
         $alfaS = $m[0]['Value'];
         $lambda = 0;
         $LamSMT = 0;
@@ -374,8 +380,8 @@ class PCBController extends Controller
 
         if($smt == "true") {
             $smtP = new PartSMT();
-            $smtP->setLeadConfig(intval($obj->LeadConfig));
-            $smtP->setTCEPackage(intval($obj->TCEPackage));
+            $smtP->setLeadConfig($obj->LeadConfig);
+            $smtP->setTCEPackage($obj->TCEPackage);
             $smtP->setCnt(intval($obj->Cnt));
             $smtP->setHeight(intval($obj->Height));
             $smtP->setWidth(intval($obj->Width));
@@ -447,8 +453,8 @@ class PCBController extends Controller
         $EquipChoices = $servicePCB->getEquipmentTypes();
         $MatChoices = $servicePCB->getMaterials();
 
-        $eqT = $servicePCB->getEquipmentTypeByDesc($pcb->getEquipType());
-        $eq = $eqT[0]['ID_EquipType'];
+        $eq = $pcb->getEquipType();
+        //$eq = $eqT[0]['ID_EquipType'];
 
         $m = $servicePCB->getMaterialByDesc($pcb->getSubstrateMaterial());
         $mat = $m[0]['ID_SubstrateMat'];
@@ -520,14 +526,16 @@ class PCBController extends Controller
             ->add('LeadConfig', 'choice', array(
                 'mapped' => false,
                 'label' => 'Typy vývodů',
-                'choices' => array(1=>"Leadless", 150=>"J/S Lead", 5000=>"Gull Wing"),
+                'choices' => array("Leadless"=>"Leadless", "J/S Lead"=>"J/S Lead", "Gull Wing"=>"Gull Wing", "Worstcase" => "Worst case"),
                 'required' => true,
+                'data' => "Worstcase"
             ))
             ->add('TCEPackage', 'choice', array(
                 'mapped' => false,
                 'label' => 'Materiál pouzdra',
-                'choices' => array(7=>"Plastic", 6=>"Ceramic"),
+                'choices' => array("Plastic"=>"Plastic", "Ceramic"=>"Ceramic", "Worstcase" => "Worst case"),
                 'required' => true,
+                'data' => "Worstcase"
             ))
             ->add('Height', 'integer', array(
                 'required' => false,
@@ -594,15 +602,15 @@ class PCBController extends Controller
                 $pcb->setLabel($obj->Label);
                 $pcb->setLifetime(intval($obj->Lifetime));
 
-                $eq = $servicePCB->getEquipmentTypeByID(intval($obj->EquipType));
+                //$eq = $servicePCB->getEquipmentTypeByID(intval($obj->EquipType));
                 $m = $servicePCB->getMaterialByID(intval($obj->SubstrateMaterial));
 
-                $pcb->setEquipType($eq[0]['Description']);
+                $pcb->setEquipType($obj->EquipType);
                 $pcb->setSubstrateMaterial($m[0]['Description']);
 
                 //prepocet STM
                 $partsSmtToChange = $servicePCB->getActivePartsSmtByPcbID($id);
-                $CR = $eq[0]['Value'];
+                $CR = $servicePCB->getEquipmentTypeByDesc($pcb->getEquipType())['Value'];
                 $alfaS = $m[0]['Value'];
                 $zivot = $pcb->getLifetime();
                 $oldSumLams = 0;
@@ -630,8 +638,8 @@ class PCBController extends Controller
                 break;
             case 3:
                 $smtP = new PartSMT();
-                $smtP->setLeadConfig(intval($obj->LeadConfig));
-                $smtP->setTCEPackage(intval($obj->TCEPackage));
+                $smtP->setLeadConfig($obj->LeadConfig);
+                $smtP->setTCEPackage($obj->TCEPackage);
                 $smtP->setCnt(intval($obj->Cnt));
                 $smtP->setHeight(intval($obj->Height));
                 $smtP->setWidth(intval($obj->Width));
@@ -692,8 +700,8 @@ class PCBController extends Controller
         else if ($mode == 3) {
             return new Response(
                 json_encode(array(
-                    'LeadConfig' => $smtP->getLeadConfig(intval($obj->LeadConfig)),
-                    'TCEPackage' => $smtP->getTCEPackage(intval($obj->TCEPackage)),
+                    'LeadConfig' => $smtP->getLeadConfig(),
+                    'TCEPackage' => $smtP->getTCEPackage(),
                     'Cnt' => $smtP->getCnt(intval($obj->Cnt)),
                     'Height' => $smtP->getHeight(intval($obj->Height)),
                     'Width' => $smtP->getWidth(intval($obj->Width)),

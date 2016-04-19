@@ -34,7 +34,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityDiodeopto');
+                        FROM QualityUniversal');
         $stmt->execute();
         $diodeQualityAll = $stmt->fetchAll();
 
@@ -115,7 +115,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityDiodeopto qual
+                        FROM QualityUniversal qual
                         WHERE qual.Description = :desc');
         $stmt->execute(array(':desc' => $qualityDesc));
         $diodeApp = $stmt->fetchAll();

@@ -35,7 +35,7 @@ class OptoService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityDiodeopto');
+                        FROM QualityUniversal');
         $stmt->execute();
         $QualityAll = $stmt->fetchAll();
 
@@ -93,7 +93,7 @@ class OptoService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT qual.Value
-                        FROM QualityDiodeopto qual
+                        FROM QualityUniversal qual
                         WHERE qual.Description = :desc');
         $stmt->execute(array(':desc' => $qualityDesc));
         $quality = $stmt->fetch();
@@ -103,15 +103,6 @@ class OptoService {
 //====================================================================================================================
     public function calculateLam (Optoelectronics $opto, $pcbID) {
         $sEnv = $opto->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 611');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
-
         $piE = $this->systemService->getPiE(611, $sEnv);
 
         $pcb = $this->pcbService->getItem($pcbID);

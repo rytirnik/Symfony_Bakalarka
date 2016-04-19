@@ -15,6 +15,21 @@
         var newTubeWaveURL = "{{ path('newTubeWave') }}";
         var newDiodeLFURL = "{{ path('newDiodeLF') }}";
         var newOptoURL = "{{ path('newOpto') }}";
+        var newCrystalURL = "{{ path('newCrystal') }}";
+        var newTransistorBiLFURL = "{{ path('newTransistorBiLF') }}";
+        var newTransistorFetLFURL = "{{ path('newTransistorFetLF') }}";
+
+        var transDescOptions = "{{ transDescOptions }}";
+        //var coilsDescOptions = "<option value='Worst case'> Worst case </option>";
+        var coilsDescOptions = "{{ coilsDescOptions }}";
+
+        var descOptions = "";
+        for (i=0; i < {{ coilsDescChoices|length }}; i++)
+            //descOptions += "<option value='" + coilsDescChoices[i]['Description'] + "'>" + coilsDescChoices[i]['Description'] + "</option>";
+            descOptions += coilsDescChoices[i];
+
+
+
         var idPCB = {{pcb.IDPCB}};
 
         var detailURL = "{{ path('detailPart', {id:-1}) }}";
@@ -101,6 +116,18 @@
             </li>
             <li>
                 <a href = "#tab_12"> Optoelektronika </a>
+            </li>
+            <li>
+                <a href = "#tab_13"> Krystaly </a>
+            </li>
+            <li>
+                <a href = "#tab_14"> Tranzistory bipolar LF </a>
+            </li>
+            <li>
+                <a href = "#tab_15"> Tranzistory FET LF </a>
+            </li>
+            <li>
+                <a href = "#tab_16"> Indukčnosti </a>
             </li>
 
 
@@ -784,6 +811,220 @@
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Quality }}</td>
                                  <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.DPTemp }} </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.PassiveTemp }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_13" class = "tab_content">
+                <h2> Přidat krystal </h2>
+
+                <form id="formCrystal" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formCrystal) }}>
+
+                    {{ form_widget(formCrystal) }}
+                    <div id = "submitHandle">
+                        <input id="saveCrystal" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if crystals %}
+                    <h2> Uložené krystaly </h2>
+                    <table id="CrystalTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Typ </td>
+                            <td> Pouzdro </td>
+                            <td> Kvalita </td>
+                            <td> Frekvence </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for crystal in crystals %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Type }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.CasePart }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Frequency }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_14" class = "tab_content">
+                <h2> Přidat tranzistor (bipolární, nízkofrekvenční) </h2>
+
+                <form id="formTransistorBiLF" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formTransistorBiLF) }}>
+
+                    {{ form_widget(formTransistorBiLF) }}
+                    <div id = "submitHandle">
+                        <input id="saveTransistorBiLF" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if transistorsBiLF %}
+                    <h2> Uložené tranzistory </h2>
+                    <table id="TransistorBiLFTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Aplikace </td>
+                            <td> Kvalita </td>
+                            <td> Jmenovitý výkon </td>
+                            <td> Napětí CE </td>
+                            <td> Napětí CEO </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for transistor in transistorsBiLF %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.PowerRated }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.VoltageCE }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.VoltageCEO }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.TempDissipation }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.TempPassive }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_15" class = "tab_content">
+                <h2> Přidat tranzistor (si fet, nízkofrekvenční) </h2>
+
+                <form id="formTransistorFetLF" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formTransistorFetLF) }}>
+
+                    {{ form_widget(formTransistorFetLF) }}
+                    <div id = "submitHandle">
+                        <input id="saveTransistorFetLF" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if transistorsFetLF %}
+                    <h2> Uložené tranzistory </h2>
+                    <table id="TransistorFetLFTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Technologie </td>
+                            <td> Aplikace </td>
+                            <td> Kvalita </td>
+                            <td> Jmenovitý výkon </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for transistor in transistorsFetLF %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Technology }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.PowerRated }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.TempDissipation }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.TempPassive }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_16" class = "tab_content">
+                <h2> Přidat indukčnost </h2>
+
+                <form id="formInductive" class = "resForm long" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formInductive) }}>
+
+                    {{ form_widget(formInductive) }}
+                    <div id = "submitHandle">
+                        <input id="saveInductive" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div class="cleaner"> </div>
+
+                {% if inductives %}
+                    <h2> Uložené indukčnosti </h2>
+                    <table id="InductivesTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Druh </td>
+                            <td> Popis </td>
+                            <td> Kvalita </td>
+                            <td> Ztrátový výkon </td>
+                            <td> Hmotnost </td>
+                            <td> Plocha </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for inductive in inductives %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.DevType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.PowerLoss }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Weight }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Surface }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.TempDissipation }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.TempPassive }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

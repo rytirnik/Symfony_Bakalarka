@@ -149,7 +149,7 @@ class PcbService {
         $eqs = $stmt->fetchAll();
 
         foreach($eqs as $eq) {
-            $EquipChoices[$eq['ID_EquipType']] = $eq['Description'];
+            $EquipChoices[$eq['Description']] = $eq['Description'];
         }
         return $EquipChoices;
     }
@@ -177,7 +177,7 @@ class PcbService {
                         FROM EquipmentType e
                         WHERE e.ID_EquipType = :id');
         $stmt->execute(array(':id' => $equipID));
-        return $stmt->fetchAll();
+        return $stmt->fetch();
     }
 
 //====================================================================================================================
@@ -188,7 +188,7 @@ class PcbService {
                         FROM EquipmentType e
                         WHERE e.Description = :d');
         $stmt->execute(array(':d' => $desc));
-        return $stmt->fetchAll();
+        return $stmt->fetch();
     }
 
 //====================================================================================================================
@@ -212,6 +212,31 @@ class PcbService {
         $stmt->execute(array(':mat' => $desc));
         return $stmt->fetchAll();
     }
+//====================================================================================================================
+
+    public function getLeadConfigValue ($desc) {
+        switch ($desc) {
+            case 'Gull Wing':
+                $value = 5000;
+                break;
+            case 'J/S Lead':
+                $value = 150;
+                break;
+            default:
+                $value = 1;
+                break;
+        }
+        return $value;
+    }
+
+//====================================================================================================================
+
+    public function getPackageValue ($desc) {
+        if($desc == 'Ceramic')
+            return 6;
+        else
+            return 7;
+    }
 
 //====================================================================================================================
     public function lamPCBwire (PCB $pcb, $piE) {
@@ -231,13 +256,13 @@ class PcbService {
 
 //====================================================================================================================
     public function lamPCBsmt (PartSMT $smtP, $CR, $alfaS, $zivot, $dt) {
-        $piLC = $smtP->getLeadConfig();
+        $piLC = $this->getLeadConfigValue($smtP->getLeadConfig());
         $h = 5;
         $delka = $smtP->getHeight();
         $sirka = $smtP->getWidth();
         $d = (sqrt(pow($delka,2) + pow($sirka,2))) / 2;
 
-        $alfaCC = $smtP->getTCEPackage();
+        $alfaCC = $this->getPackageValue($smtP->getTCEPackage());
         $otepleni = $smtP->getTempDissipation();
         $y = Abs(($alfaS * $dt) - ($alfaCC * ($dt + $otepleni))) * pow(10, -6);
         $nf = $piLC * 3.5 * pow(($d / (0.65 * $h) * $y), -2.26);

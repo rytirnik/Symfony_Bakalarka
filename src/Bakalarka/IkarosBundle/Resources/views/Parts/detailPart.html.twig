@@ -133,6 +133,33 @@
                <p class="pRed"> * povinné pole </p>
            </form>
 
+      {% elseif type == "krystal" %}
+           <form id="formCrystalE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formCrystal) }}>
+               {{ form_widget(formCrystal) }}
+               <div class = "submitHandle">
+                   <input id="EditCrystal" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+
+      {% elseif type == "tranzistor, bipolární LF" %}
+           <form id="formTransistorBiLFE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formTransistorBiLF) }}>
+               {{ form_widget(formTransistorBiLF) }}
+               <div class = "submitHandle">
+                   <input id="EditTransistorBiLF" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+
+      {% elseif type == "tranzistor, FET LF" %}
+           <form id="formTransistorFetLFE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formTransistorFetLF) }}>
+               {{ form_widget(formTransistorFetLF) }}
+               <div class = "submitHandle">
+                   <input id="EditTransistorFetLF" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+
       {% endif %}
 
 

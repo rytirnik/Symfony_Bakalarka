@@ -3,14 +3,21 @@
 namespace Bakalarka\IkarosBundle\Controller;
 
 use Bakalarka\IkarosBundle\Entity\ConnectorGen;
+use Bakalarka\IkarosBundle\Entity\Crystal;
 use Bakalarka\IkarosBundle\Entity\Filter;
 use Bakalarka\IkarosBundle\Entity\Optoelectronics;
 use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
+use Bakalarka\IkarosBundle\Entity\TransistorBiLF;
+use Bakalarka\IkarosBundle\Entity\TransistorFetLF;
 use Bakalarka\IkarosBundle\Entity\TubeWave;
 
+use Bakalarka\IkarosBundle\Forms\CrystalForm;
 use Bakalarka\IkarosBundle\Forms\DiodeLFForm;
+use Bakalarka\IkarosBundle\Forms\InductiveForm;
 use Bakalarka\IkarosBundle\Forms\OptoForm;
+use Bakalarka\IkarosBundle\Forms\TransistorBiLFForm;
+use Bakalarka\IkarosBundle\Forms\TransistorFetLFForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -62,6 +69,10 @@ class PartsController extends Controller {
         $serviceTubeWave = $this->get('ikaros_tubeWaveService');
         $serviceDiode = $this->get('ikaros_diodeService');
         $serviceOpto = $this->get('ikaros_optoService');
+        $serviceCrystal = $this->get('ikaros_crystalService');
+        $serviceTransistorBiLF = $this->get('ikaros_transistorBiLFService');
+        $serviceTransistorFetLF = $this->get('ikaros_transistorFetLFService');
+        $serviceInductive = $this->get('ikaros_inductiveService');
 
         $resistors = $serviceResistor->getActiveResistors($id);
         $capacitors = $serviceCapacitor->getActiveCapacitors($id);
@@ -75,6 +86,10 @@ class PartsController extends Controller {
         $tubeWaves = $serviceTubeWave->getActiveTubeWaves($id);
         $diodesLF = $serviceDiode->getActiveDiodesLF($id);
         $optos = $serviceOpto->getActiveOptos($id);
+        $crystals = $serviceCrystal->getActiveCrystals($id);
+        $transistorsBiLF = $serviceTransistorBiLF->getActiveTransistors($id);
+        $transistorsFetLF = $serviceTransistorFetLF->getActiveTransistors($id);
+        $inductives = $serviceInductive->getActiveInductives($id);
 
 
 //---Resistor form---------------------------------------------------------------------------
@@ -159,6 +174,31 @@ class PartsController extends Controller {
         $formOpto = $this->createForm(new OptoForm(), array(), array('envChoices' => $envChoices ,
             'sysEnv' => $sysEnv, 'qualityChoices' => $optoQualChoices , 'appChoices' => $optoAppChoices));
 
+//---Crystal form---------------------------------------------------------------------------
+
+        $formCrystal = $this->createForm(new CrystalForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv));
+
+//---Transistors Bipolar LF form------------------------------------------------------------
+
+        $transistorQualChoices = $serviceTransistorBiLF->getQualityChoices();
+
+        $formTransistorBiLF = $this->createForm(new TransistorBiLFForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'qualityChoices' => $transistorQualChoices ));
+
+//---Transistors FET LF form------------------------------------------------------------
+
+        $transistorFetQualChoices = $serviceTransistorFetLF->getQualityChoices();
+
+        $formTransistorFetLF = $this->createForm(new TransistorFetLFForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'qualityChoices' => $transistorFetQualChoices ));
+
+//---Inductive device form------------------------------------------------------------
+
+        $inductiveTransChoices = $serviceInductive->getTransformersDescChoices();
+
+        $formInductive = $this->createForm(new InductiveForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'descChoices' => $inductiveTransChoices ));
 
 //---render template--------------------------------------------------------------------------
 
@@ -178,6 +218,12 @@ class PartsController extends Controller {
             'formTubeWave' => $formTubeWave->createView(), 'tubeWaves' => $tubeWaves,
             'formDiodeLF' => $formDiodeLF->createView(), 'diodesLF' => $diodesLF,
             'formOpto' => $formOpto->createView(), 'optos' => $optos,
+            'formCrystal' => $formCrystal->createView(), 'crystals' => $crystals,
+            'formTransistorBiLF' => $formTransistorBiLF->createView(), 'transistorsBiLF' => $transistorsBiLF,
+            'formTransistorFetLF' => $formTransistorFetLF->createView(), 'transistorsFetLF' => $transistorsFetLF,
+            'formInductive' => $formInductive->createView(), 'inductives' => $inductives,
+            'transDescOptions' => $serviceInductive->getTransformersDescOptions(), 'coilsDescOptions' => $serviceInductive->getCoilsDescOptions(),
+            'coilsDescChoices' => $serviceInductive->getCoilsDescChoices(),
         ));
 
     }
@@ -814,7 +860,166 @@ class PartsController extends Controller {
             )
         );
     }
+//====================================================================================================================
+    /**
+     * @Route("/newCrystal", name="newCrystal")
+     * @Template()
+     */
+    public function newCrystalAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
 
+        $objF = json_decode($formData);
+        $obj = $objF->crystalForm;
+
+        $crystal = new Crystal();
+        $crystal->setParams($obj);
+
+        $serviceCrystal = $this->get('ikaros_crystalService');
+        $lambda = $serviceCrystal->calculateLam($crystal);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $crystal, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $crystal->getLabel(),
+                'Lam' => $crystal->getLam(),
+                'Type' => $crystal->getType(),
+                'CasePart' => $crystal->getCasePart(),
+                'Frequency' => $crystal->getFrequency(),
+                'Quality' => $crystal->getQuality(),
+                'Environment' => $crystal->getEnvironment(),
+                'idP' => $crystal->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+
+//====================================================================================================================
+    /**
+     * @Route("/newTransistorBiLF", name="newTransistorBiLF")
+     * @Template()
+     */
+    public function newTransistorBiLFAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->transistorBiLFForm;
+
+        $transistor = new TransistorBiLF();
+        $transistor->setParams($obj);
+
+        $serviceTransistor = $this->get('ikaros_transistorBiLFService');
+        $lambda = $serviceTransistor->calculateLam($transistor, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $transistor, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $transistor->getLabel(),
+                'Lam' => $transistor->getLam(),
+                'Type' => $transistor->getType(),
+                'CasePart' => $transistor->getCasePart(),
+                'Application' => $transistor->getApplication(),
+                'Quality' => $transistor->getQuality(),
+                'Environment' => $transistor->getEnvironment(),
+                'PowerRated' => $transistor->getPowerRated(),
+                'VoltageCE' => $transistor->getVoltageCE(),
+                'VoltageCEO' => $transistor->getVoltageCEO(),
+                'TempDissipation' => $transistor->getTempDissipation(),
+                'TempPassive' => $transistor->getTempPassive(),
+                'idP' => $transistor->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+//====================================================================================================================
+    /**
+     * @Route("/newTransistorFetLF", name="newTransistorFetLF")
+     * @Template()
+     */
+    public function newTransistorFetLFAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->transistorFetLFForm;
+
+        $transistor = new TransistorFetLF();
+        $transistor->setParams($obj);
+
+        $serviceTransistor = $this->get('ikaros_transistorFetLFService');
+        $lambda = $serviceTransistor->calculateLam($transistor, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $transistor, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $transistor->getLabel(),
+                'Lam' => $transistor->getLam(),
+                'Type' => $transistor->getType(),
+                'CasePart' => $transistor->getCasePart(),
+                'Application' => $transistor->getApplication(),
+                'Quality' => $transistor->getQuality(),
+                'Environment' => $transistor->getEnvironment(),
+                'PowerRated' => $transistor->getPowerRated(),
+                'Technology' => $transistor->getTechnology(),
+                'TempDissipation' => $transistor->getTempDissipation(),
+                'TempPassive' => $transistor->getTempPassive(),
+                'idP' => $transistor->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
 //====================================================================================================================
     /**
      * @Route("/detailPart/{id}", name="detailPart")
@@ -994,6 +1199,43 @@ class PartsController extends Controller {
 
                 return array('type'=> $type, 'formOpto' => $formOpto->createView(),
                     'IDPart' => $opto->getIDPart(), 'Label' => $opto->getLabel(), 'Lam' => $opto->getLam(),
+                    'systemID' => $systemID);
+            case 'krystal':
+                $serviceCrystal = $this->get('ikaros_crystalService');
+                $crystal = $serviceCrystal->getItem($id);
+                $crystalArray = $crystal->to_array();
+
+                $formCrystal = $this->createForm(new CrystalForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'crystal' => $crystalArray));
+
+                return array('type'=> $type, 'formCrystal' => $formCrystal->createView(),
+                    'IDPart' => $crystal->getIDPart(), 'Label' => $crystal->getLabel(), 'Lam' => $crystal->getLam(),
+                    'systemID' => $systemID);
+            case 'tranzistor, bipolární LF':
+                $serviceTransistorBiLF = $this->get('ikaros_transistorBiLFService');
+                $transistor = $serviceTransistorBiLF->getItem($id);
+                $transistorArray = $transistor->to_array();
+
+                $QualChoices = $serviceTransistorBiLF->getQualityChoices();
+
+                $formTransistorBiLF = $this->createForm(new TransistorBiLFForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'qualityChoices' => $QualChoices , 'transistor' => $transistorArray));
+
+                return array('type'=> $type, 'formTransistorBiLF' => $formTransistorBiLF->createView(),
+                    'IDPart' => $transistor->getIDPart(), 'Label' => $transistor->getLabel(), 'Lam' => $transistor->getLam(),
+                    'systemID' => $systemID);
+            case 'tranzistor, FET LF':
+                $serviceTransistorFetLF = $this->get('ikaros_transistorFetLFService');
+                $transistor = $serviceTransistorFetLF->getItem($id);
+                $transistorArray = $transistor->to_array();
+
+                $QualChoices = $serviceTransistorFetLF->getQualityChoices();
+
+                $formTransistorFetLF = $this->createForm(new TransistorFetLFForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'qualityChoices' => $QualChoices , 'transistor' => $transistorArray));
+
+                return array('type'=> $type, 'formTransistorFetLF' => $formTransistorFetLF->createView(),
+                    'IDPart' => $transistor->getIDPart(), 'Label' => $transistor->getLabel(), 'Lam' => $transistor->getLam(),
                     'systemID' => $systemID);
         }
         return array('type' => $type);
@@ -1362,7 +1604,72 @@ class PartsController extends Controller {
                             'Content-Type' => 'application/json; charset=utf-8'
                         )
                     );
+            case 'crystal':
+                $obj = $objF->crystalForm;
+                $serviceCrystal = $this->get('ikaros_crystalService');
+                $crystal = $serviceCrystal->getItem($id);
+                $crystal->setParams($obj);
 
+                $oldLam = $crystal->getLam();
+                $lambda = $serviceCrystal->calculateLam($crystal);
+
+                $e = $servicePart->setLams($lambda, $crystal, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $crystal->getLabel(),
+                            'Lam' => $crystal->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'transistorBiLF':
+                $obj = $objF->transistorBiLFForm;
+                $serviceTransistorBiLF = $this->get('ikaros_transistorBiLFService');
+                $transistor = $serviceTransistorBiLF->getItem($id);
+                $transistor->setParams($obj);
+
+                $oldLam = $transistor->getLam();
+                $lambda = $serviceTransistorBiLF->calculateLam($transistor, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $transistor, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $transistor->getLabel(),
+                            'Lam' => $transistor->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'transistorFetLF':
+                $obj = $objF->transistorFetLFForm;
+                $serviceTransistorFetLF = $this->get('ikaros_transistorFetLFService');
+                $transistor = $serviceTransistorFetLF->getItem($id);
+                $transistor->setParams($obj);
+
+                $oldLam = $transistor->getLam();
+                $lambda = $serviceTransistorFetLF->calculateLam($transistor, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $transistor, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $transistor->getLabel(),
+                            'Lam' => $transistor->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
         }
 
         //KONEC SWITCHE

@@ -197,5 +197,10 @@ jQuery(document).ready(function($) {
         $ovladac.find('span.cislo:first').addClass('aktOdkaz');
     });
 
+    $("#inductiveForm_DevType").change(function() {
+        alert(html(coilsDescOptions) );
+        $("select[name='inductiveForm[Description]']").find('option').remove().end().append(descOptions);
+    });
+
 
 });
