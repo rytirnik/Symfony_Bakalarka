@@ -34,7 +34,7 @@ class ConnectionService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectionType c
+                        FROM Connection_Type c
                         WHERE c.Lamb = :lamb');
         $stmt->execute(array('lamb' => $conType));
         $conType = $stmt->fetchAll();
@@ -46,7 +46,7 @@ class ConnectionService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectionType c
+                        FROM Connection_Type c
                         WHERE c.Description = :desc');
         $stmt->execute(array('desc' => $conType));
         $conType = $stmt->fetch();
@@ -58,7 +58,7 @@ class ConnectionService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectionType
+                        FROM Connection_Type
                         ORDER BY Description');
         $stmt->execute();
         $conTypes = $stmt->fetchAll();
@@ -76,7 +76,7 @@ class ConnectionService {
             ->prepare('SELECT p.*, conQ.*
                         FROM
                        (SELECT con.*, q.Description
-                       FROM Connections con LEFT JOIN ConnectionType q ON (con.ConnectionType = q.Lamb)) AS conQ
+                       FROM Connections con LEFT JOIN Connection_Type q ON (con.ConnectionType = q.Lamb)) AS conQ
                        LEFT JOIN (SELECT part.*
                         FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
                         WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
@@ -89,14 +89,6 @@ class ConnectionService {
 //====================================================================================================================
     public function calculateLam (Connections $con, $pcbID = -1) {
         $sEnv = $con->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 171');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
         $piE = $this->systemService->getPiE(171, $sEnv);
 
         $base = $this->getConTypeValue($con->getConnectionType());

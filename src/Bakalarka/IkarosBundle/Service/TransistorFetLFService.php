@@ -36,7 +36,7 @@ class TransistorFetLFService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityUniversal');
+                        FROM Universal_quality');
         $stmt->execute();
         $QualityAll = $stmt->fetchAll();
 
@@ -51,7 +51,7 @@ class TransistorFetLFService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT qual.Value
-                        FROM QualityUniversal qual
+                        FROM Universal_quality qual
                         WHERE qual.Description = :desc');
         $stmt->execute(array(':desc' => $qualityDesc));
         $quality = $stmt->fetch();

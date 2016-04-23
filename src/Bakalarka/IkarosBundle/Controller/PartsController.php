@@ -5,6 +5,7 @@ namespace Bakalarka\IkarosBundle\Controller;
 use Bakalarka\IkarosBundle\Entity\ConnectorGen;
 use Bakalarka\IkarosBundle\Entity\Crystal;
 use Bakalarka\IkarosBundle\Entity\Filter;
+use Bakalarka\IkarosBundle\Entity\InductiveDev;
 use Bakalarka\IkarosBundle\Entity\Optoelectronics;
 use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
@@ -195,10 +196,14 @@ class PartsController extends Controller {
 
 //---Inductive device form------------------------------------------------------------
 
-        $inductiveTransChoices = $serviceInductive->getTransformersDescChoices();
+        $inductiveTransDescChoices = $serviceInductive->getTransformersDescChoices();
+        //$inductiveCoilsDescChoices = $serviceInductive->getCoilsDescChoices();
+
+        $inductiveTransQuality = $serviceInductive->getQualityTransChoices();
+        //$inductiveCoilsQuality = $serviceInductive->getQualityCoilsChoices();
 
         $formInductive = $this->createForm(new InductiveForm(), array(), array('envChoices' => $envChoices ,
-            'sysEnv' => $sysEnv, 'descChoices' => $inductiveTransChoices ));
+            'sysEnv' => $sysEnv, 'descChoices' => $inductiveTransDescChoices, 'qualityChoices' => $inductiveTransQuality ));
 
 //---render template--------------------------------------------------------------------------
 
@@ -222,8 +227,8 @@ class PartsController extends Controller {
             'formTransistorBiLF' => $formTransistorBiLF->createView(), 'transistorsBiLF' => $transistorsBiLF,
             'formTransistorFetLF' => $formTransistorFetLF->createView(), 'transistorsFetLF' => $transistorsFetLF,
             'formInductive' => $formInductive->createView(), 'inductives' => $inductives,
-            'transDescOptions' => $serviceInductive->getTransformersDescOptions(), 'coilsDescOptions' => $serviceInductive->getCoilsDescOptions(),
-            'coilsDescChoices' => $serviceInductive->getCoilsDescChoices(),
+            'transDescOptions' => $serviceInductive->getTransformersDescChoices(1), 'coilsDescOptions' => $serviceInductive->getCoilsDescChoices(1),
+            'transQualityChoices' => $serviceInductive->getQualityTransChoices(1), 'coilsQualityChoices' => $serviceInductive->getQualityCoilsChoices(1),
         ));
 
     }
@@ -1020,6 +1025,64 @@ class PartsController extends Controller {
             )
         );
     }
+
+//====================================================================================================================
+    /**
+     * @Route("/newInductive", name="newInductive")
+     * @Template()
+     */
+    public function newInductiveAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->inductiveForm;
+
+        $inductive = new InductiveDev();
+        $inductive->setParams($obj);
+
+        $serviceInductive= $this->get('ikaros_inductiveService');
+        $lambda = $serviceInductive->calculateLam($inductive, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $inductive, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $inductive->getLabel(),
+                'Lam' => $inductive->getLam(),
+                'Type' => $inductive->getType(),
+                'CasePart' => $inductive->getCasePart(),
+                'DevType' => $inductive->getDevType(),
+                'Description' => $inductive->getDescription(),
+                'Quality' => $inductive->getQuality(),
+                'Environment' => $inductive->getEnvironment(),
+                'PowerLoss' => $inductive->getPowerLoss(),
+                'Weight' => $inductive->getWeight(),
+                'Surface' => $inductive->getSurface(),
+                'TempDissipation' => $inductive->getTempDissipation(),
+                'TempPassive' => $inductive->getTempPassive(),
+                'idP' => $inductive->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+
 //====================================================================================================================
     /**
      * @Route("/detailPart/{id}", name="detailPart")
@@ -1237,6 +1300,31 @@ class PartsController extends Controller {
                 return array('type'=> $type, 'formTransistorFetLF' => $formTransistorFetLF->createView(),
                     'IDPart' => $transistor->getIDPart(), 'Label' => $transistor->getLabel(), 'Lam' => $transistor->getLam(),
                     'systemID' => $systemID);
+            case 'indukčnost':
+                $serviceInductive = $this->get('ikaros_inductiveService');
+                $inductive = $serviceInductive->getItem($id);
+                $inductiveArray = $inductive->to_array();
+
+                $devType = $inductive->getDevType();
+                if($devType == 'Coils') {
+                    $descChoices = $serviceInductive->getCoilsDescChoices();
+                    $qualityChoices = $serviceInductive->getQualityCoilsChoices();
+                }
+                else {
+                    $descChoices = $serviceInductive->getTransformersDescChoices();
+                    $qualityChoices = $serviceInductive->getQualityTransChoices();
+                }
+
+                $formInductive = $this->createForm(new InductiveForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'descChoices' => $descChoices, 'qualityChoices' => $qualityChoices,
+                    'inductive' => $inductiveArray));
+
+                return array('type'=> $type, 'formInductive' => $formInductive->createView(),
+                    'IDPart' => $inductive->getIDPart(), 'Label' => $inductive->getLabel(), 'Lam' => $inductive->getLam(),
+                    'systemID' => $systemID, 'transDescOptions' => $serviceInductive->getTransformersDescChoices(1),
+                    'coilsDescOptions' => $serviceInductive->getCoilsDescChoices(1),'transQualityChoices' => $serviceInductive->getQualityTransChoices(1),
+                    'coilsQualityChoices' => $serviceInductive->getQualityCoilsChoices(1),
+                );
         }
         return array('type' => $type);
     }
@@ -1664,6 +1752,28 @@ class PartsController extends Controller {
                         json_encode(array(
                             'Label' => $transistor->getLabel(),
                             'Lam' => $transistor->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'inductive':
+                $obj = $objF->inductiveForm;
+                $serviceInductive = $this->get('ikaros_inductiveService');
+                $inductive = $serviceInductive->getItem($id);
+                $inductive->setParams($obj);
+
+                $oldLam = $inductive->getLam();
+                $lambda = $serviceInductive->calculateLam($inductive, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $inductive, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $inductive->getLabel(),
+                            'Lam' => $inductive->getLam()
                         )),
                         200,
                         array(

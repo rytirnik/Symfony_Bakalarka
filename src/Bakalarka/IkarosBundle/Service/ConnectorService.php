@@ -48,7 +48,7 @@ class ConnectorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectorSocType');
+                        FROM ConnectorSoc_Type');
         $stmt->execute();
         $conSocTypes = $stmt->fetchAll();
 
@@ -63,7 +63,7 @@ class ConnectorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectorGenType');
+                        FROM ConnectorGen_Type');
         $stmt->execute();
         $conGenTypes = $stmt->fetchAll();
 
@@ -102,15 +102,31 @@ class ConnectorService {
     }
 
 //====================================================================================================================
-    public function lamConSoc (ConnectorSoc $conSoc) {
+    public function getConSocTypeValue ($desc) {
+     $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM ConnectorSoc_Type c
+                        WHERE c.Description = :d');
+        $stmt->execute(array('d' => $desc));
+        $conType = $stmt->fetch();
+        return floatval($conType['Lamb']);
+    }
+//====================================================================================================================
+    public function getConGenTypeValue ($desc) {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM ConnectorSocType c
+                        FROM ConnectorGen_Type c
                         WHERE c.Description = :d');
-        $stmt->execute(array('d' => $conSoc->getConnectorType()));
-        $conType = $stmt->fetchAll();
-        $lamB = floatval($conType[0]['Lamb']);
+        $stmt->execute(array('d' => $desc));
+        $conType = $stmt->fetch();
+        return floatval($conType['Lamb']);
+    }
+
+//====================================================================================================================
+    public function lamConSoc (ConnectorSoc $conSoc) {
+        $base = $this->getConSocTypeValue($conSoc->getConnectorType());
 
         $qual = $conSoc->getQuality();
         if ($qual == "MIL-SPEC")
@@ -119,20 +135,21 @@ class ConnectorService {
             $piQ = 1;
 
         $sEnv = $conSoc->getEnvironment();
-        $stmt = $this->doctrine->getManager()
+        /*$stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
                         FROM Environment e
                         WHERE e.ID_Section = 152');
         $stmt->execute();
         $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];
+        $piE = $env[0][$sEnv];*/
+        $piE = $this->systemService->getPiE(152,$sEnv);
 
         $q = 0.39;
         $n = $conSoc->getActivePins();
         $piP = exp(pow(($n-1)/10, $q));
 
-        $lambda = $lamB * $piP * $piQ * $piE * pow(10, -6);
+        $lambda = $base * $piP * $piQ * $piE * pow(10, -6);
 
         return $lambda;
     }
@@ -144,14 +161,7 @@ class ConnectorService {
 
         $conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
 
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM ConnectorGenType c
-                        WHERE c.Description = :d');
-        $stmt->execute(array('d' => $conGen->getConnectorType()));
-        $conType = $stmt->fetchAll();
-        $base = floatval($conType[0]['Lamb']);
+        $base = $this->getConGenTypeValue($conGen->getConnectorType());
 
         $prumerI = $conGen->getCurrentContact();
         $popis = $conGen->getConnectorType();
@@ -206,45 +216,11 @@ class ConnectorService {
             $piQ = 2;
 
         $sEnv = $conGen->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                        FROM Environment e
-                        WHERE e.ID_Section = 151');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
+
         $piE = $this->systemService->getPiE(151, $sEnv);
 
         $lambda = $base * $piT * $piK * $piQ * $piE * pow(10, -6);
         return $lambda;
     }
 
-
-//====================================================================================================================
-    /*public function setLamsConGen(ConnectorGen $conGen, $pcbID) {
-        $pcb = $this->pcbService->getItem($pcbID);
-        $system = $this->systemService->getItem($pcb->getSystemID());
-
-        //$conGen->setTemp($system->getTemp() + $conGen->getPassiveTemp());
-
-        $lambda = $this->lamConGen($conGen);
-
-        $conGen->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        $conGen->setPCBID($pcb);
-        try {
-            $em = $this->doctrine->getManager();
-            $em->persist($conGen);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
-            return $e;
-        }
-        return "";
-    }*/
 }

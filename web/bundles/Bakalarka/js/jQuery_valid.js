@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
                         $("#tab_01").append('<h2> Uložené resistory </h2>'+
                             '<table id="ResTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                                    '<td> Označeni </td> '+
+                                    '<td> Název </td> '+
                                     '<td> Lambda </td>'+
                                     '<td> Prostředí </td>'+
                                     '<td> Materiál </td>'+
@@ -1252,7 +1252,7 @@ jQuery(document).ready(function($) {
                         $("#tab_11").append('<h2> Uložené diody, nízkofrekvenční </h2>'+
                             '<table id="DiodeLFTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                            '<td> Označeni </td> '+
+                            '<td> Název </td> '+
                             '<td> Lambda </td>'+
                             '<td> Prostředí </td>'+
                             '<td> Aplikace </td>'+
@@ -1355,7 +1355,7 @@ jQuery(document).ready(function($) {
                         $("#tab_12").append('<h2> Uložené optoelektroniky </h2>'+
                             '<table id="OptoTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                            '<td> Označeni </td> '+
+                            '<td> Název </td> '+
                             '<td> Lambda </td>'+
                             '<td> Prostředí </td>'+
                             '<td> Aplikace </td>'+
@@ -1448,7 +1448,7 @@ jQuery(document).ready(function($) {
                         $("#tab_13").append('<h2> Uložené krystaly </h2>'+
                             '<table id="CrystalTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                            '<td> Označeni </td> '+
+                            '<td> Název </td> '+
                             '<td> Lambda </td>'+
                             '<td> Prostředí </td>'+
                             '<td> Typ </td>'+
@@ -1576,7 +1576,7 @@ jQuery(document).ready(function($) {
                         $("#tab_14").append('<h2> Uložené tranzistory </h2>'+
                             '<table id="TransistorBiLFTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                            '<td> Označeni </td> '+
+                            '<td> Název </td> '+
                             '<td> Lambda </td>'+
                             '<td> Prostředí </td>'+
                             '<td> Aplikace </td>'+
@@ -1668,7 +1668,7 @@ jQuery(document).ready(function($) {
             "form[PowerRated]": {
                 required: "Povinné pole 'Jmenovitý výkon' (kladné desetinné číslo)",
                 number: "Neplatné desetinné číslo",
-                min: "Jmenovitý výýkon musí být kladné číslo"
+                min: "Jmenovitý výkon musí být kladné číslo"
             },
             "form[TempDissipation]": {
                 required: "Povinné pole 'Oteplení ztrát. výkonem' (kladné desetinné číslo)",
@@ -1692,7 +1692,7 @@ jQuery(document).ready(function($) {
                         $("#tab_15").append('<h2> Uložené tranzistory </h2>'+
                             '<table id="TransistorFetLFTable" class = "systems part newPart systemsHover">' +
                             '<thead> <tr> '+
-                            '<td> Označeni </td> '+
+                            '<td> Název </td> '+
                             '<td> Lambda </td>'+
                             '<td> Prostředí </td>'+
                             '<td> Technologie </td>'+
@@ -1743,6 +1743,139 @@ jQuery(document).ready(function($) {
             });
             $(".validErr").remove();
             validatorTransistorFetLF.resetForm();
+        }
+    });
+    var validatorInductive = $("#formInductive").validate( {
+        errorPlacement: function(error, element) {
+            if(element.parent().children().length == 2)
+                element.parent().append('<p class="validErr">' + error.text() + '</p>' );
+            else {
+                element.parent().children('p').text(error.text());
+            }
+            $(".submitMsg").remove();
+        },
+        rules: {
+            "form[Label]": {
+                maxlength: 64
+            },
+            "form[Type]": {
+                maxlength: 64
+            },
+            "form[PowerLoss]": {
+                number: true,
+                min: 0
+            },
+            "form[TempDissipation]": {
+                number: true,
+                min: 0
+            },
+            "form[TempPassive]": {
+                number: true,
+                min: 0
+            },
+            "form[Surface]": {
+                number: true,
+                min: 0
+            },
+            "form[Weight]": {
+                number: true,
+                min: 0
+            },
+        },
+        messages: {
+            "form[Label]": {
+                required: "Povinné pole 'Název'"
+            },
+            "form[PowerLoss]": {
+                required: "Povinné pole 'Ztrátový výkon' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Ztrátový výkon musí být kladné číslo"
+            },
+            "form[TempDissipation]": {
+                required: "Povinné pole 'Oteplení ztrát. výkonem' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Oteplení ztrát. výkonem musí být kladné číslo"
+            },
+            "form[TempPassive]": {
+                required: "Povinné pole 'Pasivní oteplení' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Pasivní oteplení musí být kladné číslo"
+            },
+            "form[Surface]": {
+                number: "Neplatné desetinné číslo",
+                min: "Plocha musí být kladné číslo"
+            },
+            "form[Weight]": {
+                number: "Neplatné desetinné číslo",
+                min: "Hmotnost musí být kladné číslo"
+            },
+        },
+        submitHandler: function(form) {
+            $data =  $("#formInductive").serializeJSON();
+            jQuery.ajax({
+                url:        newInductiveURL,
+                data:       {formData: $data, id: idPCB },
+                success:    function(data){
+                    //alert("ok");
+                    if($("#InductivesTable").length == 0) {
+                        $("#tab_16").append('<h2> Uložené indukčnosti </h2>'+
+                            '<table id="InductivesTable" class = "systems part newPart systemsHover">' +
+                            '<thead> <tr> '+
+                            '<td> Název </td> '+
+                            '<td> Lambda </td>'+
+                            '<td> Prostředí </td>'+
+                            '<td> Druh </td>'+
+                            '<td> Popis </td>'+
+                            '<td> Kvalita </td>'+
+                            '<td> Ztrátový výkon </td>'+
+                            '<td> Hmotnost </td>'+
+                            '<td> Plocha </td>'+
+                            '<td> Oteplení ZV </td>'+
+                            '<td> Pasivní oteplení </td>'+
+                            '</tr> </thead> <tbody> </tbody> </table>');
+                    }
+
+                    $detURl = detailURL.substring(0, detailURL.lastIndexOf("-1"));
+                    $detURl = $detURl.concat(data.idP);
+
+                    $("#InductivesTable").children('tbody').append("<tr>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.DevType + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Description + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PowerLoss + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Weight + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Surface + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempDissipation + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempPassive + "</td>");
+
+                    $(".tableLink").click(function() {
+                        window.document.location = $(this).attr("href");
+                    });
+
+                    $(".tableLink").hover(function() {
+                        $(".tableLink").css("cursor", "pointer");
+                    });
+
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
+                    $("#SysLam").text($sysL);
+
+                    $(".submitMsg").remove();
+                    $("#formInductive").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                },
+                error: function(data) {
+                    //alert("Error");
+                    $(".submitMsg").remove();
+                    $("#formInductive").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+                },
+                dataType:   'json',
+                type:       'POST'
+            });
+            $(".validErr").remove();
+            validatorInductive.resetForm();
         }
     });
 

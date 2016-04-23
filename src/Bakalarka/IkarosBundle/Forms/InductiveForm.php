@@ -13,9 +13,6 @@ class InductiveForm extends AbstractType
         $envChoices = $options['envChoices'];
         $sysEnv = $options['sysEnv'];
         $qualityChoices = $options['qualityChoices'];
-
-        $qualityChoices = array("MIL-SPEC" => "MIL-SPEC", "Lower" => "Lower");
-
         $descChoices = $options['descChoices'];
 
         if($sysEnv) {
@@ -95,6 +92,7 @@ class InductiveForm extends AbstractType
         }
         else {
             $inductive = $options['inductive'];
+
             $builder
                 ->add('Environment', 'choice', array(
                     'label' => 'Prostředí',
@@ -141,11 +139,11 @@ class InductiveForm extends AbstractType
                     'choices' => $qualityChoices,
                     'data' => $inductive['Quality']
                 ))
-                ->add('PowerRated', 'number', array(
+                ->add('PowerLoss', 'number', array(
                     'required' => true,
-                    'label' => 'Jmenovitý výkon [W]',
+                    'label' => 'Ztrátový výkon [W]',
                     'error_bubbling' => true,
-                    'data' => $inductive['PowerRated']
+                    'data' => $inductive['PowerLoss']
                 ))
                 ->add('Weight', 'number', array(
                     'required' => false,

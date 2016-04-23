@@ -1,7 +1,14 @@
 {% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
 
 {% block head %}
+     <script type="text/javascript">
 
+        var transDescOptions = "{{ transDescOptions }}";
+        var coilsDescOptions = "{{ coilsDescOptions }}";
+        var transQualityOptions = "{{ transQualityChoices }}";
+        var coilsQualityOptions = "{{ coilsQualityChoices }}";
+
+      </script>
 {% endblock %}
 
 {% block content %} 
@@ -156,6 +163,14 @@
                {{ form_widget(formTransistorFetLF) }}
                <div class = "submitHandle">
                    <input id="EditTransistorFetLF" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+       {% elseif type == "indukčnost" %}
+           <form id="formInductiveE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formInductive) }}>
+               {{ form_widget(formInductive) }}
+               <div class = "submitHandle">
+                   <input id="EditInductive" type="submit" value="Upravit" />
                </div>
                <p class="pRed"> * povinné pole </p>
            </form>

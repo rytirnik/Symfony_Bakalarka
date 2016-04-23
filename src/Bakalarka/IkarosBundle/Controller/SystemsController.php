@@ -318,6 +318,9 @@ class SystemsController extends Controller
             case 'tranzistor, FET LF':
                 $service = $this->get('ikaros_transistorFetLFService');
                 break;
+            case 'indukčnost':
+                $service = $this->get('ikaros_inductiveService');
+                break;
             default:
                 return "";
         }

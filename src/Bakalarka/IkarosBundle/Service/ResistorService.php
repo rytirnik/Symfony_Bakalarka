@@ -36,7 +36,7 @@ class ResistorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
-                        FROM QualityResistor m
+                        FROM Resistor_quality m
                         WHERE m.Value = :m');
         $stmt->execute(array('m' => $quality));
         $qualR = $stmt->fetchAll();
@@ -48,7 +48,7 @@ class ResistorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityResistor');
+                        FROM Resistor_quality');
         $stmt->execute();
         $qualityAll = $stmt->fetchAll();
 
@@ -63,7 +63,7 @@ class ResistorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM MaterialResistor');
+                        FROM Resistor_material');
         $stmt->execute();
         $materialAll = $stmt->fetchAll();
 
@@ -78,13 +78,22 @@ class ResistorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM MaterialResistor');
+                        FROM Resistor_material');
         $stmt->execute();
         $materialAll = $stmt->fetchAll();
 
         return $materialAll;
     }
-
+//====================================================================================================================
+    public function getResMaterialByShortcut($mat) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT m.*
+                       FROM Resistor_material m
+                       WHERE m.ResShortcut = :m');
+        $stmt->execute(array('m' => $mat));
+        return $stmt->fetchA();
+    }
 //====================================================================================================================
     public function getActiveResistors($pcbID) {
         $stmt = $this->doctrine->getManager()
@@ -92,7 +101,7 @@ class ResistorService {
             ->prepare('SELECT p.*, resQ.*
                         FROM
                        (SELECT res.*, q.Description
-                       FROM Resistor res LEFT JOIN QualityResistor q ON (res.Quality = q.Value)) AS resQ
+                       FROM Resistor res LEFT JOIN Resistor_quality q ON (res.Quality = q.Value)) AS resQ
                        LEFT JOIN (SELECT part.*
                         FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
                         WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
@@ -111,18 +120,11 @@ class ResistorService {
         $sysTemp = $system->getTemp();
         $res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
 
-        $mat = $res->getMaterial();
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT m.*
-                       FROM MaterialResistor m
-                       WHERE m.ResShortcut = :m');
-        $stmt->execute(array('m' => $mat));
-        $material = $stmt->fetchAll();
+        $material = $this->getResMaterialByShortcut($res->getMaterial());
 
-        $base = $material[0]['Lamb'];
-        $piT_tab = $material[0]['FactorT'];
-        $piS_tab = intval($material[0]['FactorS']);
+        $base = $material['Lamb'];
+        $piT_tab = $material['FactorT'];
+        $piS_tab = intval($material['FactorS']);
 
         $temp = $res->getTemp();
         $piT = exp(((-1 * $piT_tab) / (8.617 * 0.00001)) * (1 / ($temp + 273) - 1 / 298));
@@ -145,14 +147,7 @@ class ResistorService {
         $piQ = $res->getQuality();
 
         $sEnv = $res->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 91');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
+
         $piE = $this->systemService->getPiE(91, $sEnv);
 
         $lambda = $base * $piT * $piP * $piS * $piQ * $piE * pow(10, -6);
@@ -160,34 +155,6 @@ class ResistorService {
         return $lambda;
     }
 
-//====================================================================================================================
-    /*public function setLams(Resistor $res, $pcbID) {
-        $pcb = $this->pcbService->getItem($pcbID);
-        $system = $this->systemService->getItem($pcb->getSystemID());
-
-        //$sysTemp = $system->getTemp();
-        //$res->setTemp($sysTemp + $res->getDPTemp() + $res->getPassiveTemp());
-
-        $lambda = $this->lamResistor($res);
-
-        $res->setLam($lambda);
-        $pcb->setSumPartsLam($pcb->getSumPartsLam() + $lambda);
-        $system->setLam($system->getLam() + $lambda);
-
-        $res->setPCBID($pcb);
-
-        try {
-            $em = $this->doctrine->getManager();
-            $em->persist($res);
-            $em->persist($pcb);
-            $em->persist($system);
-            $em->flush();
-
-        } catch (\Exception $e) {
-            return $e;
-        }
-        return "";
-    }*/
 
 
 }

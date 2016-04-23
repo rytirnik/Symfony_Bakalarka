@@ -18,17 +18,12 @@
         var newCrystalURL = "{{ path('newCrystal') }}";
         var newTransistorBiLFURL = "{{ path('newTransistorBiLF') }}";
         var newTransistorFetLFURL = "{{ path('newTransistorFetLF') }}";
+        var newInductiveURL = "{{ path('newInductive') }}";
 
         var transDescOptions = "{{ transDescOptions }}";
-        //var coilsDescOptions = "<option value='Worst case'> Worst case </option>";
         var coilsDescOptions = "{{ coilsDescOptions }}";
-
-        var descOptions = "";
-        for (i=0; i < {{ coilsDescChoices|length }}; i++)
-            //descOptions += "<option value='" + coilsDescChoices[i]['Description'] + "'>" + coilsDescChoices[i]['Description'] + "</option>";
-            descOptions += coilsDescChoices[i];
-
-
+        var transQualityOptions = "{{ transQualityChoices }}";
+        var coilsQualityOptions = "{{ coilsQualityChoices }}";
 
         var idPCB = {{pcb.IDPCB}};
 

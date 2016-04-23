@@ -197,10 +197,32 @@ jQuery(document).ready(function($) {
         $ovladac.find('span.cislo:first').addClass('aktOdkaz');
     });
 
-    $("#inductiveForm_DevType").change(function() {
-        alert(html(coilsDescOptions) );
-        $("select[name='inductiveForm[Description]']").find('option').remove().end().append(descOptions);
+    function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+
+   $("#inductiveForm_DevType").change(function() {
+        //var decoded = decodeHtml(coilsDescOptions);
+        //alert(decoded);
+        $("#inductiveForm_Description").empty();
+        $("#inductiveForm_Quality").empty();
+        var chosenType = $(this).val();
+        if(chosenType == 'Coils') {
+            $("#inductiveForm_Description").append(decodeHtml(coilsDescOptions));
+            $("#inductiveForm_Quality").append(decodeHtml(coilsQualityOptions));
+        }
+        else {
+            $("#inductiveForm_Description").append(decodeHtml(transDescOptions));
+            $("#inductiveForm_Quality").append(decodeHtml(transQualityOptions));
+        }
+        $("#inductiveForm_Description option[value='Worst case']").prop("selected", "selected");
+        $("#inductiveForm_Quality option[value='Lower']").prop("selected", "selected");
+
+
     });
+
 
 
 });

@@ -505,4 +505,37 @@ class InductiveDev extends Part
     {
         return $this->PCB_ID;
     }
+
+    public function setParams($obj) {
+        $this->Label = $obj->Label;
+        $this->Environment = $obj->Environment;
+        $this->Type = $obj->Type;
+        $this->CasePart = $obj->CasePart;
+        $this->Quality = $obj->Quality;
+        $this->Description = $obj->Description;
+        $this->PowerLoss = floatval($obj->PowerLoss);
+        $this->DevType = $obj->DevType;
+        $this->TempDissipation = floatval($obj->TempDissipation);
+        $this->TempPassive = floatval($obj->TempPassive);
+        $this->Surface = floatval($obj->Surface);
+        $this->Weight = floatval($obj->Weight);
+    }
+
+    public function to_array() {
+        return (array(
+            'Label' => $this->Label,
+            'CasePart' => $this->CasePart,
+            'Type' => $this->Type,
+            'Lam' => $this->Lam,
+            'Environment' => $this->Environment,
+            'Description' => $this->Description,
+            'Quality' => $this->Quality,
+            'PowerLoss' => $this->PowerLoss,
+            'DevType' => $this->DevType,
+            'TempDissipation' => $this->TempDissipation,
+            'TempPassive' => $this->TempPassive,
+            'Surface' => $this->Surface,
+            'Weight' => $this->Weight
+        ));
+    }
 }

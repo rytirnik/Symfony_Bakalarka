@@ -45,14 +45,7 @@ class TubeWaveService {
 //====================================================================================================================
     public function calculateLam (TubeWave $tubeWave, $pcbID = -1) {
         $sEnv = $tubeWave->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 72');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
+
         $piE = $this->systemService->getPiE(72, $sEnv);
 
         $p = $tubeWave->getPower();

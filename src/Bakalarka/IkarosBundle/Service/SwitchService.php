@@ -33,7 +33,7 @@ class SwitchService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM SwitchType');
+                        FROM Switch_Type');
         $stmt->execute();
         $swTypes = $stmt->fetchAll();
 
@@ -42,7 +42,17 @@ class SwitchService {
         }
         return $swTypeChoices;
     }
-
+//====================================================================================================================
+    public function getSwitchTypeValue($desc) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM Switch_Type s
+                        WHERE s.Description = :d');
+        $stmt->execute(array('d' => $$desc));
+        $switchType = $stmt->fetch();
+        return floatval($switchType['Lamb']);
+    }
 //====================================================================================================================
     public function getActiveSwitches($pcbID) {
         $stmt = $this->doctrine->getManager()
@@ -59,15 +69,8 @@ class SwitchService {
 
 //====================================================================================================================
     public function calculateLam (Switches $switch, $pcbID = -1) {
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM SwitchType s
-                        WHERE s.Description = :d');
-        $stmt->execute(array('d' => $switch->getSwitchType()));
-        $switchType = $stmt->fetch();
-        $base = floatval($switchType['Lamb']);
 
+        $base = $this->getSwitchTypeValue($switch->getSwitchType());
         $sEnv = $switch->getEnvironment();
 
         $piE = $this->systemService->getPiE(141, $sEnv);

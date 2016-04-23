@@ -37,7 +37,7 @@ class CapacitorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
-                        FROM QualityCapacitor m
+                        FROM Capacitor_quality m
                         WHERE m.Value = :m');
         $stmt->execute(array('m' => $quality));
         $qualC = $stmt->fetchAll();
@@ -48,7 +48,7 @@ class CapacitorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityCapacitor');
+                        FROM Capacitor_quality');
         $stmt->execute();
         $capQualityAll = $stmt->fetchAll();
 
@@ -63,7 +63,7 @@ class CapacitorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM MaterialCapacitor');
+                        FROM Capacitor_material');
         $stmt->execute();
         $capMaterialAll = $stmt->fetchAll();
         foreach($capMaterialAll as $m) {
@@ -77,11 +77,23 @@ class CapacitorService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM MaterialCapacitor');
+                        FROM Capacitor_material');
         $stmt->execute();
         $capMaterialAll = $stmt->fetchAll();
 
         return $capMaterialAll;
+    }
+
+//====================================================================================================================
+    public function getCapMaterialByShortcut($matC) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT m.*
+                        FROM Capacitor_material m
+                        WHERE m.CapShortcut = :m');
+        $stmt->execute(array('m' => $matC));
+        $materialC = $stmt->fetch();
+        return $materialC;
     }
 
 //====================================================================================================================
@@ -91,7 +103,7 @@ class CapacitorService {
             ->prepare('SELECT p.*, capQ.*
                         FROM
                        (SELECT cap.*, q.Description
-                       FROM Capacitor cap LEFT JOIN QualityCapacitor q ON (cap.Quality = q.Value)) AS capQ
+                       FROM Capacitor cap LEFT JOIN Capacitor_quality q ON (cap.Quality = q.Value)) AS capQ
                        LEFT JOIN (SELECT part.*
                         FROM Part part LEFT JOIN PCB pcb ON (part.PCB_ID = pcb.ID_PCB)
                         WHERE pcb.ID_PCB = :id AND part.DeleteDate IS NULL AND pcb.DeleteDate IS NULL) AS p
@@ -112,19 +124,12 @@ class CapacitorService {
         $cap->setTemp($sysTemp + $cap->getPassiveTemp());
 
         $matC = $cap->getMaterial();
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT m.*
-                        FROM MaterialCapacitor m
-                        WHERE m.CapShortcut = :m');
-        $stmt->execute(array('m' => $matC));
-        $materialC = $stmt->fetchAll();
-
-        $base = $materialC[0]['Lamb'];
-        $facT = floatval($materialC[0]['FactorT']);
-        $facC = floatval($materialC[0]['FactorC']);
-        $facV = $materialC[0]['FactorV'];
-        $facRS = $materialC[0]['PiSR'];
+        $materialC = $this->getCapMaterialByShortcut($matC);
+        $base = $materialC['Lamb'];
+        $facT = floatval($materialC['FactorT']);
+        $facC = floatval($materialC['FactorC']);
+        $facV = $materialC['FactorV'];
+        $facRS = $materialC['PiSR'];
         $piQ = $cap->getQuality();
 
         if (!$facRS) {

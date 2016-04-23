@@ -144,7 +144,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM EquipmentType');
+                        FROM pcb_EquipmentType');
         $stmt->execute();
         $eqs = $stmt->fetchAll();
 
@@ -159,7 +159,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM SubstrateMaterial ORDER BY Description');
+                        FROM pcb_SubstrateMaterial ORDER BY Description');
         $stmt->execute();
         $mat = $stmt->fetchAll();
 
@@ -174,7 +174,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
-                        FROM EquipmentType e
+                        FROM pcb_EquipmentType e
                         WHERE e.ID_EquipType = :id');
         $stmt->execute(array(':id' => $equipID));
         return $stmt->fetch();
@@ -185,7 +185,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT e.*
-                        FROM EquipmentType e
+                        FROM pcb_EquipmentType e
                         WHERE e.Description = :d');
         $stmt->execute(array(':d' => $desc));
         return $stmt->fetch();
@@ -196,7 +196,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
-                        FROM SubstrateMaterial m
+                        FROM pcb_SubstrateMaterial m
                         WHERE m.ID_SubstrateMat = :id');
         $stmt->execute(array(':id' => $matID));
         return $stmt->fetchAll();
@@ -207,7 +207,7 @@ class PcbService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT m.*
-                        FROM SubstrateMaterial m
+                        FROM pcb_SubstrateMaterial m
                         WHERE m.Description = :mat');
         $stmt->execute(array(':mat' => $desc));
         return $stmt->fetchAll();

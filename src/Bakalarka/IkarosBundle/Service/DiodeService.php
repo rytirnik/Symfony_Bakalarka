@@ -34,7 +34,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityUniversal');
+                        FROM Universal_quality');
         $stmt->execute();
         $diodeQualityAll = $stmt->fetchAll();
 
@@ -50,7 +50,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM DiodeLFApplication');
+                        FROM DiodeLF_Application');
         $stmt->execute();
         $diodeAppAll = $stmt->fetchAll();
 
@@ -102,7 +102,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM DiodeLFApplication app
+                        FROM DiodeLF_Application app
                         WHERE app.Description = :desc');
         $stmt->execute(array(':desc' => $appDesc));
         $diodeApp = $stmt->fetchAll();
@@ -115,7 +115,7 @@ class DiodeService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM QualityUniversal qual
+                        FROM Universal_quality qual
                         WHERE qual.Description = :desc');
         $stmt->execute(array(':desc' => $qualityDesc));
         $diodeApp = $stmt->fetchAll();
@@ -125,14 +125,6 @@ class DiodeService {
 //====================================================================================================================
     public function calculateLam (DiodeLF $diode, $pcbID) {
         $sEnv = $diode->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 61');
-        $stmt->execute();s
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
 
         $piE = $this->systemService->getPiE(61, $sEnv);
 

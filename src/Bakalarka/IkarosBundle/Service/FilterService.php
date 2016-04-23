@@ -34,7 +34,7 @@ class FilterService {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
             ->prepare('SELECT *
-                        FROM FilterType');
+                        FROM Filter_Type');
         $stmt->execute();
         $filterTypeAll = $stmt->fetchAll();
         foreach($filterTypeAll as $m) {
@@ -42,7 +42,18 @@ class FilterService {
         }
         return $filterTypeChoices;
     }
+//====================================================================================================================
+    public function getFilterTypeValue($desc) {
+        $stmt = $this->doctrine->getManager()
+            ->getConnection()
+            ->prepare('SELECT *
+                        FROM Filter_Type f
+                        WHERE f.Description = :d');
+        $stmt->execute(array('d' => $desc));
+        $filterType = $stmt->fetchAll();
+        return floatval($filterType[0]['Lamb']);
 
+    }
 //====================================================================================================================
     public function getActiveFilters($pcbID) {
         $stmt = $this->doctrine->getManager()
@@ -59,24 +70,10 @@ class FilterService {
 
 //====================================================================================================================
     public function calculateLam (Filter $filter, $pcbID = -1) {
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM FilterType f
-                        WHERE f.Description = :d');
-        $stmt->execute(array('d' => $filter->getFilterType()));
-        $filterType = $stmt->fetchAll();
-        $base = floatval($filterType[0]['Lamb']);
+        $base = $this->getFilterTypeValue($filter->getFilterType());
 
         $sEnv = $filter->getEnvironment();
-        /*$stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT e.*
-                       FROM Environment e
-                       WHERE e.ID_Section = 211');
-        $stmt->execute();
-        $env = $stmt->fetchAll();
-        $piE = $env[0][$sEnv];*/
+
         $piE = $this->systemService->getPiE(211, $sEnv);
 
         $qual = $filter->getQuality();

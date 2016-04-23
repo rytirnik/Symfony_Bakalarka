@@ -20,6 +20,7 @@ var oldOpto = [];
 var oldCrystal = [];
 var oldTransistorBiLF = [];
 var oldTransistorFetLF = [];
+var oldInductive = [];
 
 function savePCB(event) {
     var save = $(event.target).attr('id') == 'SavePCB1';
@@ -1197,6 +1198,82 @@ function saveTransistorFetLF(event) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+function saveInductive(event) {
+    var save = $(event.target).attr('id') == 'SaveInductive';
+    var err = 0;
+    if(save) {
+        $data =  $("#formInductiveE").serializeJSON();
+        var val = $('#formInductiveE input[id="InductiveForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formInductiveE .submitMsg").remove();
+            $("#formInductiveE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formInductiveE input[id="inductiveForm_TempDissipation"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formInductiveE .submitMsg").remove();
+            $("#formInductiveE").append('<span class="submitMsg"> Vyplňte oteplení ztrátovým výkonem (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formInductiveE input[id="inductiveForm_TempPassive"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formInductiveE .submitMsg").remove();
+            $("#formInductiveE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formInductiveE input[id="inductiveForm_PowerLoss"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formInductiveE .submitMsg").remove();
+            $("#formInductiveE").append('<span class="submitMsg"> Vyplňte ztrátový výkon (kladné desetinné číslo) </span>');
+            return;
+        }
+
+        $url = $("#formInductiveE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "inductive"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formInductiveE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(data.Lam);
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formInductiveE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formInductiveE input[id="inductiveForm_Label"]').val(oldInductive['Label']);
+        $('#formInductiveE input[id="inductiveForm_Type"]').val(oldInductive['Type']);
+        $('#formInductiveE select[id="inductiveForm_DevType"]').val(oldInductive['DevType']);
+        $('#formInductiveE select[id="inductiveForm_Description"]').val(oldInductive['Description']);
+        $('#formInductiveE select[id="inductiveForm_Quality"]').val(oldInductive['Quality']);
+        $('#formInductiveE select[id="inductiveForm_Environment"]').val(oldInductive['Environment']);
+        $('#formInductiveE input[id="inductiveForm_CasePart"]').val(oldInductive['CasePart']);
+        $('#formInductiveE input[id="inductiveForm_TempDissipation"]').val(oldInductive['TempDissipation']);
+        $('#formInductiveE input[id="inductiveForm_TempPassive"]').val(oldInductive['TempPassive']);
+        $('#formInductiveE input[id="inductiveForm_PowerLoss"]').val(oldInductive['PowerLoss']);
+        $('#formInductiveE input[id="inductiveForm_Surface"]').val(oldInductive['Surface']);
+        $('#formInductiveE input[id="inductiveForm_Weight"]').val(oldInductive['Weight']);
+    }
+    $("#formInductiveE input:not(:submit), #formInductiveE select").attr('disabled', 'disabled');
+    $('#SaveInductive').remove();
+    $('#CancelInductive').next('div').remove();
+    $('#CancelInductive').remove();
+    $("#EditInductive").show();
+}
+//----------------------------------------------------------------------------------------------------------------------
+
 function deleteSTM(event) {
     event.preventDefault();
     var $this = $(event.target);
@@ -1253,6 +1330,7 @@ jQuery(document).ready(function($) {
     $("#formCrystalE input:not(:submit), #formCrystalE select").attr('disabled', 'disabled');
     $("#formTransistorBiLFE input:not(:submit), #formTransistorBiLFE select").attr('disabled', 'disabled');
     $("#formTransistorFetLFE input:not(:submit), #formTransistorFetLFE select").attr('disabled', 'disabled');
+    $("#formInductiveE input:not(:submit), #formInductiveE select").attr('disabled', 'disabled');
 
     $("#EditPCB1").click(function(e) {
         e.preventDefault();
@@ -2015,6 +2093,50 @@ jQuery(document).ready(function($) {
         $("#formTransistorFetLFE .submitHandle").append(cancel);
 
         $("#formTransistorFetLFE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    $("#EditInductive").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formInductiveE input:not(:submit), #formInductiveE select").removeAttr('disabled');
+        $this = $(this);
+        $("#EditInductive").hide();
+        oldInductive['Label'] = $('#formInductiveE input[id="inductiveForm_Label"]').val();
+        oldInductive['Type'] = $('#formInductiveE input[id="inductiveForm_Type"]').val();
+        oldInductive['DevType'] = $('#formInductiveE select[id="inductiveForm_DevType"]').val();
+        oldInductive['Quality'] = $('#formInductiveE select[id="inductiveForm_Quality"]').val();
+        oldInductive['Description'] = $('#formInductiveE select[id="inductiveForm_Description"]').val();
+        oldInductive['Environment'] = ($('#formInductiveE select[id="inductiveForm_Environment"]').val());
+        oldInductive['CasePart'] = $('#formInductiveE input[id="inductiveForm_CasePart"]').val();
+        oldInductive['TempDissipation'] = $('#formInductiveE input[id="inductiveForm_TempDissipation"]').val();
+        oldInductive['TempPassive'] = $('#formInductiveE input[id="inductiveForm_TempPassive"]').val();
+        oldInductive['PowerLoss'] = $('#formInductiveE input[id="inductiveForm_PowerLoss"]').val();
+        oldInductive['Surface'] = $('#formInductiveE input[id="inductiveForm_Surface"]').val();
+        oldInductive['Weight'] = $('#formInductiveE input[id="inductiveForm_Weight"]').val();
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveInductive')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveInductive)
+        ;
+        $("#formInductiveE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelInductive')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveInductive)
+        ;
+        $("#formInductiveE .submitHandle").append(cancel);
+
+        $("#formInductiveE .submitHandle").append('<div class="cleaner"></div>');
 
     });
 
