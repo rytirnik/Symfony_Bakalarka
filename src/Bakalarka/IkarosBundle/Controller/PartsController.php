@@ -4,8 +4,11 @@ namespace Bakalarka\IkarosBundle\Controller;
 
 use Bakalarka\IkarosBundle\Entity\ConnectorGen;
 use Bakalarka\IkarosBundle\Entity\Crystal;
+use Bakalarka\IkarosBundle\Entity\DiodeRF;
 use Bakalarka\IkarosBundle\Entity\Filter;
 use Bakalarka\IkarosBundle\Entity\InductiveDev;
+use Bakalarka\IkarosBundle\Entity\Memory;
+use Bakalarka\IkarosBundle\Entity\Microcircuit;
 use Bakalarka\IkarosBundle\Entity\Optoelectronics;
 use Bakalarka\IkarosBundle\Entity\RotDevElaps;
 use Bakalarka\IkarosBundle\Entity\Switches;
@@ -15,7 +18,10 @@ use Bakalarka\IkarosBundle\Entity\TubeWave;
 
 use Bakalarka\IkarosBundle\Forms\CrystalForm;
 use Bakalarka\IkarosBundle\Forms\DiodeLFForm;
+use Bakalarka\IkarosBundle\Forms\DiodeRFForm;
 use Bakalarka\IkarosBundle\Forms\InductiveForm;
+use Bakalarka\IkarosBundle\Forms\MemoryForm;
+use Bakalarka\IkarosBundle\Forms\MicrocircuitForm;
 use Bakalarka\IkarosBundle\Forms\OptoForm;
 use Bakalarka\IkarosBundle\Forms\TransistorBiLFForm;
 use Bakalarka\IkarosBundle\Forms\TransistorFetLFForm;
@@ -74,6 +80,9 @@ class PartsController extends Controller {
         $serviceTransistorBiLF = $this->get('ikaros_transistorBiLFService');
         $serviceTransistorFetLF = $this->get('ikaros_transistorFetLFService');
         $serviceInductive = $this->get('ikaros_inductiveService');
+        $serviceMicrocircuit = $this->get('ikaros_microcircuitService');
+        $serviceDiodeRF = $this->get('ikaros_diodeRFService');
+        $serviceMemory = $this->get('ikaros_memoryservice');
 
         $resistors = $serviceResistor->getActiveResistors($id);
         $capacitors = $serviceCapacitor->getActiveCapacitors($id);
@@ -91,6 +100,9 @@ class PartsController extends Controller {
         $transistorsBiLF = $serviceTransistorBiLF->getActiveTransistors($id);
         $transistorsFetLF = $serviceTransistorFetLF->getActiveTransistors($id);
         $inductives = $serviceInductive->getActiveInductives($id);
+        $microcircuits = $serviceMicrocircuit->getActiveMicrocircuits($id);
+        $diodesRF = $serviceDiodeRF->getActiveDiodesRF($id);
+        $memories = $serviceMemory->getActiveMemories($id);
 
 
 //---Resistor form---------------------------------------------------------------------------
@@ -197,13 +209,46 @@ class PartsController extends Controller {
 //---Inductive device form------------------------------------------------------------
 
         $inductiveTransDescChoices = $serviceInductive->getTransformersDescChoices();
-        //$inductiveCoilsDescChoices = $serviceInductive->getCoilsDescChoices();
-
         $inductiveTransQuality = $serviceInductive->getQualityTransChoices();
-        //$inductiveCoilsQuality = $serviceInductive->getQualityCoilsChoices();
 
         $formInductive = $this->createForm(new InductiveForm(), array(), array('envChoices' => $envChoices ,
             'sysEnv' => $sysEnv, 'descChoices' => $inductiveTransDescChoices, 'qualityChoices' => $inductiveTransQuality ));
+
+//---Microcircuits form------------------------------------------------------------
+
+        $microQualChoices = $serviceMicrocircuit->getQualityChoices();
+        $microPackageChoices = $serviceMicrocircuit->getPackageTypeChoices();
+        $microTechChoices = $serviceMicrocircuit->getTechnologyChoices();
+
+        $microPackageTypeAll = $serviceMicrocircuit->getPackageTypeAll();
+        $microQualityAll = $serviceMicrocircuit->getQualityAll();
+
+        $formMicrocircuit = $this->createForm(new MicrocircuitForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'packageChoices' => $microPackageChoices, 'qualityChoices' => $microQualChoices,
+            'techChoices' => $microTechChoices));
+
+//---DiodesRF form---------------------------------------------------------------------------
+
+        $DiodeRFQualityChoices = $serviceDiodeRF->getQualityChoices();
+        $DiodeRFAppChoices = $serviceDiodeRF->getApplicationChoices();
+        $DiodeRFTypeChoices = $serviceDiodeRF->getTypeChoices();
+
+        $diodeRFtypeAll = $serviceDiodeRF->getTypesAll();
+
+        $formDiodeRF = $this->createForm(new DiodeRFForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'qualityChoices' => $DiodeRFQualityChoices , 'appChoices' => $DiodeRFAppChoices,
+            'typeChoices' => $DiodeRFTypeChoices));
+
+//---Memory form------------------------------------------------------------
+
+        $memoryQualChoices = $serviceMemory->getQualityChoices();
+        $memoryPackageChoices = $serviceMemory->getPackageTypeChoices();
+        $memoryTypeChoices = $serviceMemory->getTypeChoices();
+        $memoryEccChoices = $serviceMemory->getEccChoices();
+
+        $formMemory = $this->createForm(new MemoryForm(), array(), array('envChoices' => $envChoices ,
+            'sysEnv' => $sysEnv, 'packageChoices' => $memoryPackageChoices, 'qualityChoices' => $memoryQualChoices,
+            'typeChoices' => $memoryTypeChoices, 'eccChoices' => $memoryEccChoices));
 
 //---render template--------------------------------------------------------------------------
 
@@ -229,6 +274,12 @@ class PartsController extends Controller {
             'formInductive' => $formInductive->createView(), 'inductives' => $inductives,
             'transDescOptions' => $serviceInductive->getTransformersDescChoices(1), 'coilsDescOptions' => $serviceInductive->getCoilsDescChoices(1),
             'transQualityChoices' => $serviceInductive->getQualityTransChoices(1), 'coilsQualityChoices' => $serviceInductive->getQualityCoilsChoices(1),
+            'formMicrocircuit' => $formMicrocircuit->createView(), 'microcircuits' => $microcircuits,
+            'microPackageAll' => $microPackageTypeAll, 'microQualityAll' => $microQualityAll,
+            'formDiodeRF' => $formDiodeRF->createView(), 'diodesRF' => $diodesRF, 'diodeTypesAll' => $diodeRFtypeAll,
+            'formMemory' => $formMemory->createView(), 'memories' => $memories,
+            'memoryMosTypeChoices' => $serviceMemory->getTypeChoices("MOS",1), 'memoryBipolarTypeChoices' => $serviceMemory->getTypeChoices("Bipolar", 1),
+
         ));
 
     }
@@ -760,8 +811,6 @@ class PartsController extends Controller {
 
     }
 //====================================================================================================================
-
-
     /**
      * @Route("/newDiodeLF", name="newDiodeLF")
      * @Template()
@@ -1082,7 +1131,178 @@ class PartsController extends Controller {
             )
         );
     }
+//====================================================================================================================
+    /**
+     * @Route("/newMicrocircuit", name="newMicrocircuit")
+     * @Template()
+     */
+    public function newMicrocircuitAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
 
+        $objF = json_decode($formData);
+        $obj = $objF->microcircuitForm;
+
+        $micro = new Microcircuit();
+        $micro->setParams($obj);
+
+        $serviceMicro = $this->get('ikaros_microcircuitService');
+        $lambda = $serviceMicro->calculateLam($micro, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $micro, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $micro->getLabel(),
+                'Lam' => $micro->getLam(),
+                'Type' => $micro->getType(),
+                'CasePart' => $micro->getCasePart(),
+                'Application' => $micro->getApplication(),
+                'Description' => $micro->getDescription(),
+                'Quality' => $micro->getQuality(),
+                'Environment' => $micro->getEnvironment(),
+                'PinCount' => $micro->getPinCount(),
+                'GateCount' => $micro->getGateCount(),
+                'ProductionYears' => $micro->getProductionYears(),
+                'TempDissipation' => $micro->getTempDissipation(),
+                'Technology' => $micro->getTechnology(),
+                'TempPassive' => $micro->getTempPassive(),
+                'PackageType' => $micro->getPackageType(),
+                'idP' => $micro->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+
+//====================================================================================================================
+    /**
+     * @Route("/newDiodeRF", name="newDiodeRF")
+     * @Template()
+     */
+    public function newDiodeRFAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->diodeRFForm;
+
+        $diode = new DiodeRF();
+        $diode->setParams($obj);
+
+        $serviceDiode = $this->get('ikaros_diodeRFService');
+        $lambda = $serviceDiode->calculateLam($diode, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $diode, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $diode->getLabel(),
+                'Lam' => $diode->getLam(),
+                'PowerRated' => $diode->getPowerRated(),
+                'TempDissipation' => $diode->getTempDissipation(),
+                'TempPassive' => $diode->getTempPassive(),
+                'Application' => $diode->getApplication(),
+                'DiodeType' => $diode->getDiodeType(),
+                'Quality' => $diode->getQuality(),
+                'Environment' => $diode->getEnvironment(),
+                'idP' => $diode->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
+//====================================================================================================================
+    /**
+     * @Route("/newMemory", name="newMemory")
+     * @Template()
+     */
+    public function newMemoryAction() {
+        $post = $this->get('request')->request;
+        $id = $post->get('id');
+        $formData = $post->get('formData');
+
+        $objF = json_decode($formData);
+        $obj = $objF->memoryForm;
+
+        $memory = new Memory();
+        $memory->setParams($obj);
+
+        $serviceMemory = $this->get('ikaros_memoryService');
+        $lambda = $serviceMemory->calculateLam($memory, $id);
+
+        $serviceParts = $this->get('ikaros_partService');
+        $e = $serviceParts->setLams($lambda, $memory, $id);
+
+        if($e != "")
+            return new Response(
+                json_encode(array(
+                    'e' => $e
+                )),
+                400,
+                array(
+                    'Content-Type' => 'application/json; charset=utf-8'
+                )
+            );
+
+        return new Response(
+            json_encode(array(
+                'Label' => $memory->getLabel(),
+                'Lam' => $memory->getLam(),
+                'Type' => $memory->getType(),
+                'CasePart' => $memory->getCasePart(),
+                'MemoryType' => $memory->getMemoryType(),
+                'Description' => $memory->getDescription(),
+                'Quality' => $memory->getQuality(),
+                'Environment' => $memory->getEnvironment(),
+                'PinCount' => $memory->getPinCount(),
+                'CyclesCount' => $memory->getCyclesCount(),
+                'ProductionYears' => $memory->getProductionYears(),
+                'TempDissipation' => $memory->getTempDissipation(),
+                'Technology' => $memory->getTechnology(),
+                'TempPassive' => $memory->getTempPassive(),
+                'PackageType' => $memory->getPackageType(),
+                'ECC' => $memory->getECC(),
+                'EepromOxid' => $memory->getEepromOxid(),
+                'MemorySize' => $memory->getMemorySize(),
+                'idP' => $memory->getIDPart(),
+            )),
+            200,
+            array(
+                'Content-Type' => 'application/json; charset=utf-8'
+            )
+        );
+    }
 //====================================================================================================================
     /**
      * @Route("/detailPart/{id}", name="detailPart")
@@ -1324,6 +1544,40 @@ class PartsController extends Controller {
                     'systemID' => $systemID, 'transDescOptions' => $serviceInductive->getTransformersDescChoices(1),
                     'coilsDescOptions' => $serviceInductive->getCoilsDescChoices(1),'transQualityChoices' => $serviceInductive->getQualityTransChoices(1),
                     'coilsQualityChoices' => $serviceInductive->getQualityCoilsChoices(1),
+                );
+            case 'integrovaný obvod':
+                $serviceMicro = $this->get('ikaros_microcircuitservice');
+                $micro = $serviceMicro->getItem($id);
+                $microArray = $micro->to_array();
+
+                $packageChoices = $serviceMicro->getPackageTypeChoices();
+                $techChoices = $serviceMicro->getTechnologyChoices();
+                $qualityChoices = $serviceMicro->getQualityChoices();
+
+                $formMicrocircuit = $this->createForm(new MicrocircuitForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'techChoices' => $techChoices, 'qualityChoices' => $qualityChoices, 'packageChoices' => $packageChoices,
+                    'microcircuit' => $microArray));
+
+                return array('type'=> $type, 'formMicrocircuit' => $formMicrocircuit->createView(),
+                    'IDPart' => $micro->getIDPart(), 'Label' => $micro->getLabel(), 'Lam' => $micro->getLam(),
+                    'systemID' => $systemID,
+                );
+            case 'dioda, vysokofrekvenční':
+                $serviceDiode = $this->get('ikaros_dioderfservice');
+                $diode = $serviceDiode->getItem($id);
+                $diodeArray = $diode->to_array();
+
+                $typeChoices = $serviceDiode->getTypeChoices();
+                $appChoices = $serviceDiode->getApplicationChoices();
+                $qualityChoices = $serviceDiode->getQualityChoices();
+
+                $formDiodeRF = $this->createForm(new DiodeRFForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'typeChoices' => $typeChoices, 'qualityChoices' => $qualityChoices, 'appChoices' => $appChoices,
+                    'diodeRF' => $diodeArray));
+
+                return array('type'=> $type, 'formDiodeRF' => $formDiodeRF->createView(),
+                    'IDPart' => $diode->getIDPart(), 'Label' => $diode->getLabel(), 'Lam' => $diode->getLam(),
+                    'systemID' => $systemID,
                 );
         }
         return array('type' => $type);
@@ -1774,6 +2028,50 @@ class PartsController extends Controller {
                         json_encode(array(
                             'Label' => $inductive->getLabel(),
                             'Lam' => $inductive->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'microcircuit':
+                $obj = $objF->microcircuitForm;
+                $serviceMicro = $this->get('ikaros_microcircuitservice');
+                $micro = $serviceMicro->getItem($id);
+                $micro->setParams($obj);
+
+                $oldLam = $micro->getLam();
+                $lambda = $serviceMicro->calculateLam($micro, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $micro, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $micro->getLabel(),
+                            'Lam' => $micro->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'diodeRF':
+                $obj = $objF->diodeRFForm;
+                $serviceDiodeRF = $this->get('ikaros_dioderfservice');
+                $diode = $serviceDiodeRF->getItem($id);
+                $diode->setParams($obj);
+
+                $oldLam = $diode->getLam();
+                $lambda = $serviceDiodeRF->calculateLam($diode, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $diode, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $diode->getLabel(),
+                            'Lam' => $diode->getLam()
                         )),
                         200,
                         array(

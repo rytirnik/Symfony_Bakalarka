@@ -195,7 +195,8 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus{
 
 #submitHandle, .submitHandle {
   width: 45%;
-  margin: 0 auto; 
+  margin: 0 auto;
+
   margin-top: 1em; 
 }
  input[type=submit] {
@@ -203,6 +204,8 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus{
   margin-bottom: 1em;
   padding: 0.2em 0;
  }
+
+
  
 a:link, a:visited {
   text-decoration: none;
@@ -535,13 +538,14 @@ a:link, a:visited {
 
 .resForm label {
     float:left;
-    width: 52%;
+    width: 48%;
     text-align: right;
     margin-right: 0.5em;
 }
 
 .resForm input{
     background-color: #E6E6E6;
+    max-width: 40%;
 }
 
 .resForm {
@@ -554,7 +558,13 @@ a:link, a:visited {
     float:right;
     width: 42%;
     margin-top: -3em;
+}
 
+.optionTable {
+    float:right;
+    width: 45%;
+    margin-top: -3em;
+    margin-left: -3em;
 }
 
 #FilterTypeTable {

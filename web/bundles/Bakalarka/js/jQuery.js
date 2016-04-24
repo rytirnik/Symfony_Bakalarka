@@ -220,9 +220,62 @@ jQuery(document).ready(function($) {
         $("#inductiveForm_Description option[value='Worst case']").prop("selected", "selected");
         $("#inductiveForm_Quality option[value='Lower']").prop("selected", "selected");
 
+    });
+
+   var lastChosen = $("#diodeRFForm_DiodeType").val();
+   if(lastChosen == "Schottky")
+       $("#diodeRFForm_Quality option[value='Plastic']").remove();
+
+   $("#diodeRFForm_DiodeType").change(function() {
+        var chosenType = $(this).val();
+       //alert(chosenType);
+        if(chosenType == "Schottky" && lastChosen != 'Schottky') {
+            $("#diodeRFForm_Quality option[value='Plastic']").remove();
+        }
+        else if (chosenType != "Schottky" && lastChosen == "Schottky") {
+            $("#diodeRFForm_Quality").append('<option value="Plastic"> Plastic </option>');
+        }
+
+        lastChosen = chosenType;
+   });
+
+    function disableEEPROM () {
+        $("#memoryForm_ECC").attr('disabled', 'disabled');
+        $("#memoryForm_EepromOxid").attr('disabled', 'disabled');
+        $("#memoryForm_CyclesCount").attr('disabled', 'disabled');
+    }
+
+    var memType = $("#memoryForm_MemoryType").val();
+    if(memType != "EEPROM") {
+        disableEEPROM();
+    }
+
+    $("#memoryForm_Description").change(function() {
+        //var decoded = decodeHtml(coilsDescOptions);
+        //alert(decoded);
+        $("#memoryForm_MemoryType").empty();
+
+        var chosenType = $(this).val();
+        if(chosenType == 'MOS') {
+            $("#memoryForm_MemoryType").append(decodeHtml(memoryMosChoices));
+        }
+        else {
+            $("#memoryForm_MemoryType").append(decodeHtml(memoryBipolarChoices));
+            disableEEPROM();
+        }
 
     });
 
-
+    $("#memoryForm_MemoryType").change(function() {
+        var chosenType = $(this).val();
+        if(chosenType == "EEPROM") {
+            $("#memoryForm_ECC").removeAttr('disabled');
+            $("#memoryForm_EepromOxid").removeAttr('disabled');
+            $("#memoryForm_CyclesCount").removeAttr('disabled');
+        }
+        else {
+            disableEEPROM();
+        }
+    });
 
 });

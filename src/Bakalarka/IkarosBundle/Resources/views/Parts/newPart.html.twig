@@ -1,7 +1,7 @@
 {% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
 
 {% block head %}
-
+    <title>Přidat součástku</title>
     <script type="text/javascript">
         var newResURL = "{{ path('newResistorAjax') }}";
         var newCapURL = "{{ path('newCapacitor') }}";
@@ -19,11 +19,17 @@
         var newTransistorBiLFURL = "{{ path('newTransistorBiLF') }}";
         var newTransistorFetLFURL = "{{ path('newTransistorFetLF') }}";
         var newInductiveURL = "{{ path('newInductive') }}";
+        var newMicrocircuitURL = "{{ path('newMicrocircuit') }}";
+        var newDiodeRFURL = "{{ path('newDiodeRF') }}";
+        var newMemoryURL = "{{ path('newMemory') }}";
 
         var transDescOptions = "{{ transDescOptions }}";
         var coilsDescOptions = "{{ coilsDescOptions }}";
         var transQualityOptions = "{{ transQualityChoices }}";
         var coilsQualityOptions = "{{ coilsQualityChoices }}";
+
+        var memoryMosChoices = "{{ memoryMosTypeChoices }}";
+        var memoryBipolarChoices = "{{ memoryBipolarTypeChoices }}";
 
         var idPCB = {{pcb.IDPCB}};
 
@@ -101,13 +107,16 @@
                 <a href = "#tab_08"> Filtry </a>
             </li>
             <li>
-                <a href = "#tab_09"> Měřič motohodin </a>
+                <a href = "#tab_09"> Měřiče motohodin </a>
             </li>
             <li>
-                <a href = "#tab_10"> Permaktron </a>
+                <a href = "#tab_10"> Permaktrony </a>
             </li>
             <li>
                 <a href = "#tab_11"> Diody, nízkofrekvenční </a>
+            </li>
+             <li>
+                <a href = "#tab_18"> Diody, vysokofrekvenční </a>
             </li>
             <li>
                 <a href = "#tab_12"> Optoelektronika </a>
@@ -123,6 +132,12 @@
             </li>
             <li>
                 <a href = "#tab_16"> Indukčnosti </a>
+            </li>
+            <li>
+                <a href = "#tab_17"> Integrované obvody </a>
+            </li>
+            <li>
+                <a href = "#tab_19"> Paměti </a>
             </li>
 
 
@@ -1020,6 +1035,283 @@
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Surface }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.TempDissipation }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.TempPassive }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_17" class = "tab_content">
+                <h2> Přidat integrovaný obvod </h2>
+
+                <form id="formMicrocircuit" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formMicrocircuit) }}>
+
+                    {{ form_widget(formMicrocircuit) }}
+                    <div id = "submitHandle">
+                        <input id="saveMicrocircuit" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div id="MicroOptionsTable" class = "optionTable">
+                    <table class = "systems part">
+                        <caption> Typy provedení pouzdra </caption>
+                        <thead>
+                        <tr>
+                            <td> Typ </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for type in microPackageAll %}
+                            <tr >
+                                <td > {{ type.Description }} </td>
+                                <td> {{ type.LongDesc }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <table class = "systems part">
+                        <caption> Druhy kvality </caption>
+                        <thead>
+                        <tr>
+                            <td> Typ </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for quality in microQualityAll %}
+                            <tr >
+                                <td > {{ quality.Description }} </td>
+                                <td> {{ quality.LongDesc }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cleaner"> </div>
+
+                {% if microcircuits %}
+                    <h2> Uložené integrované obvody </h2>
+                    <table id="MicrocircuitTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Aplikace </td>
+                            <td> Počet hradel </td>
+                            <td> Technologie </td>
+                            <td> Provedení pouzdra </td>
+                            <td> Počet vývodů </td>
+                            <td> Doba výroby </td>
+                            <td> Kvalita </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for micro in microcircuits %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.GateCount }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Technology }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.PackageType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.PinCount }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.ProductionYears }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.TempDissipation }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.TempPassive }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+
+            <div id = "tab_18" class = "tab_content">
+                <h2> Přidat diodu, vysokofrekvenční </h2>
+
+                <form id="formDiodeRF" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formDiodeRF) }}>
+
+                    {{ form_widget(formDiodeRF) }}
+                    <div id = "submitHandle">
+                        <input id="saveDiodeRF" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div id="DiodeOptionsTable" class = "optionTable">
+                    <table class = "systems part">
+                        <caption> Typy diod </caption>
+                        <thead>
+                        <tr>
+                            <td> Typ </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for type in diodeTypesAll %}
+                            <tr >
+                                <td > {{ type.Description }} </td>
+                                <td> {{ type.LongDesc }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cleaner"> </div>
+
+                {% if diodesRF %}
+                    <h2> Uložené diody, vysokofrekvenční </h2>
+                    <table id="DiodeRFTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Prostředí </td>
+                            <td> Aplikace </td>
+                            <td> Typ diody </td>
+                            <td> Kvalita </td>
+                            <td> Výkon </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for diode in diodesRF %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Environment }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Application }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.DiodeType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Quality }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.PowerRated }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.TempDissipation }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.TempPassive }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+
+            <div id = "tab_19" class = "tab_content">
+                <h2> Přidat pamět </h2>
+
+                <form id="formMemory" class = "resForm" action = "{{ path('newPart', {id:pcb.IDPCB}) }}" method="post" {{ form_enctype(formMemory) }}>
+
+                    {{ form_widget(formMemory) }}
+                    <div id = "submitHandle">
+                        <input id="saveMemory" type="submit" value="Uložit" />
+                    </div>
+
+                    <p class="pRed"> * povinné pole </p>
+
+                </form>
+
+                <div id="MicroOptionsTable" class = "optionTable">
+                    <table class = "systems part">
+                        <caption> Typy provedení pouzdra </caption>
+                        <thead>
+                        <tr>
+                            <td> Typ </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for type in microPackageAll %}
+                            <tr >
+                                <td > {{ type.Description }} </td>
+                                <td> {{ type.LongDesc }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <table class = "systems part">
+                        <caption> Druhy kvality </caption>
+                        <thead>
+                        <tr>
+                            <td> Typ </td>
+                            <td> Popis </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for quality in microQualityAll %}
+                            <tr >
+                                <td > {{ quality.Description }} </td>
+                                <td> {{ quality.LongDesc }}  </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cleaner"> </div>
+
+                {% if memories %}
+                    <h2> Uložené paměti </h2>
+                    <table id="MemoryTable" class = "systems part newPart systemsHover">
+                        <thead>
+                        <tr>
+                            <td> Název </td>
+                            <td> Lambda </td>
+                            <td> Popis </td>
+                            <td> Druh </td>
+                            <td> Velikost </td>
+                            <td> Provedení pouzdra </td>
+                            <td> Počet vývodů </td>
+                            <td> Doba výroby </td>
+                            <td> Kvalita </td>
+                            <td> Oteplení ZV </td>
+                            <td> Pasivní oteplení </td>
+                            <td> Počet zápisů </td>
+                            <td> Oxid </td>
+                            <td> ECC </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for memory in memories %}
+                            <tr >
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Label }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Lam }}  </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Description }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.MemoryType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.MemorySize }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.PackageType }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.PinCount }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.ProductionYears }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Quality }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.TempDissipation }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.TempPassive }}</td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.CyclesCount }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.EepromOxid }} </td>
+                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.ECC }} </td>
                             </tr>
                         {% endfor %}
                         </tbody>

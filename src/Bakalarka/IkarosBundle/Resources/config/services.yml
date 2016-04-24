@@ -44,6 +44,15 @@ services:
   ikaros_inductiveService:
         class: 'Bakalarka\IkarosBundle\Service\InductiveService'
         arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_microcircuitService:
+        class: 'Bakalarka\IkarosBundle\Service\MicrocircuitService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_diodeRFService:
+        class: 'Bakalarka\IkarosBundle\Service\DiodeRFService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
+  ikaros_memoryService:
+        class: 'Bakalarka\IkarosBundle\Service\MemoryService'
+        arguments: ['@doctrine', '@ikaros_systemService', '@ikaros_pcbService']
 
   ikaros_systemService:
         class: 'Bakalarka\IkarosBundle\Service\SystemService'

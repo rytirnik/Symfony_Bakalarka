@@ -2,58 +2,39 @@
 /**
  * Created by PhpStorm.
  * User: Nikey
- * Date: 23.4.2016
- * Time: 17:42
+ * Date: 24.4.2016
+ * Time: 15:20
  */
 
 namespace Bakalarka\IkarosBundle\Entity;
 
+
 use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * @ORM\Entity
  */
-class Microcircuit extends Part
-{
+class DiodeRF extends Part{
     /**
-     * @ORM\Column(length=10)
-     */
-    protected $Description;
-
-    /**
-     * @ORM\Column(length=10)
+     * @ORM\Column(length=30)
      */
     protected $Application;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $GateCount;
-
-    /**
-     * @ORM\Column(length=50)
-     */
-    protected $Technology;
-
-    /**
-     * @ORM\Column(length=20)
-     */
-    protected $PackageType;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $PinCount;
-
-    /**
-     * @ORM\Column(type="float")
-     */
-    protected $ProductionYears;
 
     /**
      * @ORM\Column(length=10)
      */
     protected $Quality;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $DiodeType;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    protected $PowerRated;
 
     /**
      * @ORM\Column(type="float")
@@ -64,7 +45,6 @@ class Microcircuit extends Part
      * @ORM\Column(type="float")
      */
     protected $TempPassive;
-
     /**
      * @var integer
      */
@@ -117,33 +97,10 @@ class Microcircuit extends Part
 
 
     /**
-     * Set Description
-     *
-     * @param string $description
-     * @return Microcircuit
-     */
-    public function setDescription($description)
-    {
-        $this->Description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get Description
-     *
-     * @return string 
-     */
-    public function getDescription()
-    {
-        return $this->Description;
-    }
-
-    /**
      * Set Application
      *
      * @param string $application
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setApplication($application)
     {
@@ -163,125 +120,10 @@ class Microcircuit extends Part
     }
 
     /**
-     * Set GateCount
-     *
-     * @param integer $gateCount
-     * @return Microcircuit
-     */
-    public function setGateCount($gateCount)
-    {
-        $this->GateCount = $gateCount;
-
-        return $this;
-    }
-
-    /**
-     * Get GateCount
-     *
-     * @return integer 
-     */
-    public function getGateCount()
-    {
-        return $this->GateCount;
-    }
-
-    /**
-     * Set Technology
-     *
-     * @param string $technology
-     * @return Microcircuit
-     */
-    public function setTechnology($technology)
-    {
-        $this->Technology = $technology;
-
-        return $this;
-    }
-
-    /**
-     * Get Technology
-     *
-     * @return string 
-     */
-    public function getTechnology()
-    {
-        return $this->Technology;
-    }
-
-    /**
-     * Set PackageType
-     *
-     * @param string $packageType
-     * @return Microcircuit
-     */
-    public function setPackageType($packageType)
-    {
-        $this->PackageType = $packageType;
-
-        return $this;
-    }
-
-    /**
-     * Get PackageType
-     *
-     * @return string
-     */
-    public function getPackageType()
-    {
-        return $this->PackageType;
-    }
-
-    /**
-     * Set PinCount
-     *
-     * @param integer $pinCount
-     * @return Microcircuit
-     */
-    public function setPinCount($pinCount)
-    {
-        $this->PinCount = $pinCount;
-
-        return $this;
-    }
-
-    /**
-     * Get PinCount
-     *
-     * @return integer 
-     */
-    public function getPinCount()
-    {
-        return $this->PinCount;
-    }
-
-    /**
-     * Set ProductionYears
-     *
-     * @param float $productionYears
-     * @return Microcircuit
-     */
-    public function setProductionYears($productionYears)
-    {
-        $this->ProductionYears = $productionYears;
-
-        return $this;
-    }
-
-    /**
-     * Get ProductionYears
-     *
-     * @return float 
-     */
-    public function getProductionYears()
-    {
-        return $this->ProductionYears;
-    }
-
-    /**
      * Set Quality
      *
      * @param string $quality
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setQuality($quality)
     {
@@ -301,10 +143,56 @@ class Microcircuit extends Part
     }
 
     /**
+     * Set DiodeType
+     *
+     * @param integer $diodeType
+     * @return DiodeRF
+     */
+    public function setDiodeType($diodeType)
+    {
+        $this->DiodeType = $diodeType;
+
+        return $this;
+    }
+
+    /**
+     * Get DiodeType
+     *
+     * @return integer 
+     */
+    public function getDiodeType()
+    {
+        return $this->DiodeType;
+    }
+
+    /**
+     * Set PowerRated
+     *
+     * @param float $powerRated
+     * @return DiodeRF
+     */
+    public function setPowerRated($powerRated)
+    {
+        $this->PowerRated = $powerRated;
+
+        return $this;
+    }
+
+    /**
+     * Get PowerRated
+     *
+     * @return float 
+     */
+    public function getPowerRated()
+    {
+        return $this->PowerRated;
+    }
+
+    /**
      * Set TempDissipation
      *
      * @param float $tempDissipation
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setTempDissipation($tempDissipation)
     {
@@ -327,7 +215,7 @@ class Microcircuit extends Part
      * Set TempPassive
      *
      * @param float $tempPassive
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setTempPassive($tempPassive)
     {
@@ -360,7 +248,7 @@ class Microcircuit extends Part
      * Set Label
      *
      * @param string $label
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setLabel($label)
     {
@@ -383,7 +271,7 @@ class Microcircuit extends Part
      * Set Lam
      *
      * @param float $lam
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setLam($lam)
     {
@@ -406,7 +294,7 @@ class Microcircuit extends Part
      * Set Type
      *
      * @param string $type
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setType($type)
     {
@@ -429,7 +317,7 @@ class Microcircuit extends Part
      * Set CasePart
      *
      * @param string $casePart
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setCasePart($casePart)
     {
@@ -452,7 +340,7 @@ class Microcircuit extends Part
      * Set Temp
      *
      * @param float $temp
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setTemp($temp)
     {
@@ -475,7 +363,7 @@ class Microcircuit extends Part
      * Set Environment
      *
      * @param string $environment
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setEnvironment($environment)
     {
@@ -498,7 +386,7 @@ class Microcircuit extends Part
      * Set CreateDate
      *
      * @param \DateTime $createDate
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setCreateDate($createDate)
     {
@@ -521,7 +409,7 @@ class Microcircuit extends Part
      * Set DeleteDate
      *
      * @param \DateTime $deleteDate
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setDeleteDate($deleteDate)
     {
@@ -544,7 +432,7 @@ class Microcircuit extends Part
      * Set PCB_ID
      *
      * @param \Bakalarka\IkarosBundle\Entity\PCB $pCBID
-     * @return Microcircuit
+     * @return DiodeRF
      */
     public function setPCBID(\Bakalarka\IkarosBundle\Entity\PCB $pCBID = null)
     {
@@ -569,15 +457,11 @@ class Microcircuit extends Part
         $this->Type = $obj->Type;
         $this->CasePart = $obj->CasePart;
         $this->Quality = $obj->Quality;
-        $this->Description = $obj->Description;
         $this->Application = $obj->Application;
-        $this->Technology = $obj->Technology;
+        $this->DiodeType = $obj->DiodeType;
         $this->TempDissipation = floatval($obj->TempDissipation);
         $this->TempPassive = floatval($obj->TempPassive);
-        $this->PinCount = intval($obj->PinCount);
-        $this->GateCount = intval($obj->GateCount);
-        $this->PackageType = $obj->PackageType;
-        $this->ProductionYears = intval($obj->ProductionYears);
+        $this->PowerRated = floatval($obj->PowerRated);
     }
 
     public function to_array() {
@@ -587,16 +471,12 @@ class Microcircuit extends Part
             'Type' => $this->Type,
             'Lam' => $this->Lam,
             'Environment' => $this->Environment,
-            'Description' => $this->Description,
-            'Quality' => $this->Quality,
             'Application' => $this->Application,
-            'Technology' => $this->Technology,
+            'Quality' => $this->Quality,
+            'DiodeType' => $this->DiodeType,
             'TempDissipation' => $this->TempDissipation,
             'TempPassive' => $this->TempPassive,
-            'PinCount' => $this->PinCount,
-            'GateCount' => $this->GateCount,
-            'PackageType' => $this->PackageType,
-            'ProductionYears' => $this->ProductionYears
+            'PowerRated' => $this->PowerRated,
         ));
     }
 }

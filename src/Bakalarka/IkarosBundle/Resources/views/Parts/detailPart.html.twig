@@ -1,12 +1,38 @@
 {% extends 'BakalarkaIkarosBundle::layout.html.twig' %} 
 
 {% block head %}
-     <script type="text/javascript">
+    {% if transDescOptions is defined %}
+        {% set transDesc = transDescOptions %}
+    {% else %}
+        {% set transDesc = "" %}
+    {% endif %}
 
-        var transDescOptions = "{{ transDescOptions }}";
-        var coilsDescOptions = "{{ coilsDescOptions }}";
-        var transQualityOptions = "{{ transQualityChoices }}";
-        var coilsQualityOptions = "{{ coilsQualityChoices }}";
+    {% if coilsDescOptions is defined %}
+        {% set coilsDesc = coilsDescOptions %}
+    {% else %}
+        {% set coilsDesc = "" %}
+    {% endif %}
+
+    {% if transQualityChoices is defined %}
+        {% set transQuality = transQualityChoices %}
+    {% else %}
+        {% set transQuality = "" %}
+    {% endif %}
+
+    {% if coilsQualityChoices is defined  %}
+        {% set coilsQuality = coilsQualityChoices %}
+    {% else %}
+        {% set coilsQuality = "" %}
+    {% endif %}
+
+
+    <script type="text/javascript">
+
+            transDescOptions = "{{ transDesc }}";
+            coilsDescOptions = "{{ coilsDesc }}";
+            transQualityOptions = "{{ transQuality }}";
+            coilsQualityOptions = "{{ coilsQuality }}";
+
 
       </script>
 {% endblock %}
@@ -166,11 +192,27 @@
                </div>
                <p class="pRed"> * povinné pole </p>
            </form>
-       {% elseif type == "indukčnost" %}
+      {% elseif type == "indukčnost" %}
            <form id="formInductiveE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formInductive) }}>
                {{ form_widget(formInductive) }}
                <div class = "submitHandle">
                    <input id="EditInductive" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "integrovaný obvod" %}
+           <form id="formMicrocircuitE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formMicrocircuit) }}>
+               {{ form_widget(formMicrocircuit) }}
+               <div class = "submitHandle">
+                   <input id="EditMicrocircuit" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "dioda, vysokofrekvenční" %}
+           <form id="formDiodeRFE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formDiodeRF) }}>
+               {{ form_widget(formDiodeRF) }}
+               <div class = "submitHandle">
+                   <input id="EditDiodeRF" type="submit" value="Upravit" />
                </div>
                <p class="pRed"> * povinné pole </p>
            </form>

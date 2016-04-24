@@ -74,7 +74,7 @@ class TransistorBiLFForm extends AbstractType
                 ))
                 ->add('TempDissipation', 'number', array(
                     'required' => true,
-                    'label' => 'Oteplení ztrátovým výkonem [°C]',
+                    'label' => 'Oteplení ztrát. výkonem [°C]',
                     'error_bubbling' => true,
                     'data' => 0
                 ))
@@ -149,7 +149,7 @@ class TransistorBiLFForm extends AbstractType
                 ))
                 ->add('TempDissipation', 'number', array(
                     'required' => true,
-                    'label' => 'Oteplení ztrátovým výkonem [°C]',
+                    'label' => 'Oteplení ztrát. výkonem [°C]',
                     'error_bubbling' => true,
                     'data' => $transistor['TempDissipation']
                 ))

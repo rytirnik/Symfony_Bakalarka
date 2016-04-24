@@ -321,6 +321,12 @@ class SystemsController extends Controller
             case 'indukčnost':
                 $service = $this->get('ikaros_inductiveService');
                 break;
+            case 'integrovaný obvod':
+                $service = $this->get('ikaros_microcircuitService');
+                break;
+            case 'dioda, vysokofrekvenční':
+                $service = $this->get('ikaros_dioderfservice');
+                break;
             default:
                 return "";
         }

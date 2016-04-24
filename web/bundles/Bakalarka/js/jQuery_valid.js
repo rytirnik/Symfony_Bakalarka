@@ -1879,4 +1879,253 @@ jQuery(document).ready(function($) {
         }
     });
 
+    var validatorMicrocircuit = $("#formMicrocircuit").validate( {
+        errorPlacement: function(error, element) {
+            if(element.parent().children().length == 2)
+                element.parent().append('<p class="validErr">' + error.text() + '</p>' );
+            else {
+                element.parent().children('p').text(error.text());
+            }
+            $(".submitMsg").remove();
+        },
+        rules: {
+            "form[Label]": {
+                maxlength: 64
+            },
+            "form[Type]": {
+                maxlength: 64
+            },
+            "form[PinCount]": {
+                digits: true,
+                min: 1
+            },
+            "form[TempDissipation]": {
+                number: true,
+                min: 0
+            },
+            "form[TempPassive]": {
+                number: true,
+                min: 0
+            },
+            "form[GateCount]": {
+                digits: true,
+                min: 1
+            },
+            "form[ProductionYears]": {
+                digits: true,
+                min: 0
+            },
+        },
+        messages: {
+            "form[Label]": {
+                required: "Povinné pole 'Název'"
+            },
+            "form[PinCount]": {
+                required: "Povinné pole 'Počet vývodů' (kladné celé číslo)",
+                digits: "Neplatné celé číslo",
+                min: "Počet vývodů musí být kladné číslo"
+            },
+            "form[TempDissipation]": {
+                required: "Povinné pole 'Oteplení ztrát. výkonem' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Oteplení ztrát. výkonem musí být kladné číslo"
+            },
+            "form[TempPassive]": {
+                required: "Povinné pole 'Pasivní oteplení' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Pasivní oteplení musí být kladné číslo"
+            },
+            "form[GateCount]": {
+                required: "Povinné pole 'Počet hradel' (kladné celé číslo)",
+                min: "Počet hradel musí být kladné číslo",
+                digits: "Neplatné celé číslo",
+            },
+            "form[ProductionYears]": {
+                required: "Povinné pole 'Doba výroby' (kladné celé číslo)",
+                min: "Doba výroby musí být kladné číslo",
+                digits: "Neplatné celé číslo",
+            },
+        },
+        submitHandler: function(form) {
+            $data =  $("#formMicrocircuit").serializeJSON();
+            jQuery.ajax({
+                url:        newMicrocircuitURL,
+                data:       {formData: $data, id: idPCB },
+                success:    function(data){
+                    //alert("ok");
+                    if($("#MicrocircuitTable").length == 0) {
+                        $("#tab_17").append('<h2> Uložené indukčnosti </h2>'+
+                            '<table id="MicrocircuitTable" class = "systems part newPart systemsHover">' +
+                            '<thead> <tr> '+
+                            '<td> Název </td> '+
+                            '<td> Lambda </td>'+
+                            '<td> Popis </td>'+
+                            '<td> Aplikace </td>'+
+                            '<td> Počet hradel </td>'+
+                            '<td> Technologie </td>'+
+                            '<td> Provední pouzdra </td>'+
+                            '<td> Počet vývodů </td>'+
+                            '<td> Doba výroby </td>'+
+                            '<td> Kvalita </td>'+
+                            '<td> Oteplení ZV </td>'+
+                            '<td> Pasivní oteplení </td>'+
+                            '</tr> </thead> <tbody> </tbody> </table>');
+                    }
+
+                    $detURl = detailURL.substring(0, detailURL.lastIndexOf("-1"));
+                    $detURl = $detURl.concat(data.idP);
+
+                    $("#MicrocircuitTable").children('tbody').append("<tr>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Description + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.GateCount + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Technology + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PackageType + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PinCount + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.ProductionYears + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempDissipation + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempPassive + "</td>");
+
+                    $(".tableLink").click(function() {
+                        window.document.location = $(this).attr("href");
+                    });
+
+                    $(".tableLink").hover(function() {
+                        $(".tableLink").css("cursor", "pointer");
+                    });
+
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
+                    $("#SysLam").text($sysL);
+
+                    $(".submitMsg").remove();
+                    $("#formMicrocircuit").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                },
+                error: function(data) {
+                    //alert("Error");
+                    $(".submitMsg").remove();
+                    $("#formMicrocircuit").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+                },
+                dataType:   'json',
+                type:       'POST'
+            });
+            $(".validErr").remove();
+            validatorMicrocircuit.resetForm();
+        }
+    });
+
+    var validatorDiodeRF = $("#formDiodeRF").validate( {
+        errorPlacement: function(error, element) {
+            if(element.parent().children().length == 2)
+                element.parent().append('<p class="validErr">' + error.text() + '</p>' );
+            else {
+                element.parent().children('p').text(error.text());
+            }
+            $(".submitMsg").remove();
+        },
+        rules: {
+            "form[Label]": {
+                maxlength: 64
+            },
+            "form[Type]": {
+                maxlength: 64
+            },
+            "form[PowerRated]": {
+                number: true,
+                max: 3000,
+            },
+            "form[TempDissipation]": {
+                number: true
+            },
+            "form[TempPassive]": {
+                number: true
+            },
+
+        },
+        messages: {
+            "form[Label]": {
+                required: "Povinné pole 'Název'"
+            },
+            "form[PowerRated]": {
+                number: "Neplatné desetinné číslo",
+                max: "Maximální hodonota výkonu je 3000W"
+            },
+            "form[TempDissipation]": {
+                required: "Povinné pole 'Oteplení ZV' (desetinné číslo)",
+                number: "Neplatné desetinné číslo"
+            },
+            "form[TempOassive]": {
+                required: "Povinné pole 'Pasivní oteplení' (desetinné číslo)",
+                number: "Neplatné desetinné číslo"
+            },
+        },
+        submitHandler: function(form) {
+            $data =  $("#formDiodeRF").serializeJSON();
+            jQuery.ajax({
+                url:        newDiodeRFURL,
+                data:       {formData: $data, id: idPCB },
+                success:    function(data){
+                    //alert("ok");
+                    if($("#DiodeRFTable").length == 0) {
+                        $("#tab_18").append('<h2> Uložené diody, vysokofrekvenční </h2>'+
+                            '<table id="DiodeRFTable" class = "systems part newPart systemsHover">' +
+                            '<thead> <tr> '+
+                            '<td> Název </td> '+
+                            '<td> Lambda </td>'+
+                            '<td> Prostředí </td>'+
+                            '<td> Aplikace </td>'+
+                            '<td> Typ diody </td>'+
+                            '<td> Kvalita </td>'+
+                            '<td> Výkon </td>'+
+                            '<td> Oteplení ZV </td>'+
+                            '<td> Pasivní oteplení </td>'+
+                            '</tr> </thead> <tbody> </tbody> </table>');
+                    }
+
+                    $detURl = detailURL.substring(0, detailURL.lastIndexOf("-1"));
+                    $detURl = $detURl.concat(data.idP);
+
+                    $("#DiodeRFTable").children('tbody').append("<tr>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.DiodeType + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PowerRated + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempDissipation + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempPassive + "</td> </tr>");
+
+                    $(".tableLink").click(function() {
+                        window.document.location = $(this).attr("href");
+                    });
+
+                    $(".tableLink").hover(function() {
+                        $(".tableLink").css("cursor", "pointer");
+                    });
+
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
+                    $("#SysLam").text($sysL);
+
+                    $(".submitMsg").remove();
+                    $("#formDiodeRF").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                },
+                error: function(data) {
+                    //alert("Error");
+                    $(".submitMsg").remove();
+                    $("#formDiodeRF").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+                },
+                dataType:   'json',
+                type:       'POST'
+            });
+            $(".validErr").remove();
+            validatorDiodeRF.resetForm();
+        }
+    });
+
+
 });
