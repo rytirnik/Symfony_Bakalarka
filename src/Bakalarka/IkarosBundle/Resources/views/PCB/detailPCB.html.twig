@@ -54,7 +54,7 @@
         <div class="formDiv">
           <form id = "EditPcbForm" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form) }}>
               {{ form_widget(form) }}
-              <p class ="editLam"> ∑(λ): <span id="PCBlam1"> {{ pcb.SumLam }} </span></p>
+              <p class ="editLam"> ∑(λ): <span id="PCBlam1" class="lam"> {{ pcb.SumLam }} </span></p>
               <div class = "submitHandle">
                   <input id="EditPCB1" type="submit" value="Upravit" />
               </div>
@@ -65,7 +65,7 @@
 
           <form id = "EditPcbForm2" action = "{{ path('editPCB', {id:idSend}) }}" method="post" {{ form_enctype(form2) }}>
               {{ form_widget(form2) }}
-              <p class ="editLam"> λ: <span id="PCBlam2"> {{ pcb.Lam }} </span></p>
+              <p class ="editLam"> λ: <span id="PCBlam2" class="lam"> {{ pcb.Lam }} </span></p>
               <div class = "submitHandle">
                   <input id="EditPCB2" type="submit" value="Upravit" />
               </div>
@@ -112,7 +112,7 @@
 
               {% for s in smt %}
                   <tr >
-                      <td > {{ s.Lam }} </td>
+                      <td class="lam"> {{ s.Lam }} </td>
                       {% if s.LeadConfig == 1 %}
                         <td> Leadless </td>
                       {% elseif s.LeadConfig == 150 %}

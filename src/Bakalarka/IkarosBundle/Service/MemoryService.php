@@ -73,32 +73,6 @@ class MemoryService
     }
 
 //====================================================================================================================
-    public function getTechnologyChoices()   {
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM Microcircuit_technology');
-        $stmt->execute();
-        $techAll = $stmt->fetchAll();
-
-        foreach ($techAll as $q) {
-            $techChoices[$q['Description']] = $q['Description'];
-        }
-        return $techChoices;
-    }
-//====================================================================================================================
-    public function getTechnology ($techDesc) {
-        $stmt = $this->doctrine->getManager()
-            ->getConnection()
-            ->prepare('SELECT *
-                        FROM Microcircuit_technology tech
-                        WHERE tech.Description = :desc');
-        $stmt->execute(array(':desc' => $techDesc));
-        $tech = $stmt->fetch();
-        return $tech;
-    }
-
-//====================================================================================================================
     public function getPackageTypeAll()    {
         $stmt = $this->doctrine->getManager()
             ->getConnection()
@@ -237,11 +211,11 @@ class MemoryService
         $memoryType = $memory->getMemoryType();
 
         $memSize = $memory->getMemorySize();
-        if($memSize < 16)
+        if($memSize <= 16)
             $range = 1;
-        else if($memSize < 64)
+        else if($memSize <= 64)
             $range = 2;
-        else if($memSize < 256)
+        else if($memSize <= 256)
             $range = 3;
         else
             $range = 4;
@@ -257,7 +231,7 @@ class MemoryService
             if($oxid == "Flotox") {
                 $a2 = 0;
                 $b2 = 0;
-                $b1 = pow(($memSize/16), 0.5) * exp(-0.15/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/333));
+                $b1 = pow(($memSize *  1024 / 16000), 0.5) * exp(-0.15/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/333));
                 $a1 = 6.817  * pow(10, -6) * $cyclesCnt;
             }
             else {
@@ -269,20 +243,20 @@ class MemoryService
                     $a2 = 2.3;
 
                 //zadano v tis.
-                $b2 = pow(($memSize/64), 0.25) * exp(0.1/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/303));
-                $b1 = pow(($memSize/64), 0.25) * exp(-0.12/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/303));
+                $b2 = pow(($memSize * 1024 / 64000), 0.25) * exp(0.1/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/303));
+                $b1 = pow(($memSize *1024 / 64000), 0.25) * exp(-0.12/(8.617 * pow(10, -5)) * (1/($temp + 273) - 1/303));
 
-                if($cyclesCnt < 100)
+                if($cyclesCnt <= 100)
                     $a1 = 0.0097;
-                else if ($cyclesCnt < 200)
+                else if ($cyclesCnt <= 200)
                     $a1 = 0.014;
-                else if ($cyclesCnt < 500)
+                else if ($cyclesCnt <= 500)
                     $a1 = 0.023;
-                else if ($cyclesCnt < 1000)
+                else if ($cyclesCnt <= 1000)
                     $a1 = 0.033;
-                else if($cyclesCnt < 3000)
+                else if($cyclesCnt <= 3000)
                     $a1 = 0.061;
-                else if($cyclesCnt < 7000)
+                else if($cyclesCnt <= 7000)
                     $a1 = 0.14;
                 else
                     $a1 = 0.3;
@@ -292,21 +266,14 @@ class MemoryService
         else
             $cyc = 0;
 
-
-        $technology = $this->getTechnology($memory->getTechnology());
-        /*$category = $technology['Category'];
-        $ea = $technology['Value'];
-        if($category == 1)
-            $piT = 0.1 * exp((-$ea / (8.617 * pow(10, -5))) * (1 / ($temp + 273) - 1 / 298));
-        else
-            $piT = 0.1 * exp((-$ea / (8.617 * pow(10, -5))) * (1 / ($temp + 273) - 1 / 423));*/
-        //zatim defaultne Memories
+        //defaultne Memories
         $piT = 0.1 * exp((-0.6 / (8.617 * pow(10, -5))) * (1 / ($temp + 273) - 1 / 298));
 
         $years = $memory->getProductionYears();
         $piL = 0.01 * exp(5.35 - 0.35 * $years);
 
         $lambda = ($c1 * $piT + $c2 * $piE + $cyc) * $piQ * $piL * pow(10,-6);
+
 
         return $lambda;
     }

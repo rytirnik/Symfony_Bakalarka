@@ -1289,7 +1289,6 @@ class PartsController extends Controller {
                 'CyclesCount' => $memory->getCyclesCount(),
                 'ProductionYears' => $memory->getProductionYears(),
                 'TempDissipation' => $memory->getTempDissipation(),
-                'Technology' => $memory->getTechnology(),
                 'TempPassive' => $memory->getTempPassive(),
                 'PackageType' => $memory->getPackageType(),
                 'ECC' => $memory->getECC(),
@@ -1578,6 +1577,28 @@ class PartsController extends Controller {
                 return array('type'=> $type, 'formDiodeRF' => $formDiodeRF->createView(),
                     'IDPart' => $diode->getIDPart(), 'Label' => $diode->getLabel(), 'Lam' => $diode->getLam(),
                     'systemID' => $systemID,
+                );
+            case 'paměť':
+                $serviceMemory = $this->get('ikaros_memoryservice');
+                $memory = $serviceMemory->getItem($id);
+                $memoryArray = $memory->to_array();
+
+                $packageChoices = $serviceMemory->getPackageTypeChoices();
+                $eccChoices = $serviceMemory->getEccChoices();
+                $qualityChoices = $serviceMemory->getQualityChoices();
+                $typeChoices = $serviceMemory->getTypeChoices($memory->getDescription());
+
+                $mosChoices = $serviceMemory->getTypeChoices("MOS", 1);
+                $bipolarChoices = $serviceMemory->getTypeChoices("Bipolar", 1);
+
+                $formMemory = $this->createForm(new MemoryForm(), array(), array('envChoices' => $envChoices ,
+                    'sysEnv' => "", 'eccChoices' => $eccChoices, 'qualityChoices' => $qualityChoices,
+                    'packageChoices' => $packageChoices, 'typeChoices' => $typeChoices,
+                    'memory' => $memoryArray));
+
+                return array('type'=> $type, 'formMemory' => $formMemory->createView(),
+                    'IDPart' => $memory->getIDPart(), 'Label' => $memory->getLabel(), 'Lam' => $memory->getLam(),
+                    'systemID' => $systemID, 'memoryMosChoices' => $mosChoices,'memoryBipolarChoices' => $bipolarChoices,
                 );
         }
         return array('type' => $type);
@@ -2072,6 +2093,28 @@ class PartsController extends Controller {
                         json_encode(array(
                             'Label' => $diode->getLabel(),
                             'Lam' => $diode->getLam()
+                        )),
+                        200,
+                        array(
+                            'Content-Type' => 'application/json; charset=utf-8'
+                        )
+                    );
+            case 'memory':
+                $obj = $objF->memoryForm;
+                $serviceMemory = $this->get('ikaros_memoryservice');
+                $memory = $serviceMemory->getItem($id);
+                $memory->setParams($obj);
+
+                $oldLam = $memory->getLam();
+                $lambda = $serviceMemory->calculateLam($memory, $pcb->getIDPCB());
+
+                $e = $servicePart->setLams($lambda, $memory, -1, $oldLam);
+
+                if($e == "")
+                    return new Response(
+                        json_encode(array(
+                            'Label' => $memory->getLabel(),
+                            'Lam' => $memory->getLam()
                         )),
                         200,
                         array(

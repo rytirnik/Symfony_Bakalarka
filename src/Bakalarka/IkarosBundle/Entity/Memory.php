@@ -32,11 +32,6 @@ class Memory extends Part
     protected $MemorySize;
 
     /**
-     * @ORM\Column(length=50)
-     */
-    protected $Technology;
-
-    /**
      * @ORM\Column(length=20)
      */
     protected $PackageType;
@@ -200,28 +195,6 @@ class Memory extends Part
         return $this->MemorySize;
     }
 
-    /**
-     * Set Technology
-     *
-     * @param string $technology
-     * @return Memory
-     */
-    public function setTechnology($technology)
-    {
-        $this->Technology = $technology;
-
-        return $this;
-    }
-
-    /**
-     * Get Technology
-     *
-     * @return string 
-     */
-    public function getTechnology()
-    {
-        return $this->Technology;
-    }
 
     /**
      * Set PackageType
@@ -655,16 +628,22 @@ class Memory extends Part
         $this->Quality = $obj->Quality;
         $this->Description = $obj->Description;
         $this->MemoryType = $obj->MemoryType;
-        $this->Technology = $obj->Technology;
         $this->TempDissipation = floatval($obj->TempDissipation);
         $this->TempPassive = floatval($obj->TempPassive);
         $this->PinCount = intval($obj->PinCount);
-        $this->CyclesCount = intval($obj->CyclesCount);
         $this->MemorySize = floatval($obj->MemorySize);
         $this->PackageType = $obj->PackageType;
         $this->ProductionYears = intval($obj->ProductionYears);
-        $this->ECC = $obj->ECC;
-        $this->EepromOxid = $obj->EepromOxid;
+        if($this->MemoryType == "EEPROM") {
+            $this->ECC = $obj->ECC;
+            $this->EepromOxid = $obj->EepromOxid;
+            $this->CyclesCount = intval($obj->CyclesCount);
+        }
+        else {
+            $this->ECC = "-";
+            $this->EepromOxid = "-";
+            $this->CyclesCount = 0;
+        }
     }
 
     public function to_array() {
@@ -677,7 +656,6 @@ class Memory extends Part
             'Description' => $this->Description,
             'Quality' => $this->Quality,
             'MemoryType' => $this->MemoryType,
-            'Technology' => $this->Technology,
             'TempDissipation' => $this->TempDissipation,
             'TempPassive' => $this->TempPassive,
             'PinCount' => $this->PinCount,

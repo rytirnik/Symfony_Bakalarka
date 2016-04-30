@@ -25,6 +25,17 @@
         {% set coilsQuality = "" %}
     {% endif %}
 
+    {% if memoryMosChoices is defined  %}
+        {% set memoryMos = memoryMosChoices %}
+    {% else %}
+        {% set memoryMos = "" %}
+    {% endif %}
+
+    {% if memoryBipolarChoices is defined  %}
+        {% set memoryBipolar = memoryBipolarChoices %}
+    {% else %}
+        {% set memoryBipolar = "" %}
+    {% endif %}
 
     <script type="text/javascript">
 
@@ -32,7 +43,8 @@
             coilsDescOptions = "{{ coilsDesc }}";
             transQualityOptions = "{{ transQuality }}";
             coilsQualityOptions = "{{ coilsQuality }}";
-
+            memoryMosChoices = "{{ memoryMos }}";
+            memoryBipolarChoices = "{{ memoryBipolar }}";
 
       </script>
 {% endblock %}
@@ -65,7 +77,7 @@
       <a class = "btn goBack" href = "{{ path('detail', {id:systemID}) }}"> Zpět na systém  </a>
       <h1> Detail součástky: <span id="labelPart"> {{ Label }} </span> </h1>
       <h3> Typ součástky: {{ type }}</h3>
-      <h3> λ: <span id="lamPart"> {{ Lam }} </span> </h3>
+      <h3> λ: <span id="lamPart" class="lam"> {{ Lam }} </span> </h3>
       <br />
 
        {% if type == "rezistor" %}
@@ -213,6 +225,14 @@
                {{ form_widget(formDiodeRF) }}
                <div class = "submitHandle">
                    <input id="EditDiodeRF" type="submit" value="Upravit" />
+               </div>
+               <p class="pRed"> * povinné pole </p>
+           </form>
+      {% elseif type == "paměť" %}
+           <form id="formMemoryE" class = "resForm long filter" action = "{{ path('editPart', {id:IDPart}) }}" method="post" {{ form_enctype(formMemory) }}>
+               {{ form_widget(formMemory) }}
+               <div class = "submitHandle">
+                   <input  id="EditMemory" type="submit" value="Upravit" />
                </div>
                <p class="pRed"> * povinné pole </p>
            </form>

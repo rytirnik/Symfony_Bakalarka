@@ -107,7 +107,7 @@ jQuery(document).ready(function($) {
 
                     $("#ResTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Material + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
@@ -241,7 +241,7 @@ jQuery(document).ready(function($) {
 
                     $("#CapTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Value + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Material + "</td>"+
@@ -336,7 +336,7 @@ jQuery(document).ready(function($) {
 
                     $("#FuseTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Value + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Type + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.CasePart + "</td>" +
@@ -418,7 +418,7 @@ jQuery(document).ready(function($) {
 
                     $("#ConnectionTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ConnectionType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Type + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.CasePart + "</td>" +
@@ -512,7 +512,7 @@ jQuery(document).ready(function($) {
 
                     $("#ConSocTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ActivePins + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ConnectorType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
@@ -628,7 +628,7 @@ jQuery(document).ready(function($) {
 
                     $("#ConGenTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ConnectorType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ContactCnt + "</td>"+
@@ -738,7 +738,7 @@ jQuery(document).ready(function($) {
 
                     $("#SwitchTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.SwitchType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.ContactCnt + "</td>"+
@@ -828,7 +828,7 @@ jQuery(document).ready(function($) {
 
                     $("#FilterTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.FilterType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Type + "</td>"+
@@ -930,7 +930,7 @@ jQuery(document).ready(function($) {
 
                     $("#RotElapsTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.DevType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.TempOperational + "</td>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.TempMax + "</td>" +
@@ -1043,7 +1043,7 @@ jQuery(document).ready(function($) {
 
                     $("#TubeWaveTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>" + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Power + "</td>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Frequency + "</td>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Type + "</td>"+
@@ -1270,7 +1270,7 @@ jQuery(document).ready(function($) {
 
                     $("#DiodeLFTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
@@ -1370,7 +1370,7 @@ jQuery(document).ready(function($) {
 
                     $("#OptoTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
@@ -1463,7 +1463,7 @@ jQuery(document).ready(function($) {
 
                     $("#CrystalTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Type + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.CasePart + "</td>"+
@@ -1594,7 +1594,7 @@ jQuery(document).ready(function($) {
 
                     $("#TransistorBiLFTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
@@ -1709,7 +1709,7 @@ jQuery(document).ready(function($) {
 
                     $("#TransistorFetLFTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Technology + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
@@ -1840,7 +1840,7 @@ jQuery(document).ready(function($) {
 
                     $("#InductivesTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.DevType + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Description + "</td>"+
@@ -1941,9 +1941,9 @@ jQuery(document).ready(function($) {
                 digits: "Neplatné celé číslo",
             },
             "form[ProductionYears]": {
-                required: "Povinné pole 'Doba výroby' (kladné celé číslo)",
+                required: "Povinné pole 'Doba výroby' (kladné desetinné číslo)",
                 min: "Doba výroby musí být kladné číslo",
-                digits: "Neplatné celé číslo",
+                number: "Neplatné desetinné číslo",
             },
         },
         submitHandler: function(form) {
@@ -1977,7 +1977,7 @@ jQuery(document).ready(function($) {
 
                     $("#MicrocircuitTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Description + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.GateCount + "</td>"+
@@ -2090,7 +2090,7 @@ jQuery(document).ready(function($) {
 
                     $("#DiodeRFTable").children('tbody').append("<tr>" +
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
-                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Lam + "</td>"+
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Environment + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.Application + "</td>"+
                         "<td class='tableLink' href='" + $detURl + "'>"  + data.DiodeType + "</td>"+
@@ -2128,4 +2128,154 @@ jQuery(document).ready(function($) {
     });
 
 
+    var validatorMemory = $("#formMemory").validate( {
+        errorPlacement: function(error, element) {
+            if(element.parent().children().length == 2)
+                element.parent().append('<p class="validErr">' + error.text() + '</p>' );
+            else {
+                element.parent().children('p').text(error.text());
+            }
+            $(".submitMsg").remove();
+        },
+        rules: {
+            "form[Label]": {
+                maxlength: 64
+            },
+            "form[Type]": {
+                maxlength: 64
+            },
+            "form[PinCount]": {
+                digits: true,
+                min: 1
+            },
+            "form[TempDissipation]": {
+                number: true,
+                min: 0
+            },
+            "form[TempPassive]": {
+                number: true,
+                min: 0
+            },
+            "form[MemorySize]": {
+                number: true,
+                min: 0
+            },
+            "form[CyclesCount]": {
+                digits: true,
+                min: 1
+            },
+            "form[ProductionYears]": {
+                number: true,
+                min: 0
+            },
+        },
+        messages: {
+            "form[Label]": {
+                required: "Povinné pole 'Název'"
+            },
+            "form[PinCount]": {
+                required: "Povinné pole 'Počet vývodů' (kladné celé číslo)",
+                digits: "Neplatné celé číslo",
+                min: "Počet vývodů musí být kladné číslo"
+            },
+            "form[TempDissipation]": {
+                required: "Povinné pole 'Oteplení ztrát. výkonem' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Oteplení ztrát. výkonem musí být kladné číslo"
+            },
+            "form[TempPassive]": {
+                required: "Povinné pole 'Pasivní oteplení' (kladné desetinné číslo)",
+                number: "Neplatné desetinné číslo",
+                min: "Pasivní oteplení musí být kladné číslo"
+            },
+            "form[CyclesCount]": {
+                required: "Povinné pole 'Počet hradel' (kladné celé číslo)",
+                min: "Počet hradel musí být kladné číslo",
+                digits: "Neplatné celé číslo",
+            },
+            "form[MemorySize]": {
+                required: "Povinné pole 'Velikost paměti' (kladné desetinné číslo)",
+                min: "Velikost paměti musí být kladné číslo",
+                number: "Neplatné desetinné číslo",
+            },
+            "form[ProductionYears]": {
+                required: "Povinné pole 'Doba výroby' (kladné desetinné číslo)",
+                min: "Doba výroby musí být kladné číslo",
+                number: "Neplatné desetinné číslo",
+            },
+        },
+        submitHandler: function(form) {
+            $data =  $("#formMemory").serializeJSON();
+            jQuery.ajax({
+                url:        newMemoryURL,
+                data:       {formData: $data, id: idPCB },
+                success:    function(data){
+                    //alert("ok");
+                    if($("#MemoryTable").length == 0) {
+                        $("#tab_19").append('<h2> Uložené paměti </h2>'+
+                            '<table id="MemoryTable" class = "systems part newPart systemsHover">' +
+                            '<thead> <tr> '+
+                            '<td> Název </td> '+
+                            '<td> Lambda </td>'+
+                            '<td> Popis </td>'+
+                            '<td> Druh </td>'+
+                            '<td> Velikost </td>'+
+                            '<td> Provední pouzdra </td>'+
+                            '<td> Počet vývodů </td>'+
+                            '<td> Doba výroby </td>'+
+                            '<td> Kvalita </td>'+
+                            '<td> Oteplení ZV </td>'+
+                            '<td> Pasivní oteplení </td>'+
+                            '<td> Počet zápisů </td>'+
+                            '<td> Exid </td>'+
+                            '<td> ECC </td>'+
+                            '</tr> </thead> <tbody> </tbody> </table>');
+                    }
+
+                    $detURl = detailURL.substring(0, detailURL.lastIndexOf("-1"));
+                    $detURl = $detURl.concat(data.idP);
+
+                    $("#MemoryTable").children('tbody').append("<tr>" +
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Label + "</td>" +
+                        "<td class='tableLink lam' href='" + $detURl + "'>"  + Number(data.Lam).toExponential(3) + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Description + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.MemoryType + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.MemorySize + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PackageType + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.PinCount + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.ProductionYears + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.Quality + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempDissipation + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.TempPassive + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.CyclesCount + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.EepromOxid + "</td>"+
+                        "<td class='tableLink' href='" + $detURl + "'>"  + data.ECC + "</td>");
+
+                    $(".tableLink").click(function() {
+                        window.document.location = $(this).attr("href");
+                    });
+
+                    $(".tableLink").hover(function() {
+                        $(".tableLink").css("cursor", "pointer");
+                    });
+
+                    $sysL = parseFloat($("#SysLam").text()) + parseFloat(data.Lam);
+                    $("#SysLam").text($sysL);
+
+                    $(".submitMsg").remove();
+                    $("#formMemory").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                },
+                error: function(data) {
+                    //alert("Error");
+                    $(".submitMsg").remove();
+                    $("#formMemory").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+                },
+                dataType:   'json',
+                type:       'POST'
+            });
+            $(".validErr").remove();
+            validatorMemory.resetForm();
+        }
+    });
 });

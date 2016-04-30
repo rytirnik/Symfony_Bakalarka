@@ -17,8 +17,6 @@ class MemoryForm extends AbstractType
         $oxidChoices = array("Flotox" => "Flotox", "Textured-Poly" => "Textured-Poly");
         $typeChoices = $options['typeChoices'];
         $packageChoices = $options['packageChoices'];
-        //$techChoices = $options['techChoices'];
-        $techChoices = array("Memories" => "Memories");
         $qualityChoices = $options['qualityChoices'];
         $eccChoices = $options['eccChoices'];
 
@@ -64,11 +62,6 @@ class MemoryForm extends AbstractType
                     'required' => true,
                     'label' => 'Velikost paměti [KBits]',
                     'data' => 1
-                ))
-                ->add('Technology', 'choice', array(
-                    'required' => true,
-                    'label' => 'Technologie',
-                    'choices' => $techChoices,
                 ))
                 ->add('PackageType', 'choice', array(
                     'required' => true,
@@ -169,12 +162,6 @@ class MemoryForm extends AbstractType
                     'required' => true,
                     'label' => 'Velikost paměti [KBits]',
                     'data' => $memory['MemorySize']
-                ))
-                ->add('Technology', 'choice', array(
-                    'required' => true,
-                    'label' => 'Technologie',
-                    'choices' => $techChoices,
-                    'data' => $memory['Technology']
                 ))
                 ->add('PackageType', 'choice', array(
                     'required' => true,

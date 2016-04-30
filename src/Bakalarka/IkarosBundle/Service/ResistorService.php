@@ -92,7 +92,7 @@ class ResistorService {
                        FROM Resistor_material m
                        WHERE m.ResShortcut = :m');
         $stmt->execute(array('m' => $mat));
-        return $stmt->fetchA();
+        return $stmt->fetch();
     }
 //====================================================================================================================
     public function getActiveResistors($pcbID) {

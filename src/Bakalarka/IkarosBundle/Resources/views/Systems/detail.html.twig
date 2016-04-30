@@ -59,7 +59,7 @@
                   <td> {{ system.Title }} </td>
                   <td> {{ system.Temp }}  </td>
                   <td> {{ system.Environment }}  </td>
-                  <td id="Lam"> {{ system.Lam }} </td>
+                  <td id="Lam" class="lam"> {{ system.Lam }} </td>
                   <td id="PCBcnt"> {{ system.PCBcnt }} </td>
                   <td id="PartsCnt"> {{ system.PartsCnt }} </td>
                   <td> {{ system.CreateDate|date("d.m.Y") }} </td>
@@ -106,7 +106,7 @@
               <tbody>
                   <tr>
                       <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.Label }} </td>
-                      <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.SumLam }} </td>
+                      <td class = "tableLink lam" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.SumLam }} </td>
                       <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.Lifetime }}  </td>
                       <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.EquipType }} </td>
                       <td class = "tableLink" href = "{{ path('detailPCB',{id:d.ID_PCB}) }}"> {{ d.SubstrateMaterial }} </td>
@@ -144,7 +144,7 @@
                           <tr>
                               <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.entity_type }} </td>
                               <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Label }} </td>
-                              <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Lam }} </td>
+                              <td class = "tableLink lam" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Lam }} </td>
                               <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.Type }} </td>
                               <td class = "tableLink" href = "{{ path('detailPart',{id:part.ID_Part}) }}"> {{ part.CasePart }} </td>
                               {% if system.Username == app.user.username %}

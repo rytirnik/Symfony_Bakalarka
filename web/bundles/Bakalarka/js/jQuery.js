@@ -278,4 +278,11 @@ jQuery(document).ready(function($) {
         }
     });
 
+    $(".lam").each(function(){
+        var val = $(this).text();
+        //alert((Number(val)).toExponential(3));
+        $(this).text((Number(val)).toExponential(3));
+    });
+
+
 });

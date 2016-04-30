@@ -143,8 +143,8 @@ function savePCB2(event) {
             success:    function(data){
                 //alert("ok");
                 //$lam1 = parseFloat($("#PCBlam1").text()) + parseFloat(data.Lam);
-                $("#PCBlam1").text(data.SumLam);
-                $("#PCBlam2").text(data.Lam);
+                $("#PCBlam1").text(Number(data.SumLam).toExponential(3));
+                $("#PCBlam2").text(Number(data.Lam).toExponential(3));
 
                 $("#EditPcbForm2 .submitMsg").remove();
                 $("#EditPcbForm2").append('<span class="submitMsg"> Deska byla uložena. </span>');
@@ -194,7 +194,7 @@ function deleteSTM(event) {
                 $row.remove();
             }
 
-            var $lam = parseFloat($("#PCBlam1").text()) - parseFloat(data.Lam);
+            var $lam = parseFloat($("#PCBlam1").text()) - parseFloat(Number(data.Lam).toExponential(3));
             $("#PCBlam1").text($lam);
 
             alert("Záznam SMT smazán");
@@ -231,6 +231,7 @@ jQuery(document).ready(function($) {
     $("#formInductiveE input:not(:submit), #formInductiveE select").attr('disabled', 'disabled');
     $("#formMicrocircuitE input:not(:submit), #formMicrocircuitE select").attr('disabled', 'disabled');
     $("#formDiodeRFE input:not(:submit), #formDiodeRFE select").attr('disabled', 'disabled');
+    $("#formMemoryE input:not(:submit), #formMemoryE select").attr('disabled', 'disabled');
 
 
 
@@ -368,7 +369,7 @@ jQuery(document).ready(function($) {
             data:       {formData: $data, mode: 3},
             success:    function(data){
                 //alert("ok");
-                $lam1 = parseFloat($("#PCBlam1").text()) + parseFloat(data.Lam);
+                $lam1 = parseFloat($("#PCBlam1").text()) + parseFloat(Number(data.Lam).toExponential(3));
                 $("#PCBlam1").text($lam1);
 
                 $(".submitMsg").remove();
@@ -389,7 +390,7 @@ jQuery(document).ready(function($) {
                         '</tr> </thead> <tbody> </tbody> </table>');
                 }
 
-                $table = "<tr> <td >" + data.Lam + "</td>";
+                $table = "<tr> <td class='lam'>" + Number(data.Lam).toExponential(3) + "</td>";
 
                 if (data.LeadConfig == 1)
                     $table += "<td> Leadless </td>";

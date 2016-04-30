@@ -327,6 +327,9 @@ class SystemsController extends Controller
             case 'dioda, vysokofrekvenční':
                 $service = $this->get('ikaros_dioderfservice');
                 break;
+            case 'paměť':
+                $service = $this->get('ikaros_memoryservice');
+                break;
             default:
                 return "";
         }

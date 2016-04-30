@@ -21,7 +21,7 @@ var oldTransistorFetLF = [];
 var oldInductive = [];
 var oldMicrocircuit = [];
 var oldDiodeRF = [];
-
+var oldMemory = [];
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ function saveRes(event) {
                 $(".submitMsg").remove();
                 $("#formResE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -146,7 +146,7 @@ function saveCap(event) {
                 $(".submitMsg").remove();
                 $("#formCapE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -203,7 +203,7 @@ function saveFuse(event) {
                 $(".submitMsg").remove();
                 $("#formFuseE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -252,7 +252,7 @@ function saveConnection(event) {
                 $(".submitMsg").remove();
                 $("#formConnectionE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -307,7 +307,7 @@ function saveConSoc(event) {
                 $(".submitMsg").remove();
                 $("#formConSocE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -382,7 +382,7 @@ function saveConGen(event) {
                 $(".submitMsg").remove();
                 $("#formConGenE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -454,7 +454,7 @@ function saveSwitch(event) {
                 $(".submitMsg").remove();
                 $("#formSwitchE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -509,7 +509,7 @@ function saveFilter(event) {
                 $(".submitMsg").remove();
                 $("#formFilterE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -571,7 +571,7 @@ function saveRotElaps(event) {
                 $(".submitMsg").remove();
                 $("#formRotElapsE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -645,7 +645,7 @@ function saveTubeWave(event) {
                 $(".submitMsg").remove();
                 $("#formTubeWaveE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -708,7 +708,7 @@ function saveDiodeLF(event) {
                 $(".submitMsg").remove();
                 $("#formDiodeLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -778,7 +778,7 @@ function saveOpto(event) {
                 $(".submitMsg").remove();
                 $("#formOptoE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -839,7 +839,7 @@ function saveCrystal(event) {
                 $(".submitMsg").remove();
                 $("#formCrystalE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -922,7 +922,7 @@ function saveTransistorBiLF(event) {
                 $(".submitMsg").remove();
                 $("#formTransistorBiLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -998,7 +998,7 @@ function saveTransistorFetLF(event) {
                 $(".submitMsg").remove();
                 $("#formTransistorFetLFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -1073,7 +1073,7 @@ function saveInductive(event) {
                 $(".submitMsg").remove();
                 $("#formInductiveE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -1162,7 +1162,7 @@ function saveMicrocircuit(event) {
                 $(".submitMsg").remove();
                 $("#formMicrocircuitE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -1236,7 +1236,7 @@ function saveDiodeRF(event) {
                 $(".submitMsg").remove();
                 $("#formDiodeRFE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
 
-                $("#lamPart").text(data.Lam);
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
                 $("#labelPart").text(data.Label);
             },
             error: function(data) {
@@ -1270,6 +1270,127 @@ function saveDiodeRF(event) {
     $('#CancelDiodeRF').remove();
     $("#EditDiodeRF").show();
 }
+//----------------------------------------------------------------------------------------------------------------------
+function disableEEPROM () {
+    $("#memoryForm_ECC").attr('disabled', 'disabled');
+    $("#memoryForm_EepromOxid").attr('disabled', 'disabled');
+    $("#memoryForm_CyclesCount").attr('disabled', 'disabled');
+}
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+function saveMemory(event) {
+    var save = $(event.target).attr('id') == 'SaveMemory';
+    var err = 0;
+    if(save) {
+        $data =  $("#formMemoryE").serializeJSON();
+        var val = $('#formMemoryE input[id="memoryForm_Label"]').val();
+        if ( val == "" ) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte název </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_TempDissipation"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte oteplení ztrátovým výkonem (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_TempPassive"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte pasivní oteplení (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_MemorySize"]').val();
+        if ( val == "" || !($.isNumeric(val)) || val < 0) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte velikost paměti (kladné desetinné číslo) </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_PinCount"]').val();
+        if ( val == "" || !($.isNumeric(val)) || Math.floor(val) != val || val < 0) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte počet vývodů (kladné celé číslo) </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_CyclesCount"]').val();
+        var memType = $("#memoryForm_MemoryType").val();
+        if (memType == "EEPROM" && (val == "" || !($.isNumeric(val)) || Math.floor(val) != val || val < 0)) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte počet zápisů (kladné celé číslo) </span>');
+            return;
+        }
+        var val = $('#formMemoryE input[id="memoryForm_ProductionYears"]').val();
+        if ( val == "" || !($.isNumeric(val)) || Math.floor(val) != val || val < 0) {
+            $("#formMemoryE .submitMsg").remove();
+            $("#formMemoryE").append('<span class="submitMsg"> Vyplňte dobu výroby (kladné celé číslo) </span>');
+            return;
+        }
+
+        $url = $("#formMemoryE").attr('action');
+        jQuery.ajax({
+            url:        $url,
+            data:       {formData: $data, mode: "memory"},
+            success:    function(data){
+                //alert("ok");
+                $(".submitMsg").remove();
+                $("#formMemoryE").append('<span class="submitMsg"> Součástka byla uložena. </span>');
+
+                $("#lamPart").text(Number(data.Lam).toExponential(3));
+                $("#labelPart").text(data.Label);
+            },
+            error: function(data) {
+                //alert("Error");
+                err = 1;
+                $(".submitMsg").remove();
+                $("#formMemoryE").append('<span class="submitMsg"> Součástku se nepodařilo uložit. </span>')
+            },
+            dataType:   'json',
+            type:       'POST'
+        });
+
+    }
+    if (err || !save) {
+        $(".submitMsg").remove();
+        $('#formMemoryE input[id="memoryForm_Label"]').val(oldMemory['Label']);
+        $('#formMemoryE input[id="memoryForm_Type"]').val(oldMemory['Type']);
+        $('#formMemoryE select[id="memoryForm_Quality"]').val(oldMemory['Quality']);
+        $('#formMemoryE select[id="memoryForm_Environment"]').val(oldMemory['Environment']);
+        $('#formMemoryE select[id="memoryForm_PackageType"]').val(oldMemory['PackageType']);
+        $('#formMemoryE input[id="memoryForm_CasePart"]').val(oldMemory['CasePart']);
+        $('#formMemoryE input[id="memoryForm_TempDissipation"]').val(oldMemory['TempDissipation']);
+        $('#formMemoryE input[id="memoryForm_TempPassive"]').val(oldMemory['TempPassive']);
+        $('#formMemoryE input[id="memoryForm_PinCount"]').val(oldMemory['PinCount']);
+        $('#formMemoryE input[id="memoryForm_CyclesCount"]').val(oldMemory['CyclesCount']);
+        $('#formMemoryE input[id="memoryForm_ProductionYears"]').val(oldMemory['ProductionYears']);
+        $('#formMemoryE input[id="memoryForm_MemorySize"]').val(oldMemory['MemorySize']);
+        $('#formMemoryE select[id="memoryForm_EepromOxid"]').val(oldMemory['EepromOxid']);
+        $('#formMemoryE select[id="memoryForm_ECC"]').val(oldMemory['ECC']);
+
+        var newMemoryDesc = $('#formMemoryE select[id="memoryForm_MemoryType"]').val();
+        if(oldMemory['Description'] != newMemoryDesc) {
+            $("#memoryForm_MemoryType").empty();
+            if(oldMemory['Description'] == 'MOS') {
+                $("#memoryForm_MemoryType").append(decodeHtml(memoryMosChoices));
+            }
+            else {
+                $("#memoryForm_MemoryType").append(decodeHtml(memoryBipolarChoices));
+            }
+        }
+
+        $('#formMemoryE select[id="memoryForm_MemoryType"]').val(oldMemory['MemoryType']);
+        $('#formMemoryE select[id="memoryForm_Description"]').val(oldMemory['Description']);
+    }
+    $("#formMemoryE input:not(:submit), #formMemoryE select").attr('disabled', 'disabled');
+    $('#SaveMemory').remove();
+    $('#CancelMemory').next('div').remove();
+    $('#CancelMemory').remove();
+    $("#EditMemory").show();
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1914,9 +2035,9 @@ jQuery(document).ready(function($) {
 
         $("#formInductiveE .submitHandle").append('<div class="cleaner"></div>');
 
-    });
+    })
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditMicrocircuit").click(function(e) {
         e.preventDefault();
@@ -1962,7 +2083,7 @@ jQuery(document).ready(function($) {
 
     });
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
     $("#EditDiodeRF").click(function(e) {
         e.preventDefault();
@@ -2004,6 +2125,56 @@ jQuery(document).ready(function($) {
 
     });
 
+//----------------------------------------------------------------------------------------------------------------------
 
+    $("#EditMemory").click(function(e) {
+        e.preventDefault();
+        $(".submitMsg").remove();
+        $("#formMemoryE input:not(:submit), #formMemoryE select").removeAttr('disabled');
+        var memType = $("#memoryForm_MemoryType").val();
+        if(memType != "EEPROM") {
+            disableEEPROM();
+        }
+        $this = $(this);
+        $("#EditMemory").hide();
+        oldMemory['Label'] = $('#formMemoryE input[id="memoryForm_Label"]').val();
+        oldMemory['Type'] = $('#formMemoryE input[id="memoryForm_Type"]').val();
+        oldMemory['MemoryType'] = $('#formMemoryE select[id="memoryForm_MemoryType"]').val();
+        oldMemory['Quality'] = $('#formMemoryE select[id="memoryForm_Quality"]').val();
+        oldMemory['Description'] = $('#formMemoryE select[id="memoryForm_Description"]').val();
+        oldMemory['Environment'] = ($('#formMemoryE select[id="memoryForm_Environment"]').val());
+        oldMemory['PackageType'] = ($('#formMemoryE select[id="memoryForm_PackageType"]').val());
+        oldMemory['CasePart'] = $('#formMemoryE input[id="memoryForm_CasePart"]').val();
+        oldMemory['TempDissipation'] = $('#formMemoryE input[id="memoryForm_TempDissipation"]').val();
+        oldMemory['TempPassive'] = $('#formMemoryE input[id="memoryForm_TempPassive"]').val();
+        oldMemory['PinCount'] = $('#formMemoryE input[id="memoryForm_PinCount"]').val();
+        oldMemory['CyclesCount'] = $('#formMemoryE input[id="memoryForm_CyclesCount"]').val();
+        oldMemory['MemorySize'] = $('#formMemoryE input[id="memoryForm_MemorySize"]').val();
+        oldMemory['ProductionYears'] = $('#formMemoryE input[id="memoryForm_ProductionYears"]').val();
+        oldMemory['EepromOxid'] = ($('#formMemoryE select[id="memoryForm_EepromOxid"]').val());
+        oldMemory['ECC'] = ($('#formMemoryE select[id="memoryForm_ECC"]').val());
+
+        var save = document.createElement('input');
+        var cancel = document.createElement('input');
+        $(save)
+            .attr('id','SaveMemory')
+            .attr('class','save')
+            .attr('type','button')
+            .val('Uložit')
+            .click(saveMemory)
+        ;
+        $("#formMemoryE .submitHandle").append(save);
+        $(cancel)
+            .attr('id','CancelMemory')
+            .attr('class','cancel')
+            .attr('type','button')
+            .val('Zrušit')
+            .click(saveMemory)
+        ;
+        $("#formMemoryE .submitHandle").append(cancel);
+
+        $("#formMemoryE .submitHandle").append('<div class="cleaner"></div>');
+
+    });
 
 });

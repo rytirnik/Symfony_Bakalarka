@@ -68,17 +68,15 @@
 
     <hr />
       <h3> <span class="bold"> Systém: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ system.Title }} </a> </h3>
-        <p class="lam"> ∑(λ): <span id="SysLam" > {{ system.Lam }}</span> </p>
+        <p class="lambda"> ∑(λ): <span id="SysLam" class="lam"> {{ system.Lam }}</span> </p>
       <h3> <span class="bold"> Deska: </span> <a href = "{{ path('detail', {id:system.IDSystem}) }}"> {{ pcb.Label }} </a> </h3>
-        <p class="lam"> λ: <span>{{ pcb.SumLam }}</span> </p>
+        <p class="lambda"> λ: <span class="lam">{{ pcb.SumLam }}</span> </p>
       <hr />
       <br />
 
-
-
       {% if e %}
           {{ e }}
-          {% endif %}
+      {% endif %}
 
     <div id = "container">
         <ul class = "tabs">
@@ -203,7 +201,7 @@
                         {% for resistor in resistors %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Material }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:resistor.ID_Part}) }}"> {{ resistor.Description }}</td>
@@ -278,7 +276,7 @@
                         {% for capacitor in capacitors %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}" > {{ capacitor.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Value }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:capacitor.ID_Part}) }}"> {{ capacitor.Material }}</td>
@@ -327,7 +325,7 @@
                         {% for fuse in fuses %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Value }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.Type }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:fuse.ID_Part}) }}"> {{ fuse.CasePart }} </td>
@@ -372,7 +370,7 @@
                         {% for con in connections %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Description }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Type }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.CasePart }} </td>
@@ -420,7 +418,7 @@
                         {% for con in conSoc %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ActivePins }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ConnectorType }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Quality }}</td>
@@ -470,7 +468,7 @@
                         {% for con in conGen %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ConnectorType }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.Quality }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:con.ID_Part}) }}"> {{ con.ContactCnt }} </td>
@@ -522,7 +520,7 @@
                         {% for s in switches %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.SwitchType }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.Quality }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:s.ID_Part}) }}"> {{ s.ContactCnt }} </td>
@@ -608,7 +606,7 @@
                         {% for filter in filters %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.FilterType }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Quality }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:filter.ID_Part}) }}"> {{ filter.Type }}</td>
@@ -657,7 +655,7 @@
                         {% for rot in rotElaps %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.DevType }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.TempOperational }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:rot.ID_Part}) }}"> {{ rot.TempMax }}  </td>
@@ -706,7 +704,7 @@
                         {% for tube in tubeWaves %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Power }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Frequency }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:tube.ID_Part}) }}"> {{ tube.Type }}</td>
@@ -758,7 +756,7 @@
                         {% for diode in diodesLF %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Application }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Quality }}</td>
@@ -815,7 +813,7 @@
                         {% for opto in optos %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Application }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:opto.ID_Part}) }}"> {{ opto.Quality }}</td>
@@ -864,7 +862,7 @@
                         {% for crystal in crystals %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.Type }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:crystal.ID_Part}) }}"> {{ crystal.CasePart }}</td>
@@ -916,7 +914,7 @@
                         {% for transistor in transistorsBiLF %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Application }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Quality }}</td>
@@ -970,7 +968,7 @@
                         {% for transistor in transistorsFetLF %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Technology }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:transistor.ID_Part}) }}"> {{ transistor.Application }}</td>
@@ -1025,7 +1023,7 @@
                         {% for inductive in inductives %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.DevType }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:inductive.ID_Part}) }}"> {{ inductive.Description }}</td>
@@ -1123,7 +1121,7 @@
                         {% for micro in microcircuits %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Description }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.Application }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:micro.ID_Part}) }}"> {{ micro.GateCount }}</td>
@@ -1201,7 +1199,7 @@
                         {% for diode in diodesRF %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Environment }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.Application }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:diode.ID_Part}) }}"> {{ diode.DiodeType }}</td>
@@ -1299,7 +1297,7 @@
                         {% for memory in memories %}
                             <tr >
                                 <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Label }} </td>
-                                <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Lam }}  </td>
+                                <td class="tableLink lam" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Lam }}  </td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.Description }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.MemoryType }}</td>
                                 <td class="tableLink" href="{{ path('detailPart',{id:memory.ID_Part}) }}"> {{ memory.MemorySize }}</td>
